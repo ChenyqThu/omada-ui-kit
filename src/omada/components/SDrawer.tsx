@@ -1,5 +1,6 @@
 import React from 'react';
 import { Drawer, type DrawerProps } from 'antd';
+import { SButton } from './SButton';
 
 export type SDrawerSize = 'sm' | 'md' | 'lg';
 
@@ -15,11 +16,13 @@ export interface SDrawerProps extends Omit<DrawerProps, 'size' | 'width'> {
   subtitle?: React.ReactNode;
   statusSlot?: React.ReactNode;
   headerTabs?: React.ReactNode;
+  /** Displays a skeleton placeholder inside the drawer body while data loads */
+  loading?: boolean;
 }
 
 /**
  * Omada slide-over Drawer (`sm`: 480px, `md`: 640px, `lg`: 880px)
- * supporting a rich header slot with subtitle, status badge, and tabs.
+ * supporting a rich header slot with subtitle, status badge, tabs, and loading skeleton.
  */
 export const SDrawer: React.FC<SDrawerProps> = ({
   size = 'md',
@@ -29,6 +32,7 @@ export const SDrawer: React.FC<SDrawerProps> = ({
   statusSlot,
   headerTabs,
   extra,
+  loading = false,
   children,
   styles,
   ...rest
@@ -55,27 +59,125 @@ export const SDrawer: React.FC<SDrawerProps> = ({
     </div>
   );
 
+  const baseStyles: NonNullable<Exclude<DrawerProps['styles'], (...args: never[]) => unknown>> = {
+    header: {
+      padding: '16px 24px',
+      borderBottom: '1px solid var(--omada-border-divider)',
+    },
+    body: {
+      padding: '20px 24px',
+    },
+    footer: {
+      padding: '12px 24px',
+      borderTop: '1px solid var(--omada-border-divider)',
+    },
+  };
+
+  const mergedStyles: DrawerProps['styles'] =
+    typeof styles === 'function'
+      ? (info) => {
+          const resolved = styles(info);
+          return {
+            ...baseStyles,
+            ...resolved,
+            header: { ...baseStyles.header, ...resolved?.header },
+            body: { ...baseStyles.body, ...resolved?.body },
+            footer: { ...baseStyles.footer, ...resolved?.footer },
+          };
+        }
+      : {
+          ...baseStyles,
+          ...styles,
+          header: { ...baseStyles.header, ...styles?.header },
+          body: { ...baseStyles.body, ...styles?.body },
+          footer: { ...baseStyles.footer, ...styles?.footer },
+        };
+
   return (
     <Drawer
       size={width ?? DRAWER_WIDTHS[size]}
       title={headerNode}
-      styles={{
-        header: {
-          padding: '16px 24px',
-          borderBottom: '1px solid var(--omada-border-divider)',
-        },
-        body: {
-          padding: '20px 24px',
-        },
-        footer: {
-          padding: '12px 24px',
-          borderTop: '1px solid var(--omada-border-divider)',
-        },
-        ...styles,
-      }}
+      loading={loading}
+      styles={mergedStyles}
       {...rest}
     >
       {children}
     </Drawer>
+  );
+};
+
+export interface SDrawerFooterProps {
+  onCancel?: () => void;
+  onOk?: () => void;
+  cancelText?: React.ReactNode | null;
+  okText?: React.ReactNode | null;
+  loading?: boolean;
+  okDisabled?: boolean;
+  danger?: boolean;
+  align?: 'left' | 'right' | 'between';
+  /** Make footer sticky inside scrollable drawer body (adds top border & surface fill) */
+  sticky?: boolean;
+  extra?: React.ReactNode;
+  children?: React.ReactNode;
+  className?: string;
+}
+
+/**
+ * Standardized Omada drawer footer bar for `SDrawer`'s `footer` prop or sticky bottom body placement.
+ */
+export const SDrawerFooter: React.FC<SDrawerFooterProps> = ({
+  onCancel,
+  onOk,
+  cancelText = 'Cancel',
+  okText = 'Apply',
+  loading = false,
+  okDisabled = false,
+  danger = false,
+  align = 'right',
+  sticky = false,
+  extra,
+  children,
+  className = '',
+}) => {
+  const stickyClasses = sticky
+    ? 'sticky bottom-0 z-10 -mx-6 -mb-5 mt-5 border-t border-[var(--omada-border-divider)] bg-[var(--omada-bg-overlay)] px-6 py-3'
+    : '';
+
+  const buttonGroup = children ?? (
+    <>
+      {cancelText !== null && cancelText !== undefined && (
+        <SButton variant="secondary" disabled={loading} onClick={onCancel}>
+          {cancelText}
+        </SButton>
+      )}
+      {okText !== null && okText !== undefined && (
+        <SButton
+          variant={danger ? 'danger' : 'primary'}
+          loading={loading}
+          disabled={okDisabled}
+          onClick={onOk}
+        >
+          {okText}
+        </SButton>
+      )}
+    </>
+  );
+
+  const alignClass =
+    align === 'left'
+      ? 'justify-start'
+      : align === 'between'
+        ? 'justify-between'
+        : 'justify-end';
+
+  return (
+    <div
+      className={`flex w-full flex-wrap items-center justify-between gap-3 ${stickyClasses} ${className}`.trim()}
+    >
+      {extra && <div className="flex items-center gap-2 text-xs text-[var(--omada-text-secondary)]">{extra}</div>}
+      <div className={`flex flex-1 items-center gap-2.5 ${alignClass}`}>
+        {buttonGroup}
+      </div>
+    </div>
   );
 };
