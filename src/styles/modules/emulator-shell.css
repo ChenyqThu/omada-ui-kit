@@ -1,0 +1,253 @@
+/* ==========================================================================
+ * Omada Controller v6.3.0.34 Emulator Shell Theme Overrides & Styles
+ * Scoped strictly to `.omada-emulator-root` so global `tokens.css` stays untouched.
+ * ========================================================================== */
+
+.omada-emulator-root {
+  --omada-topbar-bg: linear-gradient(90deg, #038069 0%, #026E64 100%);
+  --omada-topbar-text: #FFFFFF;
+  --omada-bg-page: #FFFFFF;
+  --omada-bg-surface: #FFFFFF;
+  --omada-bg-sidebar: #F7F7F7;
+  --omada-bg-sidebar-active: #FFFFFF;
+  --omada-brand: #00A870;
+  --omada-brand-text: #00A870;
+  --omada-text-primary: #2B2B2B;
+  --omada-text-secondary: #636363;
+  --omada-text-tertiary: #999999;
+  --omada-border-divider: #ECECEC;
+
+  --omada-emu-topbar-bg: linear-gradient(90deg, #038069 0%, #026E64 100%);
+  --omada-emu-topbar-text: #FFFFFF;
+  --omada-emu-topbar-hover: rgba(255, 255, 255, 0.14);
+  --omada-emu-page-bg: #FFFFFF;
+  --omada-emu-sidebar-bg: #F7F7F7;
+  --omada-emu-sidebar-active-bg: #FFFFFF;
+  --omada-emu-sidebar-active-text: #00A870;
+  --omada-emu-sidebar-item-text: #2B2B2B;
+  --omada-emu-sidebar-item-hover: rgba(0, 0, 0, 0.04);
+  --omada-emu-site-pill-bg: #ECECEC;
+  --omada-emu-site-pill-hover: #E2E2E2;
+  --omada-emu-site-pill-text: #2B2B2B;
+  --omada-emu-section-label: #999999;
+  --omada-emu-card-border: #ECECEC;
+  --omada-emu-beta-bg: rgba(240, 146, 66, 0.12);
+  --omada-emu-beta-text: #F09242;
+  --omada-emu-handle-bg: #FFFFFF;
+  --omada-emu-handle-hover-bg: #F7F7F7;
+  --omada-emu-handle-border: #CCCCCC;
+  --omada-emu-handle-text: #2B2B2B;
+}
+
+[data-theme="dark"] .omada-emulator-root,
+.dark .omada-emulator-root {
+  --omada-topbar-bg: #2C2C2C;
+  --omada-topbar-text: #FFFFFF;
+  --omada-bg-page: #1C1C1C;
+  --omada-bg-surface: #1C1C1C;
+  --omada-bg-sidebar: #242424;
+  --omada-bg-sidebar-active: #1A1A1A;
+  --omada-brand: #00A163;
+  --omada-brand-text: #00A163;
+  --omada-text-primary: rgba(255, 255, 255, 0.9);
+  --omada-text-secondary: rgba(255, 255, 255, 0.65);
+  --omada-text-tertiary: rgba(255, 255, 255, 0.4);
+  --omada-border-divider: #353535;
+
+  --omada-emu-topbar-bg: #2C2C2C;
+  --omada-emu-topbar-text: #FFFFFF;
+  --omada-emu-topbar-hover: rgba(255, 255, 255, 0.12);
+  --omada-emu-page-bg: #1C1C1C;
+  --omada-emu-sidebar-bg: #242424;
+  --omada-emu-sidebar-active-bg: #1A1A1A;
+  --omada-emu-sidebar-active-text: #00A163;
+  --omada-emu-sidebar-item-text: rgba(255, 255, 255, 0.9);
+  --omada-emu-sidebar-item-hover: rgba(255, 255, 255, 0.06);
+  --omada-emu-site-pill-bg: #363636;
+  --omada-emu-site-pill-hover: #424242;
+  --omada-emu-site-pill-text: rgba(255, 255, 255, 0.9);
+  --omada-emu-section-label: rgba(255, 255, 255, 0.4);
+  --omada-emu-card-border: #353535;
+  --omada-emu-beta-bg: rgba(240, 146, 66, 0.14);
+  --omada-emu-beta-text: #F09242;
+  --omada-emu-handle-bg: #1C1C1C;
+  --omada-emu-handle-hover-bg: #2B2B2B;
+  --omada-emu-handle-border: #444444;
+  --omada-emu-handle-text: rgba(255, 255, 255, 0.85);
+}
+
+@layer components {
+  .omada-emulator-root {
+    background-color: var(--omada-emu-page-bg);
+    color: var(--omada-text-primary);
+  }
+
+  .omada-emu-topbar {
+    background: var(--omada-emu-topbar-bg);
+    color: var(--omada-emu-topbar-text);
+    border: none;
+  }
+
+  .omada-emu-topbar-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    color: var(--omada-emu-topbar-text);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+
+  .omada-emu-topbar-icon-btn:hover {
+    background-color: var(--omada-emu-topbar-hover);
+  }
+
+  .omada-emu-avatar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 9999px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+
+  .omada-emu-avatar-btn:hover {
+    opacity: 0.9;
+  }
+
+  .omada-emu-sidebar {
+    background-color: var(--omada-emu-sidebar-bg);
+    border-right: none;
+  }
+
+  .omada-emu-collapse-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: var(--omada-emu-sidebar-item-text);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+
+  .omada-emu-collapse-btn:hover {
+    background-color: var(--omada-emu-sidebar-item-hover);
+  }
+
+  .omada-emu-site-pill {
+    background-color: var(--omada-emu-site-pill-bg);
+    color: var(--omada-emu-site-pill-text);
+    border: none;
+    border-radius: 6px;
+    transition: background-color 0.15s ease;
+  }
+
+  .omada-emu-site-pill:hover {
+    background-color: var(--omada-emu-site-pill-hover);
+  }
+
+  .omada-emu-section-label {
+    color: var(--omada-emu-section-label);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+
+  .omada-emu-nav-item {
+    color: var(--omada-emu-sidebar-item-text);
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    transition: background-color 0.12s ease, color 0.12s ease;
+  }
+
+  .omada-emu-nav-item:hover:not(.is-active):not(:disabled) {
+    background-color: var(--omada-emu-sidebar-item-hover);
+  }
+
+  .omada-emu-nav-item.is-active {
+    background-color: var(--omada-emu-sidebar-active-bg);
+    color: var(--omada-emu-sidebar-active-text);
+    font-weight: 500;
+  }
+
+  .omada-emu-beta-tag {
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 3px;
+    background-color: var(--omada-emu-beta-bg);
+    color: var(--omada-emu-beta-text);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .omada-emu-main {
+    background-color: var(--omada-emu-page-bg);
+  }
+
+  .omada-emu-quick-handle {
+    background-color: var(--omada-emu-handle-bg);
+    border: 1px solid var(--omada-emu-handle-border);
+    border-right: none;
+    color: var(--omada-emu-handle-text);
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    transition: background-color 0.15s ease;
+  }
+
+  .omada-emu-quick-handle:hover {
+    background-color: var(--omada-emu-handle-hover-bg);
+  }
+
+  /* AntD 6 Dropdown portal overrides for Emulator Topbar & Site menus */
+  .omada-emu-dropdown .ant-dropdown-menu {
+    background-color: var(--omada-bg-popover);
+    border: 1px solid var(--omada-border-divider);
+    border-radius: 6px;
+    box-shadow: var(--omada-shadow-dropdown);
+    padding: 4px;
+    min-width: 168px;
+  }
+
+  .omada-emu-dropdown .ant-dropdown-menu-item {
+    border-radius: 4px;
+    min-height: 32px;
+    padding: 5px 10px;
+    color: var(--omada-text-primary);
+    font-size: 13px;
+  }
+
+  .omada-emu-dropdown .ant-dropdown-menu-item:hover {
+    background-color: var(--omada-bg-field-hover);
+  }
+
+  .omada-emu-dropdown .ant-dropdown-menu-item-selected {
+    background-color: var(--omada-brand-bg-subtlest);
+    color: var(--omada-brand-text);
+    font-weight: 600;
+  }
+
+  .omada-emu-dropdown .ant-dropdown-menu-item-divider {
+    background-color: var(--omada-border-divider);
+    margin: 4px 0;
+  }
+}

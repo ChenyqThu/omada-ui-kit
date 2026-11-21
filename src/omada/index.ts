@@ -176,6 +176,9 @@ export * from './modules/time-schedule';
 export * from './modules/data-charts';
 export * from './modules/feedback-overlays';
 
+// Omada Controller v6.3 Emulator Components
+export * from './modules/emulator-v6';
+
 // Re-export standard AntD 6 primitives so PRD demos import everything from `@/omada`
 export {
   Avatar,

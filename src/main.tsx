@@ -11,6 +11,10 @@ import './styles/modules/select-inputs.css';
 import './styles/modules/time-schedule.css';
 import './styles/modules/data-charts.css';
 import './styles/modules/feedback-overlays.css';
+import './styles/modules/emulator-shell.css';
+import './styles/modules/emulator-dashboard.css';
+import './styles/modules/emulator-devices.css';
+import './styles/modules/emulator-drawer.css';
 import { App } from './App';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

@@ -144,13 +144,35 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 | `SLoading` / `SSkeleton` / `SMask` | `16`/`20`/`32px` Figma conic spinners, gradient skeletons & `rgba(0,0,0,0.40)` Light/Dark mask | `size`, `description`, `fullscreen` / `preset` / `visible`, `blur`, `scope` |
 | `SEmpty` | Dashed empty state defaulting to official Figma `no-data` Light/Dark illustration | `illustration?: OmadaIllustrationName \| false`, `title`, `description`, `icon`, `action` |
 
+### Omada Controller v6.3 Emulator (`emulator-v6`)
+| Component / Constant | Purpose | Key Props / API |
+|---|---|---|
+| `SEmulatorShell` / `EMULATOR_NAV_GROUPS` | Omada Controller v6.3.0.34 shell (`56px` Top Bar, `216px`/`52px` borderless Sidebar with 5 sections / 13 flush items, `<||` right-edge quick-drawer handle, `.omada-emulator-root` Light/Dark tokens) | `activeKey`, `onSelect`, `activeSite`, `onSiteChange`, `onRefresh`, `onOpenShowcase`, `onToggleQuickDrawer`, `collapsed`, `onCollapsedChange` |
+| `SHealthGauge` / `SHealthRadar` | 180° semi-circular Network Health gauge (`0..100` ticks) & 4-axis concentric radar (`Wi-Fi`, `Client`, `WAN`, `Device`) | `score`, `maxScore`, `label`, `tooltip` / `wifi`, `client`, `wan`, `device`, `wanTooltip` |
+| `SHealthTrendBar` | Multi-row 24h Network Health Trend timeline (`~96` vertical status ticks per row) | `rows: SHealthTrendRow[]`, `tickLabels` |
+| `SApDistributionRuler` | `-90dBm..-30dBm` rainbow RSSI distribution ruler with clustered AP bubbles & count badges | `clusters: SApDistributionCluster[]`, `minDbm`, `maxDbm`, `step` |
+| `SChannelUtilization` | `2.4 GHz`, `5 GHz`, and `6 GHz` wireless channel utilization mini-bar chart | `bands: SChannelBand[]` |
+| `SDeviceHealthSummary` | 4-column Gateway / Switches / APs / OLTs health summary strip with `Good/Fair/Poor/No Data` breakdown & `200×4px` segmented bar | `items: DeviceHealthSummaryItem[]`, `onCategoryClick` |
+| `SDevicePortGraphic` / `PortBadgeTile` / `PortStatusLegend` | Compact (`32px`) & full (`40px`) physical switch/gateway port matrix with floating connected-device thumbnails, SFP/PoE/Uplink/LAG badges & 10-item legend | `ports: DrawerPortItem[]`, `mode?: 'compact' \| 'full'`, `showConnectedDevices`, `showLegend`, `selectedPort`, `onSelectPort` |
+
 ### Pure Validators & Helpers
 - **IP / MAC**: `parseIpValue`, `validateIpv4`, `validateCidr`, `normalizeMac`, `validateMac`
 - **Date / Upload / Schedule**: `createPickerDate`, `toNativeDate`, `formatOmadaDateRange`, `validateUploadFile`, `formatFileSize`, `createEmptySchedule`, `createSchedulePreset`, `normalizeScheduleValue`, `formatSlotRange`, `formatScheduleSummary`
+- **Port Slug Helper**: `resolveConnectedProductSlug`
 
 ---
 
-## 4. Generating New PRD Demos (AntD 6 + Dark Mode Rules)
+## 4. Application Routes (`src/App.tsx` + `src/demos/emulator/EmulatorApp.tsx`)
+
+| Hash Route | View | Key Interactions |
+|---|---|---|
+| `#/dashboard` *(default)* | `EmulatorApp` → `SiteDashboardPage` | `Overview` / `Topology` / `Wi-Fi` / `Clients` / `Traffic` tabs, `1D` / `1W` / `1M` range switcher, clickable `MainOffice_Gateway_2` opens `420px` Quick Drawer |
+| `#/devices` | `EmulatorApp` → `DeviceListPage` | `Device List` / `Device Group` / `Configuration Result` sub-tabs, live filters, `2217px` horizontally scrollable table, clicking any row (e.g. `SalesDepartment_Switch_3`) opens `420px` Quick Drawer; `Manage Device` expands to `1224px` (`Ports` tab); `<||` handle reopens active drawer |
+| `#/showcase` | `ShowcaseApp` | Full Component & Asset Library (`⋮` More → `Component Library` from Emulator; `← Omada Emulator` in Top Bar returns to `#/dashboard`) |
+
+---
+
+## 5. Generating New PRD Demos (AntD 6 + Dark Mode Rules)
 
 1. Follow `COMPONENT_CONTRACT.md` (use AntD v6 semantic `classNames`/`styles`, `variant="filled"`, `Drawer` `size`, `Modal` `destroyOnHidden`, `Form` `labelAlign="start"`, `notification` `{ title, description }`; avoid hardcoded hex colors).
 2. Create a demo module under `src/demos/<prd-slug>/`, importing all building blocks from `@/omada`:

@@ -125,6 +125,15 @@ export const ShowcaseApp: React.FC = () => {
         setActiveSite(site);
         toast.info(`Switched active site context to "${site.toUpperCase()}"`);
       }}
+      topBarExtra={
+        <a
+          href="#/dashboard"
+          data-testid="back-to-emulator-link"
+          className="inline-flex h-8 items-center gap-1 rounded bg-white/15 px-2.5 text-xs font-medium text-white no-underline transition-colors hover:bg-white/25"
+        >
+          ← Omada Emulator
+        </a>
+      }
       onNotificationClick={() =>
         toast.info('3 unread site events: 1 firmware alert, 2 adoption updates')
       }
