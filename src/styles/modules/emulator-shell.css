@@ -250,4 +250,51 @@
     background-color: var(--omada-border-divider);
     margin: 4px 0;
   }
+
+  /* AntD 6 Right-Aligned Grouped Submenu Popover (`Insights`, `Network Config`, `Device Config`) */
+  .omada-emulator-submenu-popover .ant-popover-inner {
+    background-color: var(--omada-bg-popover);
+    border: 1px solid var(--omada-border-divider);
+    border-radius: 8px;
+    box-shadow: var(--omada-shadow-popover);
+    padding: 0;
+  }
+
+  .omada-emulator-submenu-group-title {
+    color: var(--omada-text-tertiary);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--omada-border-divider);
+  }
+
+  .omada-emulator-submenu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 30px;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--omada-text-primary);
+    font-size: 13px;
+    line-height: 18px;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.12s ease, color 0.12s ease;
+  }
+
+  .omada-emulator-submenu-item:hover:not(.is-active) {
+    background-color: var(--omada-bg-field-hover);
+  }
+
+  .omada-emulator-submenu-item.is-active {
+    background-color: var(--omada-brand-bg-subtlest);
+    color: var(--omada-brand-text);
+    font-weight: 500;
+  }
 }

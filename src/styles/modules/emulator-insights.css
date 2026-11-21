@@ -1,0 +1,231 @@
+@layer components {
+  /* ==========================================================================
+   * Omada Emulator Insights Pages (`#/statistics`, `#/report`)
+   * ========================================================================== */
+
+  .omada-emulator-insights {
+    --omada-insights-canvas: var(--omada-bg-surface);
+    --omada-insights-card-bg: var(--omada-bg-surface);
+    --omada-insights-card-border: var(--omada-border-divider);
+    --omada-insights-track: var(--omada-bg-field);
+    --omada-insights-pill-active: var(--omada-bg-surface);
+    --omada-insights-pill-text-active: var(--omada-brand-text);
+
+    background-color: var(--omada-insights-canvas);
+    color: var(--omada-text-primary);
+  }
+
+  [data-theme='dark'] .omada-emulator-insights,
+  .dark .omada-emulator-insights {
+    --omada-insights-canvas: var(--omada-bg-overlay);
+    --omada-insights-card-bg: transparent;
+    --omada-insights-card-border: color-mix(
+      in srgb,
+      var(--omada-text-inverse) 14%,
+      transparent
+    );
+    --omada-insights-track: var(--omada-bg-field);
+    --omada-insights-pill-active: var(--omada-bg-field-hover);
+    --omada-insights-pill-text-active: var(--omada-brand-hover);
+  }
+
+  .omada-insights-card {
+    background-color: var(--omada-insights-card-bg);
+    border: 1px solid var(--omada-insights-card-border);
+    border-radius: 8px;
+  }
+
+  /* Underline Sub-Tabs */
+  .omada-insights-tab-btn {
+    position: relative;
+    color: var(--omada-text-secondary);
+    transition: color 0.15s ease;
+  }
+
+  .omada-insights-tab-btn:hover {
+    color: var(--omada-text-primary);
+  }
+
+  .omada-insights-tab-btn.is-active {
+    color: var(--omada-brand-text);
+  }
+
+  [data-theme='dark'] .omada-insights-tab-btn.is-active,
+  .dark .omada-insights-tab-btn.is-active {
+    color: var(--omada-brand-hover);
+  }
+
+  .omada-insights-tab-indicator {
+    background-color: var(--omada-brand-text);
+  }
+
+  [data-theme='dark'] .omada-insights-tab-indicator,
+  .dark .omada-insights-tab-indicator {
+    background-color: var(--omada-brand-hover);
+  }
+
+  /* Segmented Controls (Allow/Block Apps, 1D/1W/1M) */
+  .omada-insights-seg-track {
+    display: inline-flex;
+    height: 32px;
+    align-items: center;
+    gap: 2px;
+    border-radius: 4px;
+    background-color: var(--omada-insights-track);
+    padding: 3px;
+  }
+
+  .omada-insights-seg-pill {
+    display: inline-flex;
+    height: 26px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: none;
+    border-radius: 3px;
+    background-color: transparent;
+    padding: 0 12px;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--omada-text-secondary);
+    white-space: nowrap;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .omada-insights-seg-pill:hover:not(.is-active) {
+    color: var(--omada-text-primary);
+  }
+
+  .omada-insights-seg-pill.is-active {
+    background-color: var(--omada-insights-pill-active);
+    color: var(--omada-insights-pill-text-active);
+    font-weight: 500;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Filled Date Pill */
+  .omada-insights-date-pill {
+    display: inline-flex;
+    height: 32px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color: var(--omada-bg-field);
+    padding: 0 12px;
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--omada-text-primary);
+    transition: border-color 0.15s ease;
+  }
+
+  .omada-insights-date-pill:hover {
+    border-color: var(--omada-border-focus);
+  }
+
+  /* Category Selector Row Hover */
+  .omada-insights-cat-row {
+    border-radius: 4px;
+    transition: background-color 0.15s ease, opacity 0.15s ease;
+  }
+
+  .omada-insights-cat-row:hover {
+    background-color: var(--omada-bg-field);
+  }
+
+  /* Ghost Brand Action */
+  .omada-insights-ghost-action {
+    display: inline-flex;
+    height: 32px;
+    cursor: pointer;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    padding: 0 6px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--omada-brand-text);
+    transition: background-color 0.15s ease, opacity 0.15s ease;
+  }
+
+  .omada-insights-ghost-action:hover {
+    background-color: var(--omada-brand-bg-subtlest);
+  }
+
+  [data-theme='dark'] .omada-insights-ghost-action,
+  .dark .omada-insights-ghost-action {
+    color: var(--omada-brand-hover);
+  }
+
+  /* Primary Export Button */
+  .omada-insights-primary-btn.ant-btn {
+    height: 32px !important;
+    border-radius: 3px !important;
+    padding-inline: 16px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    background-color: var(--omada-brand) !important;
+    border-color: var(--omada-brand) !important;
+    box-shadow: none !important;
+  }
+
+  .omada-insights-primary-btn.ant-btn:hover {
+    background-color: var(--omada-brand-hover) !important;
+    border-color: var(--omada-brand-hover) !important;
+  }
+
+  /* Insights Tables (Apps & Users) */
+  .omada-insights-table-shell {
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid var(--omada-insights-card-border);
+    background-color: var(--omada-bg-surface);
+  }
+
+  .omada-insights-table .ant-table {
+    background-color: var(--omada-bg-surface);
+    color: var(--omada-text-primary);
+    font-size: 14px;
+  }
+
+  .omada-insights-table .ant-table-thead > tr > th {
+    height: 41px;
+    padding: 0 14px !important;
+    background-color: var(--omada-bg-table-header) !important;
+    color: var(--omada-text-primary) !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+    line-height: 20px;
+    border-bottom: 1px solid var(--omada-border-divider) !important;
+    white-space: nowrap;
+  }
+
+  .omada-insights-table .ant-table-thead > tr > th::before {
+    display: none !important;
+  }
+
+  .omada-insights-table .ant-table-tbody > tr > td {
+    height: 44px;
+    padding: 0 14px !important;
+    background-color: var(--omada-bg-surface);
+    color: var(--omada-text-primary);
+    font-size: 14px;
+    line-height: 20px;
+    border-bottom: 1px solid var(--omada-border-divider) !important;
+    white-space: nowrap;
+  }
+
+  .omada-insights-table .ant-table-tbody > tr:hover > td {
+    background-color: color-mix(
+      in srgb,
+      var(--omada-bg-surface) 96%,
+      var(--omada-text-primary)
+    ) !important;
+  }
+}

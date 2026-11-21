@@ -17,6 +17,11 @@ import { SHealthTrendBar } from '../../../omada/components/SHealthTrendBar';
 import { SApDistributionRuler } from '../../../omada/components/SApDistributionRuler';
 import { SChannelUtilization } from '../../../omada/components/SChannelUtilization';
 import {
+  DEFAULT_TOPOLOGY_DISPLAY_OPTIONS,
+  type TopologyDisplayOptions,
+} from '../../../omada/components/STopologyCanvas';
+import { TopologyTabView, TopologyToolbarControls } from './TopologyTabView';
+import {
   AP_DISTRIBUTION_CLUSTERS,
   CHANNEL_UTILIZATION_BANDS,
   DASHBOARD_GATEWAY,
@@ -186,6 +191,10 @@ export const SiteDashboardPage: React.FC<SiteDashboardPageProps> = ({
   const [activityMetricFilter, setActivityMetricFilter] = useState<'all' | 'upload' | 'download'>('all');
   const [runningSpeedTest, setRunningSpeedTest] = useState(false);
   const [customWindowLabel, setCustomWindowLabel] = useState<string | null>(null);
+  const [topoSearchQuery, setTopoSearchQuery] = useState('');
+  const [topoDisplayOptions, setTopoDisplayOptions] = useState<TopologyDisplayOptions>(
+    DEFAULT_TOPOLOGY_DISPLAY_OPTIONS,
+  );
 
   const activeWan =
     DASHBOARD_GATEWAY.wanPorts.find((p) => p.key === activeWanKey) ?? DASHBOARD_GATEWAY.wanPorts[0];
@@ -379,73 +388,94 @@ export const SiteDashboardPage: React.FC<SiteDashboardPageProps> = ({
           })}
         </div>
 
-        {/* Timestamp & Time Range Picker */}
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="tabular-nums text-[14px] text-[var(--omada-text-tertiary)]">
-            {customWindowLabel ?? DASHBOARD_TIMESTAMP}
-          </span>
-          <div
-            role="group"
-            aria-label="Time range selector"
-            className="inline-flex h-[32px] items-center rounded-[4px] bg-[var(--omada-dash-track)] p-[3px]"
-          >
-            {TIME_RANGES.map((rangeKey) => {
-              const isActive = timeRange === rangeKey;
-              return (
-                <button
-                  key={rangeKey}
-                  type="button"
-                  aria-pressed={isActive}
-                  onClick={() => {
-                    setTimeRange(rangeKey);
-                    setCustomWindowLabel(null);
-                  }}
-                  className={`inline-flex h-[26px] cursor-pointer items-center justify-center rounded-[2px] border-0 px-2.5 text-[12px] transition-colors ${
-                    isActive
-                      ? 'bg-[var(--omada-dash-pill-active)] font-medium text-[var(--omada-dash-pill-text-active)] shadow-2xs'
-                      : 'bg-transparent text-[var(--omada-text-secondary)] hover:text-[var(--omada-text-primary)]'
-                  }`}
-                >
-                  {rangeKey}
-                </button>
-              );
-            })}
-            <span
-              className="mx-1 h-3.5 w-px bg-[var(--omada-dash-card-border)]"
-              aria-hidden="true"
-            />
-            <Dropdown
-              trigger={['click']}
-              menu={{
-                items: [
-                  { key: 'Sep 19, 2025 (Last 24h)', label: 'Sep 19, 2025 (Last 24h)' },
-                  { key: 'Sep 13 - Sep 19, 2025', label: 'Sep 13 - Sep 19, 2025' },
-                  { key: 'Aug 21 - Sep 19, 2025', label: 'Aug 21 - Sep 19, 2025' },
-                ],
-                onClick: ({ key }) => {
-                  if (key.includes('24h')) {
-                    setTimeRange('1D');
-                    setCustomWindowLabel(null);
-                  } else if (key.includes('13')) {
-                    setTimeRange('1W');
-                    setCustomWindowLabel(key);
-                  } else {
-                    setTimeRange('1M');
-                    setCustomWindowLabel(key);
-                  }
-                },
-              }}
+        {/* Right Header Controls: Topology Toolbar OR Timestamp & Time Range Picker */}
+        {mainTab === 'topology' ? (
+          <TopologyToolbarControls
+            searchQuery={topoSearchQuery}
+            onSearchChange={setTopoSearchQuery}
+            displayOptions={topoDisplayOptions}
+            onDisplayOptionsChange={setTopoDisplayOptions}
+            onReplay={() =>
+              notification.info({
+                title: 'Topology Playback',
+                description: 'Showing live 24h topology snapshot (9 devices, 3 clients online).',
+              })
+            }
+            onExport={() =>
+              notification.success({
+                title: 'Topology Exported',
+                description: 'Exported Headquarters Building topology diagram as topology-map.svg.',
+              })
+            }
+          />
+        ) : (
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="tabular-nums text-[14px] text-[var(--omada-text-tertiary)]">
+              {customWindowLabel ?? DASHBOARD_TIMESTAMP}
+            </span>
+            <div
+              role="group"
+              aria-label="Time range selector"
+              className="inline-flex h-[32px] items-center rounded-[4px] bg-[var(--omada-dash-track)] p-[3px]"
             >
-              <button
-                type="button"
-                aria-label="Custom date range"
-                className="inline-flex h-[26px] w-[28px] cursor-pointer items-center justify-center rounded-[2px] border-0 bg-transparent text-[var(--omada-text-secondary)] hover:text-[var(--omada-text-primary)]"
+              {TIME_RANGES.map((rangeKey) => {
+                const isActive = timeRange === rangeKey;
+                return (
+                  <button
+                    key={rangeKey}
+                    type="button"
+                    aria-pressed={isActive}
+                    onClick={() => {
+                      setTimeRange(rangeKey);
+                      setCustomWindowLabel(null);
+                    }}
+                    className={`inline-flex h-[26px] cursor-pointer items-center justify-center rounded-[2px] border-0 px-2.5 text-[12px] transition-colors ${
+                      isActive
+                        ? 'bg-[var(--omada-dash-pill-active)] font-medium text-[var(--omada-dash-pill-text-active)] shadow-2xs'
+                        : 'bg-transparent text-[var(--omada-text-secondary)] hover:text-[var(--omada-text-primary)]'
+                    }`}
+                  >
+                    {rangeKey}
+                  </button>
+                );
+              })}
+              <span
+                className="mx-1 h-3.5 w-px bg-[var(--omada-dash-card-border)]"
+                aria-hidden="true"
+              />
+              <Dropdown
+                trigger={['click']}
+                menu={{
+                  items: [
+                    { key: 'Sep 19, 2025 (Last 24h)', label: 'Sep 19, 2025 (Last 24h)' },
+                    { key: 'Sep 13 - Sep 19, 2025', label: 'Sep 13 - Sep 19, 2025' },
+                    { key: 'Aug 21 - Sep 19, 2025', label: 'Aug 21 - Sep 19, 2025' },
+                  ],
+                  onClick: ({ key }) => {
+                    if (key.includes('24h')) {
+                      setTimeRange('1D');
+                      setCustomWindowLabel(null);
+                    } else if (key.includes('13')) {
+                      setTimeRange('1W');
+                      setCustomWindowLabel(key);
+                    } else {
+                      setTimeRange('1M');
+                      setCustomWindowLabel(key);
+                    }
+                  },
+                }}
               >
-                <SIcon name="icon-46146-123043" size={15} />
-              </button>
-            </Dropdown>
+                <button
+                  type="button"
+                  aria-label="Custom date range"
+                  className="inline-flex h-[26px] w-[28px] cursor-pointer items-center justify-center rounded-[2px] border-0 bg-transparent text-[var(--omada-text-secondary)] hover:text-[var(--omada-text-primary)]"
+                >
+                  <SIcon name="icon-46146-123043" size={15} />
+                </button>
+              </Dropdown>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Main Content Area */}
@@ -883,11 +913,20 @@ export const SiteDashboardPage: React.FC<SiteDashboardPageProps> = ({
             </section>
           </div>
         </div>
+      ) : mainTab === 'topology' ? (
+        <TopologyTabView
+          hideTopControls
+          searchQuery={topoSearchQuery}
+          onSearchChange={setTopoSearchQuery}
+          displayOptions={topoDisplayOptions}
+          onDisplayOptionsChange={setTopoDisplayOptions}
+          onOpenDeviceByName={onOpenDeviceByName}
+          onNavigate={onNavigate}
+        />
       ) : (
         <DashboardSecondaryTabView
           tab={mainTab}
           onBackToOverview={() => setMainTab('overview')}
-          onOpenDeviceByName={onOpenDeviceByName}
           onNavigate={onNavigate}
         />
       )}
@@ -896,70 +935,16 @@ export const SiteDashboardPage: React.FC<SiteDashboardPageProps> = ({
 };
 
 interface DashboardSecondaryTabViewProps {
-  tab: Exclude<DashboardMainTabKey, 'overview'>;
+  tab: Exclude<DashboardMainTabKey, 'overview' | 'topology'>;
   onBackToOverview: () => void;
-  onOpenDeviceByName?: (name: string) => void;
   onNavigate?: (routeKey: string) => void;
 }
 
 const DashboardSecondaryTabView: React.FC<DashboardSecondaryTabViewProps> = ({
   tab,
   onBackToOverview,
-  onOpenDeviceByName,
   onNavigate,
 }) => {
-  if (tab === 'topology') {
-    const nodes = [
-      { name: 'MainOffice_Gateway_2', role: 'Gateway · ER707-M2 v1.0', status: 'Connected' },
-      { name: 'SalesDepartment_Switch_3', role: 'Switch · SG2210MP v5.0', status: 'Connected' },
-      { name: 'COOOffice_Eap_1', role: 'AP · EAP650 v1.0', status: 'Connected' },
-      { name: 'BreakRoom_Eap_2', role: 'AP · EAP230-Wall v1.0', status: 'Connected' },
-      { name: 'StorageRoom_Eap_3', role: 'AP · EAP650 v1.0', status: 'Connected' },
-    ];
-    return (
-      <div className="omada-dash-card p-5" data-testid="dashboard-tab-panel-topology">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h2 className="omada-dash-title m-0">Site Topology Summary</h2>
-            <p className="mt-1 mb-0 text-[13px] text-[var(--omada-text-secondary)]">
-              Hierarchical uplink path from Main Office Floor gateway to switches and wireless APs.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onBackToOverview}
-            className="cursor-pointer rounded-[4px] border border-[var(--omada-dash-card-border)] bg-transparent px-3 py-1.5 text-[12px] text-[var(--omada-text-secondary)] hover:border-[var(--omada-brand)] hover:text-[var(--omada-brand-text)]"
-          >
-            Back to Overview
-          </button>
-        </div>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-          {nodes.map((node) => (
-            <button
-              key={node.name}
-              type="button"
-              onClick={() => onOpenDeviceByName?.(node.name)}
-              className="omada-dash-card flex cursor-pointer items-center justify-between p-3.5 text-left transition-colors hover:border-[var(--omada-brand)]"
-            >
-              <div className="min-w-0">
-                <div className="truncate text-[13px] font-medium text-[var(--omada-dash-link)]">
-                  {node.name}
-                </div>
-                <div className="mt-0.5 truncate text-[12px] text-[var(--omada-text-secondary)]">
-                  {node.role}
-                </div>
-              </div>
-              <span className="inline-flex shrink-0 items-center gap-1 text-[12px] text-[var(--omada-brand-text)]">
-                <span className="h-2 w-2 rounded-full bg-[var(--omada-brand-hover)]" />
-                {node.status}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   if (tab === 'wifi') {
     return (
       <div className="flex flex-col gap-4" data-testid="dashboard-tab-panel-wifi">

@@ -204,4 +204,55 @@ describe('SEmulatorShell', () => {
       expect(btn?.querySelector('svg.lucide-chevron-right')).toBeInTheDocument();
     }
   });
+
+  it('opens right-aligned grouped popovers for Insights, Network Config, and Device Config and highlights parent Insights for statistics/report', async () => {
+    const onSelect = vi.fn();
+    const { container, rerender } = renderWithTheme(
+      <SEmulatorShell activeKey="statistics" onSelect={onSelect}>
+        <div>Statistics View</div>
+      </SEmulatorShell>,
+    );
+
+    const insightsBtn = container.querySelector('[data-nav-key="insights"]');
+    expect(insightsBtn).toHaveClass('is-active');
+    expect(
+      insightsBtn?.querySelector('[data-omada-icon="sidebar-icon-icon-insight-on"]'),
+    ).toBeInTheDocument();
+
+    // Clicking Insights opens its popover with Application Analytics & Reports
+    fireEvent.click(insightsBtn!);
+    const analyticsItem = await screen.findByText('Application Analytics');
+    expect(screen.getByText('Reports')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Reports'));
+    expect(onSelect).toHaveBeenCalledWith('report');
+
+    rerender(
+      <OmadaProvider defaultThemeMode="light">
+        <SEmulatorShell activeKey="report" onSelect={onSelect}>
+          <div>Reports View</div>
+        </SEmulatorShell>
+      </OmadaProvider>,
+    );
+    expect(container.querySelector('[data-nav-key="insights"]')).toHaveClass('is-active');
+    expect(analyticsItem).toBeDefined();
+
+    // Clicking Network Config opens its 7-group popover
+    const netCfgBtn = container.querySelector('[data-nav-key="network-config"]');
+    fireEvent.click(netCfgBtn!);
+    expect(await screen.findByText('General Settings')).toBeInTheDocument();
+    expect(screen.getByText('Network Settings')).toBeInTheDocument();
+    expect(screen.getByText('Authentication')).toBeInTheDocument();
+    expect(screen.getAllByText('VPN').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText('Security')).toBeInTheDocument();
+    expect(screen.getByText('Transmission')).toBeInTheDocument();
+    expect(screen.getByText('Profile')).toBeInTheDocument();
+
+    // Clicking Device Config opens its 3-group popover
+    const devCfgBtn = container.querySelector('[data-nav-key="device-config"]');
+    fireEvent.click(devCfgBtn!);
+    expect(await screen.findByText('Gateway')).toBeInTheDocument();
+    expect(screen.getByText('Switch')).toBeInTheDocument();
+    expect(screen.getByText('AP')).toBeInTheDocument();
+    expect(screen.getByText('EoGRE Tunnel')).toBeInTheDocument();
+  });
 });

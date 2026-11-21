@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Dropdown, Tooltip, type MenuProps } from 'antd';
+import { Dropdown, Popover, Tooltip, type MenuProps } from 'antd';
 import { ChevronRight } from 'lucide-react';
 import { SIcon } from '../assets/SIcon';
 import type { OmadaIconName } from '../assets/iconsManifest';
@@ -8,6 +8,19 @@ import { useOmadaTheme } from '../theme/OmadaProvider';
 import { omadaLayout, type ThemeMode } from '../theme/tokens';
 import type { SNavGroup, SNavItem, SSiteOption } from './SAppShell';
 
+export interface SEmulatorSubmenuItem {
+  key: string;
+  label: string;
+  iconName?: OmadaIconName;
+  activeIconName?: OmadaIconName;
+}
+
+export interface SEmulatorSubmenuGroup {
+  key: string;
+  title?: string;
+  items: SEmulatorSubmenuItem[];
+}
+
 export interface SEmulatorNavItem extends SNavItem {
   /** Default sidebar icon slug from `iconsManifest.ts`. */
   iconName?: OmadaIconName;
@@ -15,6 +28,8 @@ export interface SEmulatorNavItem extends SNavItem {
   activeIconName?: OmadaIconName;
   /** Whether the item renders a trailing `>` submenu indicator. */
   hasSubmenu?: boolean;
+  /** Grouped flyout submenu items rendered in a right-aligned Popover. */
+  submenuGroups?: SEmulatorSubmenuGroup[];
 }
 
 export interface SEmulatorNavGroup extends Omit<SNavGroup, 'items'> {
@@ -66,6 +81,25 @@ export const EMULATOR_NAV_GROUPS: SEmulatorNavGroup[] = [
         iconName: 'sidebar-icon-icon-insight-off',
         activeIconName: 'sidebar-icon-icon-insight-on',
         hasSubmenu: true,
+        submenuGroups: [
+          {
+            key: 'insights-views',
+            items: [
+              {
+                key: 'statistics',
+                label: 'Application Analytics',
+                iconName: 'sidebar-icon-icon-statistics-off',
+                activeIconName: 'sidebar-icon-icon-statistics-on',
+              },
+              {
+                key: 'report',
+                label: 'Reports',
+                iconName: 'sidebar-icon-icon-reports-off',
+                activeIconName: 'sidebar-icon-icon-reports-on',
+              },
+            ],
+          },
+        ],
       },
       {
         key: 'logs',
@@ -105,6 +139,88 @@ export const EMULATOR_NAV_GROUPS: SEmulatorNavGroup[] = [
         iconName: 'sidebar-icon-icon-network-config-off',
         activeIconName: 'sidebar-icon-icon-network-config-on',
         hasSubmenu: true,
+        submenuGroups: [
+          {
+            key: 'general-settings',
+            title: 'General Settings',
+            items: [
+              { key: 'site-settings', label: 'Site Settings' },
+              { key: 'ssh', label: 'SSH' },
+              { key: 'schedule', label: 'Schedule' },
+              { key: 'mdns', label: 'mDNS' },
+              { key: 'voip', label: 'VoIP' },
+              { key: 'cli-config', label: 'CLI Configuration' },
+              { key: 'snmp', label: 'SNMP' },
+            ],
+          },
+          {
+            key: 'network-settings',
+            title: 'Network Settings',
+            items: [
+              { key: 'internet', label: 'Internet' },
+              { key: 'lan', label: 'LAN' },
+              { key: 'wlan', label: 'WLAN' },
+            ],
+          },
+          {
+            key: 'authentication',
+            title: 'Authentication',
+            items: [
+              { key: 'portal', label: 'Portal' },
+              { key: 'dot1x', label: '802.1X' },
+              { key: 'mac-auth', label: 'MAC-Based Auth' },
+            ],
+          },
+          {
+            key: 'vpn',
+            title: 'VPN',
+            items: [
+              { key: 'vpn-status', label: 'VPN Status' },
+              { key: 'vpn', label: 'VPN' },
+            ],
+          },
+          {
+            key: 'security',
+            title: 'Security',
+            items: [
+              { key: 'acl', label: 'ACL' },
+              { key: 'url-filtering', label: 'URL Filtering' },
+              { key: 'app-control', label: 'Application Control' },
+              { key: 'ids-ips', label: 'IDS/IPS' },
+              { key: 'wireless-ids-ips', label: 'Wireless IDS/IPS' },
+              { key: 'firewall', label: 'Firewall' },
+              { key: 'impb', label: 'IP-MAC-Port Binding' },
+            ],
+          },
+          {
+            key: 'transmission',
+            title: 'Transmission',
+            items: [
+              { key: 'routing', label: 'Routing' },
+              { key: 'nat', label: 'NAT' },
+              { key: 'dhcp-reservation', label: 'DHCP Reservation' },
+              { key: 'bandwidth-control', label: 'Bandwidth Control' },
+              { key: 'session-limit', label: 'Session Limit' },
+              { key: 'gateway-qos', label: 'Gateway QoS' },
+              { key: 'switch-qos', label: 'Switch QoS' },
+              { key: 'oui-vlan', label: 'OUI-Based VLAN' },
+            ],
+          },
+          {
+            key: 'profile',
+            title: 'Profile',
+            items: [
+              { key: 'groups', label: 'Groups' },
+              { key: 'time-range', label: 'Time Range' },
+              { key: 'rate-limit', label: 'Rate Limit' },
+              { key: 'ppsk', label: 'PPSK' },
+              { key: 'radius-profile', label: 'RADIUS Profile' },
+              { key: 'ldap-profile', label: 'LDAP Profile' },
+              { key: 'apn-profile', label: 'APN Profile' },
+              { key: 'cert-profile', label: 'Certificate' },
+            ],
+          },
+        ],
       },
       {
         key: 'device-config',
@@ -112,6 +228,36 @@ export const EMULATOR_NAV_GROUPS: SEmulatorNavGroup[] = [
         iconName: 'sidebar-icon-icon-device-config-off',
         activeIconName: 'sidebar-icon-icon-device-config-on',
         hasSubmenu: true,
+        submenuGroups: [
+          {
+            key: 'gateway',
+            title: 'Gateway',
+            items: [
+              { key: 'dns', label: 'DNS' },
+              { key: 'mac-filtering', label: 'MAC Filtering' },
+              { key: 'ip-mac-binding', label: 'IP-MAC Binding' },
+              { key: 'upnp', label: 'UPnP' },
+              { key: 'iptv', label: 'IPTV' },
+            ],
+          },
+          {
+            key: 'switch',
+            title: 'Switch',
+            items: [
+              { key: 'switch-ports', label: 'Switch Ports' },
+              { key: 'vrrp', label: 'VRRP' },
+            ],
+          },
+          {
+            key: 'ap',
+            title: 'AP',
+            items: [
+              { key: 'eogre-tunnel', label: 'EoGRE Tunnel' },
+              { key: 'bluetooth', label: 'Bluetooth' },
+              { key: 'wifi-calling', label: 'Wi-Fi Calling' },
+            ],
+          },
+        ],
       },
       {
         key: 'hotspot',
@@ -236,6 +382,8 @@ export const SEmulatorShell: React.FC<SEmulatorShellProps> = ({
   const resolvedSiteKey = activeSite ?? innerSiteKey;
   const currentSite =
     sites.find((s) => s.key === resolvedSiteKey || s.label === resolvedSiteKey) ?? sites[0];
+
+  const [openSubmenuKey, setOpenSubmenuKey] = useState<string | null>(null);
 
   const { themeMode, resolvedTheme, setThemeMode } = useOmadaTheme();
 
@@ -494,7 +642,14 @@ export const SEmulatorShell: React.FC<SEmulatorShellProps> = ({
                 )}
                 <div className="flex flex-col gap-1">
                   {group.items.map((item) => {
-                    const isActive = item.key === activeKey;
+                    const submenuGroups = item.submenuGroups;
+                    const hasPopoverSubmenu = Boolean(submenuGroups?.length);
+                    const hasActiveSubmenu = Boolean(
+                      submenuGroups?.some((sg) =>
+                        sg.items.some((sub) => sub.key === activeKey),
+                      ),
+                    );
+                    const isActive = item.key === activeKey || hasActiveSubmenu;
                     const iconNode =
                       item.icon ??
                       (item.iconName ? (
@@ -514,8 +669,15 @@ export const SEmulatorShell: React.FC<SEmulatorShellProps> = ({
                         type="button"
                         disabled={item.disabled}
                         aria-current={isActive ? 'page' : undefined}
+                        aria-haspopup={hasPopoverSubmenu ? 'menu' : undefined}
+                        aria-expanded={
+                          hasPopoverSubmenu ? openSubmenuKey === item.key : undefined
+                        }
                         data-nav-key={item.key}
-                        onClick={() => !item.disabled && onSelect(item.key)}
+                        onClick={() => {
+                          if (item.disabled || hasPopoverSubmenu) return;
+                          onSelect(item.key);
+                        }}
                         className={`omada-emu-nav-item flex h-[36px] w-full cursor-pointer items-center text-[14px] disabled:cursor-not-allowed disabled:opacity-45 ${
                           collapsed ? 'justify-center px-0' : 'gap-2.5 px-4 text-left'
                         } ${isActive ? 'is-active' : ''}`.trim()}
@@ -539,6 +701,97 @@ export const SEmulatorShell: React.FC<SEmulatorShellProps> = ({
                         )}
                       </button>
                     );
+
+                    if (hasPopoverSubmenu && submenuGroups && !item.disabled) {
+                      const groupCount = submenuGroups.length;
+                      const panelWidthClass =
+                        groupCount === 1
+                          ? 'w-[228px] p-2'
+                          : groupCount <= 3
+                            ? 'w-[500px] max-w-[calc(100vw-240px)] p-4'
+                            : 'w-[680px] max-w-[calc(100vw-240px)] max-h-[calc(100vh-80px)] overflow-y-auto p-4';
+                      const layoutGridClass =
+                        groupCount === 1
+                          ? 'flex flex-col gap-0.5'
+                          : groupCount <= 3
+                            ? 'grid grid-cols-3 gap-5'
+                            : 'grid grid-cols-4 gap-x-5 gap-y-4';
+
+                      const popoverContent = (
+                        <div
+                          data-testid={`emu-submenu-${item.key}`}
+                          className={panelWidthClass}
+                        >
+                          <div className={layoutGridClass}>
+                            {submenuGroups.map((subGroup) => (
+                              <div key={subGroup.key} className="min-w-0">
+                                {subGroup.title && (
+                                  <div className="omada-emulator-submenu-group-title">
+                                    {subGroup.title}
+                                  </div>
+                                )}
+                                <div className="flex flex-col gap-0.5">
+                                  {subGroup.items.map((subItem) => {
+                                    const subActive = subItem.key === activeKey;
+                                    const subIcon = subItem.iconName ? (
+                                      <SIcon
+                                        name={
+                                          subActive && subItem.activeIconName
+                                            ? subItem.activeIconName
+                                            : subItem.iconName
+                                        }
+                                        size={16}
+                                      />
+                                    ) : null;
+                                    return (
+                                      <button
+                                        key={subItem.key}
+                                        type="button"
+                                        data-submenu-key={subItem.key}
+                                        onClick={() => {
+                                          setOpenSubmenuKey(null);
+                                          onSelect(subItem.key);
+                                        }}
+                                        className={`omada-emulator-submenu-item ${
+                                          subActive ? 'is-active' : ''
+                                        }`.trim()}
+                                      >
+                                        {subIcon && (
+                                          <span className="inline-flex shrink-0 items-center">
+                                            {subIcon}
+                                          </span>
+                                        )}
+                                        <span className="truncate">{subItem.label}</span>
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+
+                      return (
+                        <Popover
+                          key={item.key}
+                          placement="rightTop"
+                          trigger={['hover', 'click']}
+                          arrow={false}
+                          mouseEnterDelay={0.08}
+                          mouseLeaveDelay={0.15}
+                          open={openSubmenuKey === item.key}
+                          onOpenChange={(nextOpen) =>
+                            setOpenSubmenuKey(nextOpen ? item.key : null)
+                          }
+                          classNames={{ root: 'omada-emulator-submenu-popover' }}
+                          styles={{ container: { padding: 0 } }}
+                          content={popoverContent}
+                        >
+                          {btn}
+                        </Popover>
+                      );
+                    }
 
                     if (collapsed) {
                       return (

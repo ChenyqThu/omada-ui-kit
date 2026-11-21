@@ -20,22 +20,63 @@ import {
   type DrawerMode,
   type ExpandedDrawerTab,
 } from './drawer/DevicePropertiesDrawer';
+import { ClientListPage } from './clients/ClientListPage';
+import { ClientPropertiesDrawer } from './clients/ClientPropertiesDrawer';
+import { EMULATOR_CLIENTS, type EmulatorClientRecord } from './clients/clientsData';
+import { MapPage } from './map/MapPage';
+import { ApplicationAnalyticsPage } from './insights/ApplicationAnalyticsPage';
+import { ReportsPage } from './insights/ReportsPage';
+import { LogsPage } from './logs/LogsPage';
+import { IncidentsPage } from './incidents/IncidentsPage';
+import { IntelliRecoverPage } from './intellirecover/IntelliRecoverPage';
 
-const NAV_ITEM_META = new Map<string, { label: string; groupLabel: string }>(
-  EMULATOR_NAV_GROUPS.flatMap((group) =>
-    group.items.map((item) => [
-      item.key,
-      { label: item.label, groupLabel: group.label ?? 'Emulator' },
-    ]),
-  ),
-);
+const NAV_ITEM_META = new Map<string, { label: string; groupLabel: string }>();
+for (const group of EMULATOR_NAV_GROUPS) {
+  for (const item of group.items) {
+    NAV_ITEM_META.set(item.key, {
+      label: item.label,
+      groupLabel: group.label ?? 'Emulator',
+    });
+    if (item.submenuGroups) {
+      for (const subGroup of item.submenuGroups) {
+        for (const subItem of subGroup.items) {
+          NAV_ITEM_META.set(subItem.key, {
+            label: subItem.label,
+            groupLabel: subGroup.title ? `${item.label} · ${subGroup.title}` : item.label,
+          });
+        }
+      }
+    }
+  }
+}
 
-function parseEmulatorRoute(hash: string): string {
-  const cleaned = hash.replace(/^#\/?/, '').split('?')[0].trim().toLowerCase();
+const ROUTE_ALIASES: Record<string, string> = {
+  insights: 'statistics',
+  reports: 'report',
+  log: 'logs',
+  abnormal: 'incidents',
+  intellirecover: 'intelli-recover',
+};
+
+const IMPLEMENTED_ROUTES = new Set([
+  'dashboard',
+  'devices',
+  'clients',
+  'map',
+  'statistics',
+  'report',
+  'logs',
+  'incidents',
+  'intelli-recover',
+]);
+
+function parseEmulatorRoute(hashOrRoute: string): string {
+  const cleaned = hashOrRoute.replace(/^#\/?/, '').split('?')[0].trim().toLowerCase();
   if (!cleaned || cleaned === 'dashboard') {
     return 'dashboard';
   }
-  return NAV_ITEM_META.has(cleaned) ? cleaned : 'dashboard';
+  const aliased = ROUTE_ALIASES[cleaned] ?? cleaned;
+  return NAV_ITEM_META.has(aliased) ? aliased : 'dashboard';
 }
 
 export interface EmulatorAppProps {
@@ -45,13 +86,15 @@ export interface EmulatorAppProps {
 
 /**
  * Integrated Omada Controller v6.3.0.34 Emulator application (`#/dashboard`, `#/devices`,
- * two-stage `420px`/`1224px` `DevicePropertiesDrawer`, and `#/showcase` switcher).
+ * `#/clients`, `#/map`, `#/statistics`, `#/report`, `#/logs`, `#/incidents`,
+ * `#/intelli-recover`, two-stage `420px`/`1224px` `DevicePropertiesDrawer`,
+ * `420px` `ClientPropertiesDrawer`, `800px` `IncidentDetailDrawer`, and `#/showcase` switcher).
  */
 export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
   const notification = useOmadaNotification();
 
   const [activeRoute, setActiveRoute] = useState<string>(() => {
-    if (initialRoute) return initialRoute;
+    if (initialRoute) return parseEmulatorRoute(initialRoute);
     if (typeof window !== 'undefined') {
       return parseEmulatorRoute(window.location.hash);
     }
@@ -61,12 +104,16 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
   const [activeSite, setActiveSite] = useState<string>('main-office-floor');
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [devices, setDevices] = useState<EmulatorDeviceRecord[]>(EMULATOR_DEVICES);
+  const [clients, setClients] = useState<EmulatorClientRecord[]>(EMULATOR_CLIENTS);
 
   const [activeDeviceKey, setActiveDeviceKey] = useState<string>('salesdepartment-switch-3');
   const [hasExplicitDeviceSelection, setHasExplicitDeviceSelection] = useState<boolean>(false);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [drawerMode, setDrawerMode] = useState<DrawerMode>('quick');
   const [drawerTab, setDrawerTab] = useState<ExpandedDrawerTab>('ports');
+
+  const [activeClientKey, setActiveClientKey] = useState<string>('test-pc');
+  const [clientDrawerOpen, setClientDrawerOpen] = useState<boolean>(false);
 
   const [searchModalOpen, setSearchModalOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -85,20 +132,23 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
   const navigateTo = useCallback((routeKey: string) => {
     if (routeKey === 'showcase') {
       setDrawerOpen(false);
+      setClientDrawerOpen(false);
       if (typeof window !== 'undefined') {
         window.location.hash = '#/showcase';
       }
       return;
     }
-    const normalized = NAV_ITEM_META.has(routeKey) ? routeKey : 'dashboard';
+    const normalized = parseEmulatorRoute(routeKey);
     setActiveRoute(normalized);
     setDrawerOpen(false);
+    setClientDrawerOpen(false);
     if (typeof window !== 'undefined') {
       window.location.hash = `#/${normalized}`;
     }
   }, []);
 
   const openQuickDrawerForDevice = useCallback((device: EmulatorDeviceRecord) => {
+    setClientDrawerOpen(false);
     setActiveDeviceKey(device.key);
     setHasExplicitDeviceSelection(true);
     setDrawerMode('quick');
@@ -120,6 +170,26 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
     [devices, openQuickDrawerForDevice],
   );
 
+  const openQuickDrawerForClient = useCallback((client: EmulatorClientRecord) => {
+    setDrawerOpen(false);
+    setActiveClientKey(client.key);
+    setClientDrawerOpen(true);
+  }, []);
+
+  const openClientByName = useCallback(
+    (clientName: string) => {
+      const lower = clientName.trim().toLowerCase();
+      const matched =
+        clients.find((c) => c.name.toLowerCase() === lower) ??
+        clients.find((c) => c.mac.toLowerCase() === lower) ??
+        clients[0];
+      if (matched) {
+        openQuickDrawerForClient(matched);
+      }
+    },
+    [clients, openQuickDrawerForClient],
+  );
+
   const activeDevice = useMemo(() => {
     const preferredKey = hasExplicitDeviceSelection
       ? activeDeviceKey
@@ -129,11 +199,17 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
     return devices.find((d) => d.key === preferredKey) ?? devices[0] ?? null;
   }, [devices, hasExplicitDeviceSelection, activeDeviceKey, activeRoute]);
 
+  const activeClient = useMemo(
+    () => clients.find((c) => c.key === activeClientKey) ?? clients[0] ?? null,
+    [clients, activeClientKey],
+  );
+
   const handleToggleQuickDrawer = useCallback(() => {
     if (drawerOpen) {
       setDrawerOpen(false);
       return;
     }
+    setClientDrawerOpen(false);
     setDrawerMode('quick');
     setDrawerOpen(true);
   }, [drawerOpen]);
@@ -142,6 +218,35 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
     setDevices((prev) =>
       prev.map((item) => (item.key === target.key ? { ...item, name: nextName } : item)),
     );
+  }, []);
+
+  const handleRenameClient = useCallback((target: EmulatorClientRecord, nextName: string) => {
+    setClients((prev) =>
+      prev.map((item) => (item.key === target.key ? { ...item, name: nextName } : item)),
+    );
+  }, []);
+
+  const handleClientAction = useCallback((target: EmulatorClientRecord, action: string) => {
+    if (action === 'authorize') {
+      setClients((prev) =>
+        prev.map((item) =>
+          item.key === target.key
+            ? { ...item, status: item.status === 'authorized' ? 'pending' : 'authorized' }
+            : item,
+        ),
+      );
+    } else if (action === 'block') {
+      setClients((prev) =>
+        prev.map((item) =>
+          item.key === target.key
+            ? { ...item, status: 'blocked', onlineState: 'blocked' }
+            : item,
+        ),
+      );
+    } else if (action === 'forget') {
+      setClients((prev) => prev.filter((item) => item.key !== target.key));
+      setClientDrawerOpen(false);
+    }
   }, []);
 
   const searchMatches = useMemo(() => {
@@ -220,7 +325,39 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
         />
       )}
 
-      {activeRoute !== 'dashboard' && activeRoute !== 'devices' && (
+      {activeRoute === 'clients' && (
+        <ClientListPage
+          clients={clients}
+          selectedClientKey={clientDrawerOpen ? activeClient?.key ?? null : null}
+          onSelectClient={openQuickDrawerForClient}
+          onOpenDeviceByName={openDeviceByName}
+        />
+      )}
+
+      {activeRoute === 'map' && <MapPage onOpenDeviceByName={openDeviceByName} />}
+
+      {activeRoute === 'statistics' && (
+        <ApplicationAnalyticsPage onOpenClientByName={openClientByName} />
+      )}
+
+      {activeRoute === 'report' && <ReportsPage />}
+
+      {activeRoute === 'logs' && (
+        <LogsPage
+          onOpenClientByName={openClientByName}
+          onOpenDeviceByName={openDeviceByName}
+        />
+      )}
+
+      {activeRoute === 'incidents' && (
+        <IncidentsPage onOpenDeviceByName={openDeviceByName} />
+      )}
+
+      {activeRoute === 'intelli-recover' && (
+        <IntelliRecoverPage onOpenDeviceByName={openDeviceByName} />
+      )}
+
+      {!IMPLEMENTED_ROUTES.has(activeRoute) && (
         <div className="p-6" data-testid={`emulator-route-${activeRoute}`}>
           <div className="omada-dash-card p-6">
             <div className="mb-4 flex items-center justify-between gap-4 border-b border-[var(--omada-border-divider)] pb-4">
@@ -243,11 +380,20 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
             </div>
             <SEmpty
               title={`${routeMeta?.label ?? activeRoute} Workspace`}
-              description="Simulated module view inside Omada Controller v6.3.0.34. Switch to Dashboard or Devices to inspect live telemetry and port matrices."
+              description="Simulated module view inside Omada Controller v6.3.0.34. Switch to Dashboard, Devices, Clients, Map, Insights, Logs, Incidents, or IntelliRecover to inspect live telemetry."
             />
           </div>
         </div>
       )}
+
+      <ClientPropertiesDrawer
+        open={clientDrawerOpen}
+        client={activeClient}
+        onClose={() => setClientDrawerOpen(false)}
+        onOpenDeviceByName={openDeviceByName}
+        onRenameClient={handleRenameClient}
+        onClientAction={handleClientAction}
+      />
 
       <DevicePropertiesDrawer
         open={drawerOpen}

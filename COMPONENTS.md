@@ -147,13 +147,17 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 ### Omada Controller v6.3 Emulator (`emulator-v6`)
 | Component / Constant | Purpose | Key Props / API |
 |---|---|---|
-| `SEmulatorShell` / `EMULATOR_NAV_GROUPS` | Omada Controller v6.3.0.34 shell (`56px` Top Bar, `216px`/`52px` borderless Sidebar with 5 sections / 13 flush items, `<||` right-edge quick-drawer handle, `.omada-emulator-root` Light/Dark tokens) | `activeKey`, `onSelect`, `activeSite`, `onSiteChange`, `onRefresh`, `onOpenShowcase`, `onToggleQuickDrawer`, `collapsed`, `onCollapsedChange` |
+| `SEmulatorShell` / `EMULATOR_NAV_GROUPS` | Omada Controller v6.3.0.34 shell (`56px` Top Bar, `216px`/`52px` borderless Sidebar with 5 sections / 13 flush items, right-aligned grouped AntD Popovers for `Insights`, `Network Config` & `Device Config`, `<||` right-edge quick-drawer handle, `.omada-emulator-root` Light/Dark tokens) | `activeKey`, `onSelect`, `activeSite`, `onSiteChange`, `onRefresh`, `onOpenShowcase`, `onToggleQuickDrawer`, `collapsed`, `onCollapsedChange` |
 | `SHealthGauge` / `SHealthRadar` | 180° semi-circular Network Health gauge (`0..100` ticks) & 4-axis concentric radar (`Wi-Fi`, `Client`, `WAN`, `Device`) | `score`, `maxScore`, `label`, `tooltip` / `wifi`, `client`, `wan`, `device`, `wanTooltip` |
 | `SHealthTrendBar` | Multi-row 24h Network Health Trend timeline (`~96` vertical status ticks per row) | `rows: SHealthTrendRow[]`, `tickLabels` |
 | `SApDistributionRuler` | `-90dBm..-30dBm` rainbow RSSI distribution ruler with clustered AP bubbles & count badges | `clusters: SApDistributionCluster[]`, `minDbm`, `maxDbm`, `step` |
 | `SChannelUtilization` | `2.4 GHz`, `5 GHz`, and `6 GHz` wireless channel utilization mini-bar chart | `bands: SChannelBand[]` |
 | `SDeviceHealthSummary` | 4-column Gateway / Switches / APs / OLTs health summary strip with `Good/Fair/Poor/No Data` breakdown & `200×4px` segmented bar | `items: DeviceHealthSummaryItem[]`, `onCategoryClick` |
 | `SDevicePortGraphic` / `PortBadgeTile` / `PortStatusLegend` | Compact (`32px`) & full (`40px`) physical switch/gateway port matrix with floating connected-device thumbnails, SFP/PoE/Uplink/LAG badges & 10-item legend | `ports: DrawerPortItem[]`, `mode?: 'compact' \| 'full'`, `showConnectedDevices`, `showLegend`, `selectedPort`, `onSelectPort` |
+| `SClientOverviewStrip` | 4-column client overview KPI strip (`Online Clients`, `Mobile`, `Others`, `Office`) with `SClientIcon` artwork | `items?: ClientOverviewItem[]`, `activeKey`, `onItemClick` |
+| `STopologyCanvas` | Interactive horizontal/vertical hierarchical network topology tree (`Internet` → Gateways → Switches → APs → Clients) with curved Bezier links, collapsible hubs, search/health dimming & zoom/pan | `root?: TopologyNodeData`, `layout`, `onLayoutChange`, `searchQuery`, `healthFilter`, `networkFilter`, `ssidFilter`, `displayOptions`, `onOpenDeviceByName`, `onSelectNode` |
+| `SDonutSummaryCard` | ECharts ring donut summary card with centered KPI overlay & either vertical interactive breakdown rows (`Application Analytics`) or compact side-by-side legend (`Reports`) | `title`, `centerValue`, `centerLabel`, `data: SDonutSummaryItem[]`, `layout?: 'vertical' \| 'horizontal'`, `legendColumns?: 1 \| 2`, `closable`, `onClose`, `onItemClick` |
+| `SCategoryKpiCarousel` | Horizontal scrollable 10-card incident category KPI strip (`Overview`..`Security`) with `<` / `>` scroll arrows & active `#00A870` highlight | `items?: CategoryKpiItem[]`, `activeKey`, `defaultActiveKey`, `onSelect` |
 
 ### Pure Validators & Helpers
 - **IP / MAC**: `parseIpValue`, `validateIpv4`, `validateCidr`, `normalizeMac`, `validateMac`
@@ -166,8 +170,15 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 
 | Hash Route | View | Key Interactions |
 |---|---|---|
-| `#/dashboard` *(default)* | `EmulatorApp` → `SiteDashboardPage` | `Overview` / `Topology` / `Wi-Fi` / `Clients` / `Traffic` tabs, `1D` / `1W` / `1M` range switcher, clickable `MainOffice_Gateway_2` opens `420px` Quick Drawer |
+| `#/dashboard` *(default)* | `EmulatorApp` → `SiteDashboardPage` | `Overview` / `Topology` (`TopologyTabView` + `<STopologyCanvas>`) / `Wi-Fi` / `Clients` / `Traffic` tabs, `1D` / `1W` / `1M` range switcher, clickable `MainOffice_Gateway_2` & topology device nodes open `420px` `DevicePropertiesDrawer` |
 | `#/devices` | `EmulatorApp` → `DeviceListPage` | `Device List` / `Device Group` / `Configuration Result` sub-tabs, live filters, `2217px` horizontally scrollable table, clicking any row (e.g. `SalesDepartment_Switch_3`) opens `420px` Quick Drawer; `Manage Device` expands to `1224px` (`Ports` tab); `<||` handle reopens active drawer |
+| `#/clients` | `EmulatorApp` → `ClientListPage` + `ClientPropertiesDrawer` | `Online` / `Offline` / `Blocked` / `All` tabs, `<SClientOverviewStrip>`, search + type + experience filters, `1792px` scrollable table, row click opens `420px` `ClientPropertiesDrawer`, clicking `AP/Port` or `Uplink Gateway` opens `DevicePropertiesDrawer` |
+| `#/map` | `EmulatorApp` → `MapPage` | `Heat Map` (CAD office floorplan SVG, `2.4/5/6 GHz`, opacity slider, `Edit`/`Simulate`) & `Device Map` (West Africa vector map, search pill, zoom stack, green-halo `SProductImage` pins opening `DevicePropertiesDrawer`) |
+| `#/insights` or `#/statistics` | `EmulatorApp` → `ApplicationAnalyticsPage` | `230×230` ECharts traffic donut, 20 interactive categories, `Categories` (`<SDonutSummaryCard>` grid) / `Apps` / `Users` tabs; clickable user rows open `ClientPropertiesDrawer` |
+| `#/report` | `EmulatorApp` → `ReportsPage` | `Summary` / `Wired` / `Wireless` / `Client & Application` tabs, `1D` / `1W` / `1M` picker, 3-col Client & SSID donuts (`<SDonutSummaryCard>`), onboarding spike bar & completion ring/bar charts |
+| `#/logs` or `#/log` | `EmulatorApp` → `LogsPage` | `Alerts` / `Events` (default) / `Audit Logs` tabs, module filter, clickable inline client (`Neffos_X20_Pro`) & device (`StorageRoom_Eap_3`) links opening drawers, Settings modal |
+| `#/incidents` or `#/abnormal` | `EmulatorApp` → `IncidentsPage` + `IncidentDetailDrawer` | `Incident Analysis` / `Notification` / `Settings` tabs, status/time/severity filters, `<SCategoryKpiCarousel>`, row click opens `800px` `IncidentDetailDrawer` with ECharts timeline & clickable `BreakRoom_Eap_2` link |
+| `#/intelli-recover` or `#/intellirecover` | `EmulatorApp` → `IntelliRecoverPage` | `intellirecover-2` hero banner + policy editor modal, `Devices` / `Clients` filter, `+ Add` modal, monitored PoE table with sticky Actions & clickable Uplink links |
 | `#/showcase` | `ShowcaseApp` | Full Component & Asset Library (`⋮` More → `Component Library` from Emulator; `← Omada Emulator` in Top Bar returns to `#/dashboard`) |
 
 ---

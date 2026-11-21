@@ -1,0 +1,399 @@
+@layer components {
+  /* ==========================================================================
+   * Omada Controller v6.3 — Incidents Page & Incident Detail Drawer
+   * ========================================================================== */
+
+  .omada-incidents-page {
+    background-color: var(--omada-bg-surface);
+    color: var(--omada-text-primary);
+  }
+
+  /* Top Navigation Underline Sub-Tabs */
+  .omada-incidents-subtab-btn {
+    position: relative;
+    color: var(--omada-text-secondary);
+    transition: color 0.15s ease;
+  }
+
+  .omada-incidents-subtab-btn:hover {
+    color: var(--omada-text-primary);
+  }
+
+  .omada-incidents-subtab-btn.is-active {
+    color: var(--omada-brand-text);
+  }
+
+  [data-theme='dark'] .omada-incidents-subtab-btn.is-active,
+  .dark .omada-incidents-subtab-btn.is-active {
+    color: var(--omada-brand-hover);
+  }
+
+  .omada-incidents-subtab-indicator {
+    background-color: var(--omada-brand-text);
+  }
+
+  [data-theme='dark'] .omada-incidents-subtab-indicator,
+  .dark .omada-incidents-subtab-indicator {
+    background-color: var(--omada-brand-hover);
+  }
+
+  /* Segmented Control Tracks (Status, Time Range, Severity) */
+  .omada-incidents-seg-track {
+    display: inline-flex;
+    height: 32px;
+    align-items: center;
+    gap: 2px;
+    border-radius: 4px;
+    background-color: var(--omada-bg-field);
+    padding: 3px;
+  }
+
+  .omada-incidents-seg-pill {
+    display: inline-flex;
+    height: 26px;
+    cursor: pointer;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    border-radius: 3px;
+    background-color: transparent;
+    padding: 0 10px;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--omada-text-secondary);
+    white-space: nowrap;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .omada-incidents-seg-pill:hover:not(.is-active) {
+    color: var(--omada-text-primary);
+  }
+
+  .omada-incidents-seg-pill.is-active {
+    background-color: var(--omada-bg-surface);
+    color: var(--omada-brand-text);
+    font-weight: 500;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+
+  [data-theme='dark'] .omada-incidents-seg-pill.is-active,
+  .dark .omada-incidents-seg-pill.is-active {
+    background-color: var(--omada-bg-field-hover);
+    color: var(--omada-brand-hover);
+  }
+
+  .omada-incidents-calendar-btn {
+    display: inline-flex;
+    height: 26px;
+    width: 28px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 3px;
+    background: transparent;
+    color: var(--omada-text-secondary);
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .omada-incidents-calendar-btn:hover {
+    background-color: var(--omada-bg-field-hover);
+    color: var(--omada-text-primary);
+  }
+
+  /* Category KPI Carousel */
+  .omada-kpi-carousel-track {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .omada-kpi-carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .omada-kpi-carousel-arrow {
+    display: inline-flex;
+    height: 28px;
+    width: 22px;
+    flex-shrink: 0;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--omada-text-secondary);
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .omada-kpi-carousel-arrow:hover {
+    background-color: var(--omada-bg-field);
+    color: var(--omada-text-primary);
+  }
+
+  .omada-kpi-carousel-card {
+    display: flex;
+    height: 64px;
+    min-width: 162px;
+    flex-shrink: 0;
+    cursor: pointer;
+    align-items: center;
+    gap: 12px;
+    border-radius: 4px;
+    border: 1px solid var(--omada-border-divider);
+    background-color: var(--omada-bg-surface);
+    padding: 0 14px;
+    text-align: left;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .omada-kpi-carousel-card:hover:not(.is-active) {
+    border-color: var(--omada-border-strong);
+    background-color: var(--omada-bg-table-row-hover);
+  }
+
+  .omada-kpi-carousel-card.is-active {
+    border-color: var(--omada-brand);
+    background-color: var(--omada-brand-bg-subtlest);
+  }
+
+  /* Search Input */
+  .omada-incidents-search.ant-input-affix-wrapper {
+    width: 260px !important;
+    flex: 0 0 260px;
+    height: 32px;
+    border-radius: 4px;
+    background-color: var(--omada-bg-field) !important;
+    border: 1px solid transparent !important;
+    padding-inline: 10px;
+    font-size: 13px;
+  }
+
+  .omada-incidents-search.ant-input-affix-wrapper .ant-input {
+    background-color: transparent !important;
+  }
+
+  .omada-incidents-search.ant-input-affix-wrapper:hover,
+  .omada-incidents-search.ant-input-affix-wrapper-focused {
+    border-color: var(--omada-border-focus) !important;
+  }
+
+  /* Incidents Table */
+  .omada-incidents-table-shell {
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid var(--omada-border-divider);
+    background-color: var(--omada-bg-surface);
+  }
+
+  .omada-incidents-table .ant-table {
+    background-color: var(--omada-bg-surface);
+    color: var(--omada-text-primary);
+    font-size: 14px;
+  }
+
+  .omada-incidents-table .ant-table-container {
+    border-radius: 8px;
+  }
+
+  .omada-incidents-table .ant-table-thead > tr > th {
+    height: 41px;
+    padding: 0 14px !important;
+    background-color: var(--omada-bg-table-header) !important;
+    color: var(--omada-text-primary) !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+    line-height: 20px;
+    border-bottom: 1px solid var(--omada-border-divider) !important;
+    white-space: nowrap;
+  }
+
+  .omada-incidents-table .ant-table-thead > tr > th::before {
+    display: none !important;
+  }
+
+  .omada-incidents-table .ant-table-tbody > tr {
+    cursor: pointer;
+  }
+
+  .omada-incidents-table .ant-table-tbody > tr > td {
+    padding: 13px 14px !important;
+    background-color: var(--omada-bg-surface);
+    color: var(--omada-text-primary);
+    font-size: 14px;
+    line-height: 20px;
+    border-bottom: 1px solid var(--omada-border-divider) !important;
+    vertical-align: middle;
+  }
+
+  .omada-incidents-table .ant-table-tbody > tr:last-child > td {
+    border-bottom: none !important;
+  }
+
+  .omada-incidents-table .ant-table-tbody > tr.omada-incidents-row-selected > td {
+    background-color: var(--omada-brand-bg-subtlest) !important;
+  }
+
+  .omada-incidents-table .ant-table-tbody > tr:hover > td {
+    background-color: color-mix(
+      in srgb,
+      var(--omada-bg-surface) 96%,
+      var(--omada-text-primary)
+    ) !important;
+  }
+
+  .omada-incidents-table .ant-table-thead > tr > th.ant-table-cell-fix,
+  .omada-incidents-table .ant-table-thead > tr > th.ant-table-cell-fix-end {
+    background-color: var(--omada-bg-table-header) !important;
+    box-shadow: -6px 0 12px -4px rgba(0, 0, 0, 0.06);
+  }
+
+  .omada-incidents-table .ant-table-tbody > tr > td.ant-table-cell-fix,
+  .omada-incidents-table .ant-table-tbody > tr > td.ant-table-cell-fix-end {
+    background-color: var(--omada-bg-surface) !important;
+    box-shadow: -6px 0 12px -4px rgba(0, 0, 0, 0.06);
+  }
+
+  .omada-incidents-table .ant-table-tbody > tr.omada-incidents-row-selected > td.ant-table-cell-fix,
+  .omada-incidents-table .ant-table-tbody > tr.omada-incidents-row-selected > td.ant-table-cell-fix-end {
+    background-color: color-mix(
+      in srgb,
+      var(--omada-bg-surface) 92%,
+      var(--omada-brand)
+    ) !important;
+  }
+
+  .omada-incidents-table .ant-table-tbody > tr:hover > td.ant-table-cell-fix,
+  .omada-incidents-table .ant-table-tbody > tr:hover > td.ant-table-cell-fix-end {
+    background-color: color-mix(
+      in srgb,
+      var(--omada-bg-surface) 96%,
+      var(--omada-text-primary)
+    ) !important;
+  }
+
+  .omada-incidents-row-action-btn {
+    display: inline-flex;
+    height: 26px;
+    width: 26px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    padding: 0;
+    color: var(--omada-brand-text);
+    transition: background-color 0.15s ease, opacity 0.15s ease;
+  }
+
+  .omada-incidents-row-action-btn:hover {
+    background-color: var(--omada-brand-bg-subtlest);
+  }
+
+  /* 800px Incident Detail Drawer */
+  .omada-incident-drawer {
+    position: fixed;
+    top: 56px;
+    right: 0;
+    width: min(800px, 100vw);
+    height: calc(100vh - 56px);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--omada-bg-overlay);
+    color: var(--omada-text-primary);
+    box-shadow: var(--omada-shadow-drawer);
+    border-left: 1px solid var(--omada-border-divider);
+  }
+
+  .omada-incident-date-pill {
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    border-radius: 4px;
+    padding: 0 10px;
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--omada-text-primary);
+    background-color: color-mix(
+      in srgb,
+      var(--omada-link) 9%,
+      var(--omada-bg-field)
+    );
+  }
+
+  .omada-incident-status-pill {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    border-radius: 3px;
+    padding: 0 8px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 18px;
+    white-space: nowrap;
+  }
+
+  .omada-incident-status-pill--ongoing,
+  .omada-incident-status-pill--unresolved {
+    background-color: var(--omada-color-warning-bg);
+    color: var(--omada-color-warning);
+  }
+
+  .omada-incident-status-pill--resolved {
+    background-color: var(--omada-color-success-bg);
+    color: var(--omada-color-success);
+  }
+
+  .omada-incident-status-pill--ignored {
+    background-color: var(--omada-bg-field);
+    color: var(--omada-text-secondary);
+  }
+
+  .omada-incident-drawer-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    background: transparent;
+    padding: 2px 4px;
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--omada-text-secondary);
+    cursor: pointer;
+    transition: opacity 0.15s ease, color 0.15s ease;
+  }
+
+  .omada-incident-drawer-action-btn:hover:not(:disabled) {
+    color: var(--omada-brand-text);
+  }
+
+  .omada-incident-drawer-action-btn:disabled {
+    cursor: not-allowed;
+    color: var(--omada-text-disabled);
+    opacity: 0.52;
+    filter: grayscale(1);
+  }
+
+  .omada-incident-timeline-card {
+    border: 1px solid var(--omada-border-divider);
+    border-radius: 8px;
+    background-color: var(--omada-bg-overlay);
+  }
+
+  .omada-incident-cause-card {
+    border: 1px solid var(--omada-border-divider);
+    border-radius: 6px;
+    background-color: var(--omada-bg-overlay);
+  }
+
+  /* Settings & Notification Cards */
+  .omada-incidents-panel-card {
+    border: 1px solid var(--omada-border-divider);
+    border-radius: 8px;
+    background-color: var(--omada-bg-surface);
+  }
+}
