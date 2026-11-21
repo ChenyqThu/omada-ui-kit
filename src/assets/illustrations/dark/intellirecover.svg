@@ -1,0 +1,21 @@
+<svg width="244" height="160" viewBox="0 0 244 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M143.829 37.4248H207V69.0105H143.829V37.4248Z" fill="#242424" stroke-width="1.2" stroke-linecap="square" stroke="#999999"/>
+<path d="M145.85 39.4053H205.147V66.8848H145.85V39.4053Z" fill="#242424" stroke-width="0.6375" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<path d="M155.2 43.7417H195.629V46.2686H155.2V43.7417Z" fill="#45514D"/>
+<path d="M155.2 51.3225H179.205V53.8494H155.2V51.3225Z" fill="#45514D"/>
+<path d="M155.2 58.9031H179.205V61.4299H155.2V58.9031Z" fill="#45514D"/>
+<ellipse cx="119.123" cy="80.3813" rx="41.6931" ry="41.6931" fill="#242424" stroke-width="1.2" stroke-linecap="square" stroke="#999999"/>
+<ellipse cx="119.123" cy="80.3813" rx="38.3459" ry="38.3459" fill="#2D3633" stroke-width="0.6375" stroke="white" stroke-opacity="0.5"/>
+<path d="M68.5854 71.5378C68.5854 48.5114 87.2521 29.8447 110.279 29.8447" stroke-width="2.125" stroke="#00A870"/>
+<path d="M169.66 89.2256C169.66 112.252 150.994 130.919 127.967 130.919" stroke-width="2.125" stroke="#00A870"/>
+<path d="M37 93.0156H100.171V124.601H37V93.0156Z" fill="#242424" stroke-width="1.2" stroke-linecap="square" stroke="#999999"/>
+<path d="M39.022 95.1992H98.3191V122.476H39.022V95.1992Z" fill="#242424" stroke-width="0.6375" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<path d="M48.3711 99.3325H88.8008V101.859H48.3711V99.3325Z" fill="#45514D"/>
+<path d="M48.3711 106.913H72.3762V109.44H48.3711V106.913Z" fill="#45514D"/>
+<path d="M48.3711 114.494H72.3762V117.021H48.3711V114.494Z" fill="#45514D"/>
+<path d="M108.571 72.9848C109.365 67.871 113.787 63.957 119.123 63.957C124.46 63.957 128.882 67.871 129.676 72.9849C134.442 73.7802 138.074 77.9234 138.074 82.9151C138.074 88.4754 133.567 92.983 128.006 92.983H110.239C104.679 92.983 100.172 88.4754 100.172 82.9151C100.172 77.9232 103.805 73.7798 108.571 72.9848Z" fill-rule="evenodd" clip-rule="evenodd" fill="#33A0E9"/>
+<path d="M110.279 21.0007L122.281 29.213L110.279 37.4253L110.279 21.0007Z" fill="#00A870"/>
+<path d="M128.599 122.075L116.596 130.287L128.599 138.499L128.599 122.075Z" fill="#00A870"/>
+<path d="M118.4 78.3162H121.108V87.1602H118.4V78.3162Z" fill="white"/>
+<path d="M114.069 79.8468L119.755 71.5374L125.44 79.8468H114.069Z" fill="white"/>
+</svg>

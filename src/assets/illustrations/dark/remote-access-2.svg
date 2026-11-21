@@ -1,0 +1,19 @@
+<svg width="160" height="120" viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="28.1818" cy="30.1427" r="9.97404" stroke-width="1.2" stroke="#999999"/>
+<circle cx="28.1816" cy="30.143" r="4.98702" fill="#B7EE00" stroke-width="0.514287" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<path d="M14.4678 30.1428H41.8964" stroke-width="0.6" stroke="white" stroke-opacity="0.64"/>
+<path d="M28.1819 43.8572L28.1819 16.4286" stroke-width="0.6" stroke="white" stroke-opacity="0.64"/>
+<rect x="42.0891" y="41.1396" width="78.4687" height="54.7209" fill="#2D3633" stroke-width="1.2" stroke-linecap="square" stroke="#999999"/>
+<rect x="46.2207" y="45.2688" width="70.2089" height="46.4611" fill="#242424" stroke-width="0.6" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<path d="M56.5442 18.4253H106.103V41.1396H100.941V23.5876H61.7066V41.1396H56.5442V18.4253Z" stroke-width="1.2" stroke-linecap="square" stroke="#999999"/>
+<ellipse cx="81.3238" cy="62.821" rx="6.1949" ry="6.19482" fill="#00A870"/>
+<path d="M79.1667 67.9832H83.4843L86.4879 78.3078H76.1631L79.1667 67.9832Z" fill="#00A870"/>
+<rect x="116.429" y="54.5635" width="10.3248" height="4.12988" fill="#242424" stroke-width="0.6" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<rect x="116.429" y="62.822" width="10.3248" height="4.12988" fill="#242424" stroke-width="0.6" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<rect x="35.896" y="54.5635" width="10.3248" height="4.12988" fill="#242424" stroke-width="0.6" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<rect x="35.896" y="62.822" width="10.3248" height="4.12988" fill="#242424" stroke-width="0.6" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<rect x="70.9995" y="84.5042" width="20.6497" height="2.06494" fill="#F476FF"/>
+<path d="M121.039 80.7146C127.351 80.7146 132.468 85.8314 132.468 92.1432C132.468 98.455 127.351 103.572 121.039 103.572C114.727 103.572 109.61 98.455 109.61 92.1432C109.61 85.8314 114.727 80.7146 121.039 80.7146Z" fill-rule="evenodd" clip-rule="evenodd" fill="#33A0E9"/>
+<rect x="115.466" y="88.7986" width="8.91798" height="8.91798" stroke-width="1.02857" stroke="white"/>
+<path d="M117.695 88.7986V86.5691H126.613V95.4871H124.383" stroke-width="1.02857" stroke="white"/>
+</svg>

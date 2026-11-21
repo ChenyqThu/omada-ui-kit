@@ -1,0 +1,24 @@
+<svg width="244" height="160" viewBox="0 0 244 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="61.9267" y="51.1875" width="103.14" height="70.4144" fill="#E3F1EC" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<rect x="66.8865" y="57.1448" width="93.2231" height="64.4638" fill="white" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<rect x="75.2957" y="79.7834" width="36.3932" height="34.0218" fill="white" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<rect x="79.103" y="83.4824" width="28.7889" height="26.6293" fill="#E3F1EC" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<path d="M93.2233 117.175L93.2233 113.811" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<path d="M93.2233 79.7863L93.2233 76.4224" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<path d="M72.0978 97.3083L75.2957 97.3083" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<path d="M111.678 97.3083L114.876 97.3083" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<rect x="88.1995" y="91.7661" width="10.5866" height="10.0727" fill="#05C178"/>
+<rect x="53" y="121.594" width="120" height="4.95876" fill="white" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<ellipse cx="72.8322" cy="63.0907" rx="1.98347" ry="1.9835" fill="#EE385C"/>
+<ellipse cx="78.785" cy="63.0907" rx="1.98347" ry="1.9835" fill="#FFCB00"/>
+<ellipse cx="84.7376" cy="63.0907" rx="1.98347" ry="1.9835" fill="#00A870"/>
+<rect x="125.746" y="38" width="67" height="45" fill="white" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<rect x="128.447" y="40.4561" width="61.5985" height="40.0879" fill="#E3F1EC"/>
+<path d="M121.246 42.5V33H129.746" stroke-width="1.2" stroke="#00A870"/>
+<path d="M197.246 42.5V33H188.746" stroke-width="1.2" stroke="#00A870"/>
+<path d="M121.246 78V87.5H129.746" stroke-width="1.2" stroke="#00A870"/>
+<path d="M197.246 78V87.5H188.746" stroke-width="1.2" stroke="#00A870"/>
+<rect x="134.246" y="48" width="46" height="4" fill="#F476FF"/>
+<rect x="134.246" y="58" width="32" height="4" fill="#0069CB"/>
+<rect x="134.246" y="68" width="23" height="4" fill="#0069CB"/>
+</svg>

@@ -1,0 +1,22 @@
+<svg width="160" height="120" viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="8" y="51.491" width="68.1656" height="54.5325" fill="white" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<rect x="10.5977" y="54.0884" width="62.972" height="49.3389" fill="white" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<rect x="15.6688" y="59.1597" width="23.0059" height="19.5976" fill="#E3F1EC"/>
+<rect x="83.8345" y="14" width="68.1656" height="54.5325" fill="white" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<rect x="86.4321" y="16.5974" width="62.972" height="49.3389" fill="white" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<rect x="91.5027" y="21.6685" width="52.8283" height="19.5976" fill="#E3F1EC"/>
+<rect x="38.2485" y="28.1445" width="81.7987" height="65.439" fill="white" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<rect x="41.3646" y="31.2607" width="75.5664" height="59.2067" fill="#E3F1EC" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<rect x="45.4913" y="36.1536" width="5.96449" height="5.96449" fill="#0069CB"/>
+<rect x="45.4913" y="47.2307" width="5.96449" height="5.96449" fill="#05C178"/>
+<rect x="45.4913" y="58.3074" width="5.96449" height="5.96449" fill="#05C178"/>
+<rect x="55.7157" y="36.1536" width="56.2366" height="5.96449" fill="#B7DED0"/>
+<rect x="55.7157" y="58.3074" width="24.71" height="5.96449" fill="#B7DED0"/>
+<rect x="55.7157" y="47.2307" width="24.71" height="5.96449" fill="#B7DED0"/>
+<rect x="86.3905" y="47.2307" width="25.5621" height="5.96449" fill="#B7DED0"/>
+<path d="M120.757 80.4614C127.032 80.4614 132.118 85.5479 132.118 91.8224C132.118 98.0968 127.032 103.183 120.757 103.183C114.483 103.183 109.396 98.0968 109.396 91.8224C109.396 85.5479 114.483 80.4614 120.757 80.4614Z" fill-rule="evenodd" clip-rule="evenodd" fill="#00A870"/>
+<path d="M127.29 84.7217H113.657V98.3548H127.29V84.7217Z" fill="white" fill-opacity="0.01"/>
+<path d="M115.077 86.1416V95.2303H124.165V86.1416H115.077Z" stroke-width="1.02248" stroke="white"/>
+<path d="M126.153 88.4146V97.2187H117.35" stroke-width="1.02248" stroke-linecap="square" stroke="white"/>
+<path d="M117.349 90.5403L119.053 92.1096L121.893 89.1865" stroke-width="1.02248" stroke-linecap="square" stroke="white"/>
+</svg>

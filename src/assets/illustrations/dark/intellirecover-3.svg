@@ -1,0 +1,21 @@
+<svg width="160" height="120" viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M99.2607 22.4924H155V50.3622H99.2607V22.4924Z" fill="#242424" stroke-width="1.2" stroke-linecap="square" stroke="#999999"/>
+<path d="M101.044 24.24H153.365V48.4867H101.044V24.24Z" fill="#242424" stroke-width="0.6" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<rect x="109.294" y="28.0662" width="35.6733" height="2.22958" fill="#586963"/>
+<rect x="109.294" y="34.7551" width="21.181" height="2.22958" fill="#586963"/>
+<rect x="109.294" y="41.4441" width="21.181" height="2.22958" fill="#586963"/>
+<ellipse cx="77.4614" cy="60.3952" rx="36.7881" ry="36.7881" fill="#242424" stroke-width="1.2" stroke-linecap="square" stroke="#999999"/>
+<ellipse cx="77.4614" cy="60.3957" rx="33.8347" ry="33.8347" fill="#2D3633" stroke-width="0.6" stroke="white" stroke-opacity="0.5"/>
+<path d="M32.8694 52.5918C32.8694 32.2743 49.34 15.8037 69.6574 15.8037" stroke-width="1.875" stroke="#00A870"/>
+<path d="M122.053 68.199C122.053 88.5165 105.583 104.987 85.2652 104.987" stroke-width="1.875" stroke="#00A870"/>
+<path d="M5 71.5432H60.7395V99.413H5V71.5432Z" fill="#242424" stroke-width="1.2" stroke-linecap="square" stroke="#999999"/>
+<path d="M6.78418 73.47H59.1052V97.5374H6.78418V73.47Z" fill="#242424" stroke-width="0.6" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<rect x="15.0332" y="77.1169" width="35.6733" height="2.22958" fill="#586963"/>
+<rect x="15.0332" y="83.8057" width="21.181" height="2.22958" fill="#586963"/>
+<rect x="15.0332" y="90.4949" width="21.181" height="2.22958" fill="#586963"/>
+<path d="M68.1507 53.8687C68.8512 49.3565 72.7531 45.9029 77.4617 45.9029C82.1704 45.9029 86.0724 49.3566 86.7728 53.8689C90.9779 54.5708 94.183 58.2265 94.183 62.6308C94.183 67.537 90.2057 71.5143 85.2995 71.5143H69.6227C64.7165 71.5143 60.7393 67.537 60.7393 62.6308C60.7393 58.2261 63.945 54.5701 68.1507 53.8687Z" fill-rule="evenodd" clip-rule="evenodd" fill="#33A0E9"/>
+<path d="M69.6575 8L80.248 15.2461L69.6575 22.4923L69.6575 8Z" fill="#00A870"/>
+<path d="M85.8224 97.1836L75.2319 104.43L85.8224 111.676L85.8224 97.1836Z" fill="#00A870"/>
+<path d="M76.824 58.573H79.2128V66.3765H76.824V58.573Z" fill="white"/>
+<path d="M73.0024 59.9239L78.019 52.592L83.0356 59.9239H73.0024Z" fill="white"/>
+</svg>

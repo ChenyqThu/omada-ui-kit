@@ -1,0 +1,19 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M56.4836 16.2637H11.6484V69.6703H56.4836V16.2637Z" fill="#E3F1EC" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<path d="M68.3518 10.3296H18.9012V69.6702H68.3518V10.3296Z" fill="white" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<path d="M65.7144 12.967H21.5386V67.033H65.7144V12.967Z" fill="white" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<rect x="27.1404" y="53.6616" width="24.0913" height="5.78184" fill="#E3F1EC"/>
+<rect x="27.1404" y="44.9897" width="34.6915" height="5.78184" fill="#E3F1EC"/>
+<path d="M57.2862 39.1528C57.2862 35.74 54.5196 32.9734 51.1068 32.9734C50.1761 32.9734 49.2933 33.1792 48.5017 33.5478L44.9275 39.1528H57.2862Z" fill="#B7EE00" stroke-width="1.2" stroke-linecap="square" stroke="#636363"/>
+<ellipse cx="40.9546" cy="23.6829" rx="4.85521" ry="4.85527" fill="#32DE9B"/>
+<mask id="stroke0_46942_123658" fill="white">
+<path d="M45.8098 23.6829C45.8098 26.3644 43.636 28.5382 40.9546 28.5382C38.2731 28.5382 36.0994 26.3644 36.0994 23.6829C36.0994 21.0014 38.2731 18.8276 40.9546 18.8276C43.636 18.8276 45.8098 21.0014 45.8098 23.6829Z"/>
+</mask>
+<ellipse cx="40.9546" cy="23.6829" rx="4.85521" ry="4.85527" stroke-width="2.4" stroke-linecap="square" stroke="#636363" mask="url(#stroke0_46942_123658)"/>
+<path d="M40.955 29.4204C35.8358 29.4204 31.6859 33.768 31.6859 39.1309H50.224C50.224 33.768 46.0741 29.4204 40.955 29.4204Z" fill="#32DE9B" stroke-width="1.2" stroke-linecap="square" stroke="#636363"/>
+<ellipse cx="51.106" cy="27.326" rx="3.08968" ry="3.08972" fill="#B7EE00"/>
+<mask id="stroke1_46942_123658" fill="white">
+<path d="M54.1957 27.326C54.1957 29.0324 52.8124 30.4158 51.106 30.4158C49.3997 30.4158 48.0164 29.0324 48.0164 27.326C48.0164 25.6196 49.3997 24.2363 51.106 24.2363C52.8124 24.2363 54.1957 25.6196 54.1957 27.326Z"/>
+</mask>
+<ellipse cx="51.106" cy="27.326" rx="3.08968" ry="3.08972" stroke-width="2.4" stroke-linecap="square" stroke="#636363" mask="url(#stroke1_46942_123658)"/>
+</svg>

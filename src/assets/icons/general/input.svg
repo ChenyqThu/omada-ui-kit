@@ -1,0 +1,13 @@
+<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="1.5" y="1.5" width="13" height="13" stroke="currentColor"/>
+<path d="M1.82495 4.91248H14.175" stroke="currentColor"/>
+<path d="M4.29492 7.38232H5.52992" stroke-linecap="square" stroke="currentColor"/>
+<path d="M7.38232 7.38232H8.61732" stroke-linecap="square" stroke="currentColor"/>
+<path d="M10.47 7.38232H11.705" stroke-linecap="square" stroke="currentColor"/>
+<path d="M4.29492 9.5437H5.52992" stroke-linecap="square" stroke="currentColor"/>
+<path d="M7.38232 9.5437H8.61732" stroke-linecap="square" stroke="currentColor"/>
+<path d="M10.47 9.5437H11.705" stroke-linecap="square" stroke="currentColor"/>
+<path d="M4.29492 11.705H5.52992" stroke-linecap="square" stroke="currentColor"/>
+<path d="M7.38232 11.705H8.61732" stroke-linecap="square" stroke="currentColor"/>
+<path d="M10.47 11.705H11.705" stroke-linecap="square" stroke="currentColor"/>
+</svg>

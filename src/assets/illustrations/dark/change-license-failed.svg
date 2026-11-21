@@ -1,0 +1,14 @@
+<svg width="300" height="160" viewBox="0 0 300 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M105 29L157.2 29L169.8 41.6L181.5 52.85V120.8H105V29Z" fill="#2D3633" stroke-width="1.2" stroke-linecap="square" stroke="#999999"/>
+<path d="M118.5 38H169.8L182.4 51.05L195 63.65V129.8H118.5V38Z" fill="#242424" stroke-width="1.2" stroke-linecap="square" stroke="#999999"/>
+<path d="M169.8 38V63.65H195L169.8 38Z" stroke-width="1.2" stroke-linecap="square" stroke-linejoin="bevel" stroke="#999999"/>
+<rect x="128.4" y="48.7998" width="28.8" height="5.4" fill="#33A0E9"/>
+<rect x="128.4" y="60.5" width="19.8" height="5.4" fill="#00B476"/>
+<rect x="146.4" y="81.1997" width="27" height="29.7" fill="#2D3633" stroke-width="0.63" stroke-linecap="square" stroke="#999999"/>
+<rect x="140.1" y="86.6001" width="27" height="29.7" fill="#00B476" stroke-width="0.63" stroke-linecap="square" stroke="#999999"/>
+<circle cx="153.6" cy="98.2998" r="4.185" fill="white" stroke-width="0.63" stroke="#999999"/>
+<path d="M145.5 108.2H161.7" stroke-width="0.63" stroke-linecap="square" stroke-linejoin="bevel" stroke="white"/>
+<path d="M195.333 116C202.697 116 208.667 121.97 208.667 129.333C208.667 136.697 202.697 142.667 195.333 142.667C187.97 142.667 182 136.697 182 129.333C182 121.97 187.97 116 195.333 116Z" fill-rule="evenodd" clip-rule="evenodd" fill="#EE385C"/>
+<path d="M190 124L200.667 134.667" stroke-width="1.73333" stroke="white"/>
+<path d="M190 134.667L200.667 124" stroke-width="1.73333" stroke="white"/>
+</svg>

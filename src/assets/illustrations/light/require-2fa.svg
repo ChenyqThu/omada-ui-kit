@@ -1,0 +1,17 @@
+<svg width="300" height="160" viewBox="0 0 300 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="71.7645" y="41.1172" width="116.648" height="79.6357" fill="#E3F1EC" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<rect x="77.3715" y="47.8472" width="105.431" height="72.9059" fill="white" stroke-width="0.785137" stroke-linecap="square" stroke="#636363"/>
+<rect x="61.6683" y="120.752" width="135.715" height="5.60815" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<ellipse cx="84.1" cy="54.5772" rx="2.24322" ry="2.24326" fill="#EE385C"/>
+<ellipse cx="90.8295" cy="54.5772" rx="2.24322" ry="2.24326" fill="#FFCB00"/>
+<ellipse cx="97.5595" cy="54.5772" rx="2.24322" ry="2.24326" fill="#00A870"/>
+<rect x="95.3163" y="61.9941" width="139.217" height="42.1213" fill="white" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<rect x="141.065" y="72.5547" width="39.9348" height="7" fill="#E3F1EC"/>
+<path d="M210.165 69.8245C204.927 69.8245 200.28 70.5367 197.383 71.6355V86.1562C197.383 88.963 198.838 91.5694 201.226 93.0433L210.517 98.7762L219.604 93.0527C221.956 91.5709 223.383 88.9853 223.383 86.205V71.8096C220.53 70.6125 215.675 69.8245 210.165 69.8245Z" fill="#00A870"/>
+<path d="M204.383 82.5547L208.383 86.5547L216.383 77.888" stroke-width="1.73333" stroke="white"/>
+<rect x="141.065" y="86.5547" width="30.4765" height="7" fill="#E3F1EC"/>
+<path d="M133.734 96.2094C133.734 92.21 130.492 88.9678 126.492 88.9678C125.402 88.9678 124.367 89.209 123.439 89.6409L119.251 96.2094H133.734Z" fill="#B7EE00" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<ellipse cx="114.595" cy="78.0808" rx="5.6897" ry="5.68977" fill="#32DE9B" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<path d="M114.596 84.8044C108.597 84.8044 103.734 89.8992 103.734 96.184H125.458C125.458 89.8992 120.595 84.8044 114.596 84.8044Z" fill="#32DE9B" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<ellipse cx="126.492" cy="82.3499" rx="3.62072" ry="3.62076" fill="#B7EE00" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+</svg>

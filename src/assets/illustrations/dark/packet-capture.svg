@@ -1,0 +1,24 @@
+<svg width="244" height="160" viewBox="0 0 244 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="61.9268" y="51.1875" width="103.14" height="70.4144" fill="#242424" stroke-width="1.2" stroke-linecap="square" stroke="#999999"/>
+<rect x="66.8867" y="57.1445" width="93.2231" height="64.4638" fill="#2D3633" stroke-width="0.6" stroke="white" stroke-opacity="0.5"/>
+<rect x="75.2954" y="79.783" width="36.3932" height="34.0218" fill="#1C1C1C" stroke-width="0.6" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<rect x="79.103" y="83.4824" width="28.7889" height="26.6293" fill="#2D3633" stroke-width="0.6" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<path d="M93.2231 117.174L93.2231 113.81" stroke-width="0.6" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<path d="M93.2231 79.7858L93.2231 76.4219" stroke-width="0.6" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<path d="M72.0976 97.3079L75.2954 97.3079" stroke-width="0.6" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<path d="M111.678 97.3079L114.876 97.3079" stroke-width="0.6" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<rect x="88.1992" y="91.7656" width="10.5866" height="10.0727" fill="#00A870"/>
+<rect x="53" y="121.595" width="120" height="4.95876" fill="#242424" stroke-width="1.2" stroke-linecap="square" stroke="#999999"/>
+<ellipse cx="72.8321" cy="63.0909" rx="1.98347" ry="1.9835" fill="#FF4D62"/>
+<ellipse cx="78.7847" cy="63.0909" rx="1.98347" ry="1.9835" fill="#CCA200"/>
+<ellipse cx="84.7374" cy="63.0909" rx="1.98347" ry="1.9835" fill="#008055"/>
+<rect x="125.746" y="38" width="67" height="45" fill="#242424" stroke-width="1.2" stroke-linecap="square" stroke="#999999"/>
+<rect x="128.447" y="40.4561" width="61.5985" height="40.0879" fill="#2D3633" stroke-width="0.6" stroke="white" stroke-opacity="0.5"/>
+<path d="M121.246 42.5V33H129.746" stroke-width="1.2" stroke="#00A870"/>
+<path d="M197.246 42.5V33H188.746" stroke-width="1.2" stroke="#00A870"/>
+<path d="M121.246 78V87.5H129.746" stroke-width="1.2" stroke="#00A870"/>
+<path d="M197.246 78V87.5H188.746" stroke-width="1.2" stroke="#00A870"/>
+<rect x="134.246" y="48" width="46" height="4" fill="#F476FF"/>
+<rect x="134.246" y="58" width="32" height="4" fill="#33A0E9"/>
+<rect x="134.246" y="68" width="23" height="4" fill="#33A0E9"/>
+</svg>

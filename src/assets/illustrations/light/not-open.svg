@@ -1,0 +1,17 @@
+<svg width="300" height="160" viewBox="0 0 300 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="71.7646" y="41.1172" width="116.648" height="79.6357" fill="#E3F1EC" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<rect x="77.3716" y="47.8472" width="105.431" height="72.9059" fill="white" stroke-width="0.785137" stroke-linecap="square" stroke="#636363"/>
+<rect x="61.6685" y="120.752" width="135.715" height="5.60815" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<ellipse cx="84.1002" cy="54.5772" rx="2.24322" ry="2.24326" fill="#EE385C"/>
+<ellipse cx="90.8296" cy="54.5772" rx="2.24322" ry="2.24326" fill="#FFCB00"/>
+<ellipse cx="97.5596" cy="54.5772" rx="2.24322" ry="2.24326" fill="#00A870"/>
+<rect x="95.3164" y="61.9941" width="139.217" height="42.1213" fill="white" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<rect x="105" y="72.5546" width="76" height="7" fill="#E3F1EC"/>
+<rect x="105" y="86.5546" width="58" height="7" fill="#E3F1EC"/>
+<rect x="195" y="74.5546" width="30" height="18" rx="9" fill="#CED4D2"/>
+<circle cx="204" cy="83.5546" r="7.8" fill="white"/>
+<path d="M234.534 90.7819C241.897 90.7819 247.867 96.7515 247.867 104.115C247.867 111.479 241.897 117.449 234.534 117.449C227.17 117.449 221.2 111.479 221.2 104.115C221.2 96.7515 227.17 90.7819 234.534 90.7819Z" fill-rule="evenodd" clip-rule="evenodd" fill="#FF8C27"/>
+<path d="M234.534 97.4489V105.449" stroke-width="1.73333" stroke="white"/>
+<rect x="233.2" y="108.115" width="2.66667" height="2.66667" fill="white"/>
+<rect x="233.2" y="108.115" width="2.66667" height="2.66667" fill="white"/>
+</svg>

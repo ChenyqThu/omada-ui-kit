@@ -147,13 +147,13 @@ export function useOmadaFeedback() {
 
   const notify = {
     success: (title: React.ReactNode, description?: React.ReactNode) =>
-      notification.success({ message: title, description, placement: 'topRight' }),
+      notification.success({ title, description, placement: 'topRight' }),
     error: (title: React.ReactNode, description?: React.ReactNode) =>
-      notification.error({ message: title, description, placement: 'topRight' }),
+      notification.error({ title, description, placement: 'topRight' }),
     warning: (title: React.ReactNode, description?: React.ReactNode) =>
-      notification.warning({ message: title, description, placement: 'topRight' }),
+      notification.warning({ title, description, placement: 'topRight' }),
     info: (title: React.ReactNode, description?: React.ReactNode) =>
-      notification.info({ message: title, description, placement: 'topRight' }),
+      notification.info({ title, description, placement: 'topRight' }),
   };
 
   return { toast, notify };

@@ -1,0 +1,20 @@
+<svg width="300" height="160" viewBox="0 0 300 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="93" y="44.3457" width="111" height="18" fill="#E3F1EC"/>
+<rect x="94" y="44.3457" width="110" height="72" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<path d="M98 65.3457H200V112.346H98V65.3457Z" fill="white" stroke-width="0.7" stroke-linecap="square" stroke="#636363"/>
+<path d="M144.375 104.457C144.375 99.5689 140.412 95.6063 135.524 95.6063C134.191 95.6063 132.927 95.901 131.793 96.4289L126.673 104.457H144.375Z" fill="#B7EE00" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<ellipse cx="120.984" cy="82.2997" rx="6.95406" ry="6.95415" fill="#32DE9B" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<path d="M120.984 90.5176C113.652 90.5176 107.708 96.7445 107.708 104.426H134.26C134.26 96.7445 128.316 90.5176 120.984 90.5176Z" fill="#32DE9B" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<ellipse cx="135.523" cy="87.5177" rx="4.42531" ry="4.42537" fill="#B7EE00" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<path d="M160.625 71.3457H192.042V76.8457H160.625V71.3457Z" fill="#E3F1EC"/>
+<path d="M152.625 71.3457H158.042V76.8457H152.625V71.3457Z" fill="#2D62FA"/>
+<path d="M160.625 80.3457H192.042V85.8457H160.625V80.3457Z" fill="#E3F1EC"/>
+<path d="M152.625 80.3457H158.042V85.8457H152.625V80.3457Z" fill="#E57DFA"/>
+<rect x="152.625" y="92.3457" width="26.5833" height="2" fill="#32DE9B"/>
+<rect x="152.625" y="99.7627" width="26.5833" height="2" fill="#32DE9B"/>
+<rect x="94" y="44.3457" width="110" height="17" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<rect x="135.208" y="42.3457" width="28.4167" height="11" fill="white" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<path d="M207 104.426C214.364 104.426 220.333 110.395 220.333 117.759C220.333 125.123 214.364 131.092 207 131.092C199.636 131.092 193.667 125.123 193.667 117.759C193.667 110.395 199.636 104.426 207 104.426Z" fill-rule="evenodd" clip-rule="evenodd" fill="#EE385C"/>
+<path d="M201.667 112.426L212.333 123.092" stroke-width="1.73333" stroke="white"/>
+<path d="M201.667 123.092L212.333 112.426" stroke-width="1.73333" stroke="white"/>
+</svg>

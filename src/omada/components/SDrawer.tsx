@@ -57,7 +57,7 @@ export const SDrawer: React.FC<SDrawerProps> = ({
 
   return (
     <Drawer
-      width={width ?? DRAWER_WIDTHS[size]}
+      size={width ?? DRAWER_WIDTHS[size]}
       title={headerNode}
       styles={{
         header: {

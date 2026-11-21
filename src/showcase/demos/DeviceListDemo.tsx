@@ -32,6 +32,7 @@ import {
   SMacInput,
   SPageHeader,
   SPortPanel,
+  SProductImage,
   STable,
   STabs,
   STag,
@@ -41,6 +42,7 @@ import {
   validateIpv4,
   type DeviceStatusType,
   type OmadaDeviceType,
+  type OmadaProductName,
   type SPortItem,
 } from '@/omada';
 
@@ -48,6 +50,7 @@ interface DemoDevice {
   key: string;
   name: string;
   model: string;
+  productSlug?: OmadaProductName;
   category: 'gateway' | 'switch' | 'ap';
   iconType: OmadaDeviceType;
   status: DeviceStatusType;
@@ -124,6 +127,7 @@ const INITIAL_DEVICES: DemoDevice[] = [
     key: 'dev-1',
     name: 'Core-Gateway-HQ',
     model: 'ER8411 v1.0',
+    productSlug: 'er8411',
     category: 'gateway',
     iconType: 'gateway',
     status: 'connected',
@@ -140,6 +144,7 @@ const INITIAL_DEVICES: DemoDevice[] = [
     key: 'dev-2',
     name: 'Branch-VPN-GW',
     model: 'ER7206 v2.0',
+    productSlug: 'gateway-er7206',
     category: 'gateway',
     iconType: 'gateway',
     status: 'connected',
@@ -156,6 +161,7 @@ const INITIAL_DEVICES: DemoDevice[] = [
     key: 'dev-3',
     name: 'Core-SW-Floor1',
     model: 'SG3428XMP v1.0',
+    productSlug: 'sg3452p-un-3-40',
     category: 'switch',
     iconType: 'switch',
     status: 'connected',
@@ -173,6 +179,7 @@ const INITIAL_DEVICES: DemoDevice[] = [
     key: 'dev-4',
     name: 'Dist-SW-Floor2-PoE',
     model: 'SG3210XHP-M2 v2.0',
+    productSlug: 'sg2428p-un-5-40',
     category: 'switch',
     iconType: 'switch',
     status: 'connected',
@@ -190,6 +197,7 @@ const INITIAL_DEVICES: DemoDevice[] = [
     key: 'dev-5',
     name: 'Lab-Edge-Switch',
     model: 'SG2210MP v1.0',
+    productSlug: 'sg2008p-un-3-30',
     category: 'switch',
     iconType: 'switch',
     status: 'heartbeat-missed',
@@ -207,6 +215,7 @@ const INITIAL_DEVICES: DemoDevice[] = [
     key: 'dev-6',
     name: 'Lobby-Main-AP',
     model: 'EAP783 v1.0',
+    productSlug: 'eap727-eu-1-0',
     category: 'ap',
     iconType: 'ap',
     status: 'connected',
@@ -222,6 +231,7 @@ const INITIAL_DEVICES: DemoDevice[] = [
     key: 'dev-7',
     name: 'Conf-Room-North',
     model: 'EAP670 v2.0',
+    productSlug: 'eap650',
     category: 'ap',
     iconType: 'ap',
     status: 'connected',
@@ -237,6 +247,7 @@ const INITIAL_DEVICES: DemoDevice[] = [
     key: 'dev-8',
     name: 'R&D-Zone-East',
     model: 'EAP670 v2.0',
+    productSlug: 'eap650',
     category: 'ap',
     iconType: 'ap',
     status: 'provisioning',
@@ -252,6 +263,7 @@ const INITIAL_DEVICES: DemoDevice[] = [
     key: 'dev-9',
     name: 'Courtyard-Outdoor',
     model: 'EAP650-Outdoor v1.0',
+    productSlug: 'eap650-outdoor-1-0',
     category: 'ap',
     iconType: 'ap',
     status: 'connected',
@@ -267,6 +279,7 @@ const INITIAL_DEVICES: DemoDevice[] = [
     key: 'dev-10',
     name: 'Warehouse-B2',
     model: 'EAP650 v1.0',
+    productSlug: 'eap650',
     category: 'ap',
     iconType: 'ap',
     status: 'disconnected',
@@ -282,6 +295,7 @@ const INITIAL_DEVICES: DemoDevice[] = [
     key: 'dev-11',
     name: 'Cafeteria-West',
     model: 'EAP653 v1.0',
+    productSlug: 'eap650',
     category: 'ap',
     iconType: 'ap',
     status: 'connected',
@@ -297,6 +311,7 @@ const INITIAL_DEVICES: DemoDevice[] = [
     key: 'dev-12',
     name: 'Guest-Lounge-AP',
     model: 'EAP615-Wall v1.0',
+    productSlug: 'eap615gp-wall-eu-1-20',
     category: 'ap',
     iconType: 'ap',
     status: 'adopt-failed',
@@ -508,7 +523,17 @@ export const DeviceListDemo: React.FC = () => {
           onClick={() => openDeviceDrawer(record)}
           className="flex cursor-pointer items-center gap-2.5 text-left group"
         >
-          <SDeviceIcon type={record.iconType} size={30} />
+          {record.productSlug ? (
+            <SProductImage
+              name={record.productSlug}
+              size={32}
+              alt={record.model}
+              className="shrink-0 object-contain"
+              fallback={<SDeviceIcon type={record.iconType} size={30} />}
+            />
+          ) : (
+            <SDeviceIcon type={record.iconType} size={30} />
+          )}
           <div>
             <div className="font-semibold text-[var(--omada-text-primary)] group-hover:text-[var(--omada-brand-text)]">
               {record.name}
@@ -840,7 +865,24 @@ export const DeviceListDemo: React.FC = () => {
         open={Boolean(activeDevice)}
         onClose={() => setActiveDeviceKey(null)}
         size="md"
-        title={activeDevice?.name}
+        title={
+          activeDevice ? (
+            <span className="inline-flex items-center gap-2.5">
+              {activeDevice.productSlug ? (
+                <SProductImage
+                  name={activeDevice.productSlug}
+                  size={28}
+                  alt={activeDevice.model}
+                  className="shrink-0 object-contain"
+                  fallback={<SDeviceIcon type={activeDevice.iconType} size={26} />}
+                />
+              ) : (
+                <SDeviceIcon type={activeDevice.iconType} size={26} />
+              )}
+              <span className="truncate">{activeDevice.name}</span>
+            </span>
+          ) : undefined
+        }
         subtitle={
           activeDevice ? `${activeDevice.model} · ${activeDevice.mac}` : undefined
         }

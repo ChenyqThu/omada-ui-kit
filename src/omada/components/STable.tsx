@@ -154,7 +154,6 @@ export function STable<T extends object>({
             showSizeChanger={pagination?.showSizeChanger ?? true}
             pageSizeOptions={pagination?.pageSizeOptions ?? ['10', '20', '50', '100']}
             onChange={handlePageChange}
-            size="default"
           />
         </div>
       )}

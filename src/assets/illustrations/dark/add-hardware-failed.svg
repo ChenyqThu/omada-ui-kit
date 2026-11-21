@@ -1,0 +1,21 @@
+<svg width="300" height="160" viewBox="0 0 300 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="86.5" y="83.1016" width="128" height="27.0569" stroke-width="1.2" stroke="#999999"/>
+<rect x="100.028" y="91.1143" width="20.813" height="2.0813" fill="#B7EE00"/>
+<path d="M87.126 69.5731H214.5" stroke-width="0.6" stroke="white" stroke-opacity="0.5"/>
+<path d="M87.126 71.6544H214.5" stroke-width="0.6" stroke="white" stroke-opacity="0.5"/>
+<path d="M87.126 101.833H214.5" stroke-width="0.6" stroke="white" stroke-opacity="0.5"/>
+<path d="M87.126 103.915H214.5" stroke-width="0.6" stroke="white" stroke-opacity="0.5"/>
+<rect x="100.028" y="59.1666" width="20.813" height="2.0813" fill="#00E195"/>
+<rect x="86.5" y="50.8415" width="128" height="27.0569" stroke-width="1.2" stroke="#999999"/>
+<rect x="181.199" y="62.2886" width="4.1626" height="4.1626" fill="#00E195" stroke-width="0.464375" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<rect x="187.443" y="62.2886" width="4.1626" height="4.1626" fill="#00E195" stroke-width="0.464375" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<rect x="193.687" y="62.2886" width="4.1626" height="4.1626" fill="#00E195" stroke-width="0.464375" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<rect x="199.931" y="62.2886" width="4.1626" height="4.1626" fill="#00E195" stroke-width="0.464375" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<rect x="181.199" y="94.5487" width="4.1626" height="4.1626" fill="#B7EE00" stroke-width="0.464375" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<rect x="187.443" y="94.5487" width="4.1626" height="4.1626" fill="#B7EE00" stroke-width="0.464375" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<rect x="193.687" y="94.5487" width="4.1626" height="4.1626" fill="#B7EE00" stroke-width="0.464375" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<rect x="199.931" y="94.5487" width="4.1626" height="4.1626" fill="#B7EE00" stroke-width="0.464375" stroke-linecap="square" stroke="white" stroke-opacity="0.64"/>
+<path d="M205.428 94.9049C210.635 89.6979 219.077 89.6979 224.284 94.9049C229.491 100.112 229.491 108.554 224.284 113.761C219.077 118.968 210.635 118.968 205.428 113.761C200.221 108.554 200.221 100.112 205.428 94.9049Z" fill-rule="evenodd" clip-rule="evenodd" fill="#EE385C"/>
+<path d="M209.789 109.636L220.395 99.0297" stroke-width="1.52941" stroke="white"/>
+<path d="M220.395 109.636L209.788 99.0297" stroke-width="1.52941" stroke="white"/>
+</svg>

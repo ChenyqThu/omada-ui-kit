@@ -49,11 +49,13 @@
   .omada-input.ant-input-filled,
   .omada-input.ant-input-affix-wrapper-filled,
   .omada-input.ant-input-number-filled,
+  .omada-input.ant-select-filled,
   .omada-input.ant-select-filled .ant-select-selector,
   .omada-input.ant-picker-filled,
   .ant-input-filled,
   .ant-input-affix-wrapper-filled,
   .ant-input-number-filled,
+  .ant-select.ant-select-filled,
   .ant-select-filled .ant-select-selector,
   .ant-picker-filled {
     background-color: var(--omada-bg-field) !important;
@@ -65,6 +67,7 @@
   .ant-input-filled:hover:not(:disabled),
   .ant-input-affix-wrapper-filled:hover:not(.ant-input-affix-wrapper-disabled),
   .ant-input-number-filled:hover:not(.ant-input-number-disabled),
+  .ant-select.ant-select-filled:not(.ant-select-disabled):hover,
   .ant-select-filled:not(.ant-select-disabled):hover .ant-select-selector,
   .ant-picker-filled:hover:not(.ant-picker-disabled) {
     background-color: var(--omada-bg-field) !important;
@@ -74,6 +77,7 @@
   .ant-input-filled:focus,
   .ant-input-affix-wrapper-filled:focus-within,
   .ant-input-number-filled.ant-input-number-focused,
+  .ant-select.ant-select-filled:not(.ant-select-disabled).ant-select-focused,
   .ant-select-filled.ant-select-focused .ant-select-selector,
   .ant-picker-filled.ant-picker-focused {
     background-color: var(--omada-bg-field) !important;
@@ -84,6 +88,7 @@
   .ant-input-filled.ant-input-status-error,
   .ant-input-affix-wrapper-filled.ant-input-affix-wrapper-status-error,
   .ant-input-number-filled.ant-input-number-status-error,
+  .ant-select.ant-select-filled.ant-select-status-error,
   .ant-select-filled.ant-select-status-error .ant-select-selector,
   .ant-picker-filled.ant-picker-status-error {
     border-color: var(--omada-color-error) !important;

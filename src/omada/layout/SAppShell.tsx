@@ -3,13 +3,11 @@ import { Badge, Dropdown, Tooltip, type MenuProps } from 'antd';
 import {
   Bell,
   ChevronDown,
-  Monitor,
-  Moon,
   PanelLeftClose,
   PanelLeftOpen,
-  Search,
-  Sun,
 } from 'lucide-react';
+import { SIcon } from '../assets/SIcon';
+import type { OmadaIconName } from '../assets/iconsManifest';
 import { OmadaLogo } from '../icons/OmadaLogo';
 import { useOmadaTheme } from '../theme/OmadaProvider';
 import { omadaLayout, type ThemeMode } from '../theme/tokens';
@@ -60,6 +58,12 @@ const THEME_LABELS: Record<ThemeMode, string> = {
   system: 'System',
 };
 
+const THEME_MENU_ICONS: Record<ThemeMode, OmadaIconName> = {
+  light: 'topbar-property-1-light',
+  dark: 'topbar-property-1-dark',
+  system: 'topbar-property-1-follow-system',
+};
+
 /**
  * Omada Controller v6.3 layout shell:
  * - 56px gradient Top Bar with Omada SVG wordmark, Site switcher, and Light/Dark/System toggle
@@ -101,14 +105,7 @@ export const SAppShell: React.FC<SAppShellProps> = ({
   const themeMenuItems: MenuProps['items'] = (['light', 'dark', 'system'] as ThemeMode[]).map(
     (mode) => ({
       key: mode,
-      icon:
-        mode === 'light' ? (
-          <Sun size={14} />
-        ) : mode === 'dark' ? (
-          <Moon size={14} />
-        ) : (
-          <Monitor size={14} />
-        ),
+      icon: <SIcon name={THEME_MENU_ICONS[mode]} size={16} />,
       label: (
         <span className={themeMode === mode ? 'font-semibold text-[var(--omada-brand-text)]' : ''}>
           {THEME_LABELS[mode]}
@@ -162,7 +159,7 @@ export const SAppShell: React.FC<SAppShellProps> = ({
                 onClick={onSearchClick}
                 className="flex h-8 w-8 cursor-pointer items-center justify-center rounded text-white/90 transition-colors hover:bg-white/15"
               >
-                <Search size={17} />
+                <SIcon name="search" size={20} />
               </button>
             </Tooltip>
           )}
@@ -191,7 +188,16 @@ export const SAppShell: React.FC<SAppShellProps> = ({
               data-testid="theme-switcher"
               className="flex h-8 cursor-pointer items-center gap-1.5 rounded bg-white/10 px-2.5 text-xs font-medium text-white transition-colors hover:bg-white/20"
             >
-              {resolvedTheme === 'dark' ? <Moon size={14} /> : <Sun size={14} />}
+              <SIcon
+                name={
+                  themeMode === 'system'
+                    ? 'follow-system'
+                    : resolvedTheme === 'dark'
+                      ? 'dark'
+                      : 'light'
+                }
+                size={18}
+              />
               <span>{THEME_LABELS[themeMode]}</span>
               <ChevronDown size={12} className="opacity-75" />
             </button>

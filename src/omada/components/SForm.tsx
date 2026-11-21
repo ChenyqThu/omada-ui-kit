@@ -15,7 +15,7 @@ export interface SFormProps<Values = Record<string, unknown>>
 export function SForm<Values = Record<string, unknown>>({
   layout = 'horizontal',
   colon = false,
-  labelAlign = 'left',
+  labelAlign = 'start',
   labelCol,
   wrapperCol,
   className = '',

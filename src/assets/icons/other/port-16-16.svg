@@ -1,0 +1,6 @@
+<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="stroke0_45671_101253" fill="white">
+<path d="M10.0998 3.89466V2.09436H5.89975V3.89466H3.80012V5.69465H2V12.9613H14V5.69465H12.2001V3.89466H10.0998Z" fill-rule="evenodd" clip-rule="evenodd"/>
+</mask>
+<path d="M10.0998 3.89466H12.2001V5.69465H14V12.9613H2V5.69465H3.80012V3.89466H5.89975V2.09436H10.0998V3.89466Z" stroke-width="1.6" stroke="currentColor" mask="url(#stroke0_45671_101253)"/>
+</svg>

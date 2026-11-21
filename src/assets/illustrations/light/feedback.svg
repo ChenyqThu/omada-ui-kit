@@ -1,0 +1,19 @@
+<svg width="300" height="160" viewBox="0 0 300 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M168 44H100V125H168V44Z" fill="#E3F1EC" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<path d="M186 35H111V125H186V35Z" fill="white" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<path d="M182 39H115V121H182V39Z" fill="white" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<rect x="123.496" y="93.46" width="36.5385" height="8.76912" fill="#E3F1EC"/>
+<rect x="140" y="47" width="24.2242" height="7.64976" fill="#B7EE00"/>
+<path d="M129 45.1666C132.222 45.1666 134.833 47.7783 134.833 51C134.833 54.2216 132.222 56.8333 129 56.8333C125.778 56.8333 123.167 54.2216 123.167 51C123.167 47.7783 125.778 45.1666 129 45.1666Z" fill-rule="evenodd" clip-rule="evenodd" fill="#00A870"/>
+<path d="M126.375 51L128.125 52.75L131.625 48.9584" stroke-width="0.758333" stroke="#F7F7F7"/>
+<rect x="124" y="63" width="40" height="3" fill="#2D62FA"/>
+<rect x="124" y="72" width="24" height="3" fill="#2D62FA"/>
+<rect x="123.496" y="80.3076" width="52.6154" height="8.76912" fill="#E3F1EC"/>
+<rect x="207.753" y="50.7289" width="10" height="58" transform="rotate(32.7417 207.753 50.7289)" fill="#E3F1EC" stroke="#0A5A5A" stroke-width="1.2" stroke-linecap="square" stroke-linejoin="bevel"/>
+<rect x="212.079" y="44" width="10" height="8" transform="rotate(32.7417 212.079 44)" fill="#00A870" stroke="#0A5A5A" stroke-width="1.2" stroke-linecap="square"/>
+<path d="M185.065 104.502L176.654 99.0931L172.206 115.255L185.065 104.502Z" fill="white" stroke-width="1.2" stroke-linejoin="bevel" stroke="#0A5A5A"/>
+<path d="M174.94 112.852L173.257 111.771L172.206 115.255L174.94 112.852Z" fill="#0A5A5A"/>
+<rect x="82" y="101" width="57" height="24" fill="white" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<rect x="87" y="108" width="10" height="10" fill="#32DE9B"/>
+<rect x="100" y="108" width="32" height="10" fill="#E3F1EC"/>
+</svg>

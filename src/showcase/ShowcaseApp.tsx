@@ -3,11 +3,13 @@ import {
   BarChart3,
   BellRing,
   FormInput,
+  Images,
   Palette,
   Server,
 } from 'lucide-react';
 import { SAppShell, useOmadaFeedback, type SNavGroup } from '@/omada';
 import { DeviceListDemo } from './demos/DeviceListDemo';
+import { AssetsSection } from './sections/AssetsSection';
 import { DataDisplaySection } from './sections/DataDisplaySection';
 import { FeedbackSection } from './sections/FeedbackSection';
 import { InputsSection } from './sections/InputsSection';
@@ -16,6 +18,7 @@ import { TokensSection } from './sections/TokensSection';
 type ShowcaseRoute =
   | 'devices-demo'
   | 'tokens'
+  | 'assets'
   | 'inputs'
   | 'display'
   | 'feedback';
@@ -41,6 +44,12 @@ const NAV_GROUPS: SNavGroup[] = [
         key: 'tokens',
         label: 'Design Tokens',
         icon: <Palette size={16} />,
+      },
+      {
+        key: 'assets',
+        label: 'Icons & Assets',
+        icon: <Images size={16} />,
+        badge: '998',
       },
       {
         key: 'inputs',
@@ -82,6 +91,7 @@ export const ShowcaseApp: React.FC = () => {
     >
       {activeKey === 'devices-demo' && <DeviceListDemo />}
       {activeKey === 'tokens' && <TokensSection />}
+      {activeKey === 'assets' && <AssetsSection />}
       {activeKey === 'inputs' && <InputsSection />}
       {activeKey === 'display' && <DataDisplaySection />}
       {activeKey === 'feedback' && <FeedbackSection />}
