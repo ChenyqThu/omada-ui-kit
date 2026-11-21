@@ -782,7 +782,7 @@ export const LogsPage: React.FC<LogsPageProps> = ({
       {/* Events Tab */}
       {subTab === 'events' && (
         <>
-          <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-3 pr-9">
             <div
               role="tablist"
               aria-label="Event module filter"
@@ -901,7 +901,7 @@ export const LogsPage: React.FC<LogsPageProps> = ({
       {/* Alerts Tab */}
       {subTab === 'alerts' && (
         <>
-          <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-3 pr-9">
             <div className="flex flex-wrap items-center gap-3">
               <div
                 role="tablist"
@@ -1005,7 +1005,7 @@ export const LogsPage: React.FC<LogsPageProps> = ({
       {/* Audit Logs Tab */}
       {subTab === 'audit-logs' && (
         <>
-          <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-3 pr-9">
             <div className="flex flex-wrap items-center gap-3">
               <SInput
                 variant="filled"

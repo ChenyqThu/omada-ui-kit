@@ -214,11 +214,19 @@
     display: none !important;
   }
 
-  .omada-incidents-table .ant-table-tbody > tr {
+  .omada-incidents-table .ant-table-tbody > tr.ant-table-measure-row > td {
+    height: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    line-height: 0 !important;
+    font-size: 0 !important;
+  }
+
+  .omada-incidents-table .ant-table-tbody > tr:not(.ant-table-measure-row) {
     cursor: pointer;
   }
 
-  .omada-incidents-table .ant-table-tbody > tr > td {
+  .omada-incidents-table .ant-table-tbody > tr:not(.ant-table-measure-row) > td {
     padding: 13px 14px !important;
     background-color: var(--omada-bg-surface);
     color: var(--omada-text-primary);
@@ -228,7 +236,7 @@
     vertical-align: middle;
   }
 
-  .omada-incidents-table .ant-table-tbody > tr:last-child > td {
+  .omada-incidents-table .ant-table-tbody > tr:not(.ant-table-measure-row):last-child > td {
     border-bottom: none !important;
   }
 
@@ -236,7 +244,7 @@
     background-color: var(--omada-brand-bg-subtlest) !important;
   }
 
-  .omada-incidents-table .ant-table-tbody > tr:hover > td {
+  .omada-incidents-table .ant-table-tbody > tr:not(.ant-table-measure-row):hover > td {
     background-color: color-mix(
       in srgb,
       var(--omada-bg-surface) 96%,
@@ -250,8 +258,8 @@
     box-shadow: -6px 0 12px -4px rgba(0, 0, 0, 0.06);
   }
 
-  .omada-incidents-table .ant-table-tbody > tr > td.ant-table-cell-fix,
-  .omada-incidents-table .ant-table-tbody > tr > td.ant-table-cell-fix-end {
+  .omada-incidents-table .ant-table-tbody > tr:not(.ant-table-measure-row) > td.ant-table-cell-fix,
+  .omada-incidents-table .ant-table-tbody > tr:not(.ant-table-measure-row) > td.ant-table-cell-fix-end {
     background-color: var(--omada-bg-surface) !important;
     box-shadow: -6px 0 12px -4px rgba(0, 0, 0, 0.06);
   }
@@ -265,8 +273,8 @@
     ) !important;
   }
 
-  .omada-incidents-table .ant-table-tbody > tr:hover > td.ant-table-cell-fix,
-  .omada-incidents-table .ant-table-tbody > tr:hover > td.ant-table-cell-fix-end {
+  .omada-incidents-table .ant-table-tbody > tr:not(.ant-table-measure-row):hover > td.ant-table-cell-fix,
+  .omada-incidents-table .ant-table-tbody > tr:not(.ant-table-measure-row):hover > td.ant-table-cell-fix-end {
     background-color: color-mix(
       in srgb,
       var(--omada-bg-surface) 96%,

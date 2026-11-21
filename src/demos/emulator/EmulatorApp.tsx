@@ -124,6 +124,8 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
     const handleHashChange = () => {
       const next = parseEmulatorRoute(window.location.hash);
       setActiveRoute(next);
+      setDrawerOpen(false);
+      setClientDrawerOpen(false);
     };
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);

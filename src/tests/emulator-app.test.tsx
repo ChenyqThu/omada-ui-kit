@@ -154,6 +154,9 @@ describe('EmulatorApp & App hash routing integration', () => {
     window.location.hash = '#/abnormal';
     fireEvent(window, new HashChangeEvent('hashchange'));
     expect(await screen.findByTestId('incidents-page')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('dialog', { name: /StorageRoom_Eap_3 properties/i }),
+    ).not.toBeInTheDocument();
 
     window.location.hash = '#/incidents';
     fireEvent(window, new HashChangeEvent('hashchange'));

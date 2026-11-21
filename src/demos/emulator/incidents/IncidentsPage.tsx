@@ -689,8 +689,8 @@ export const IncidentsPage: React.FC<IncidentsPageProps> = ({
 
       {mainTab === 'analysis' && (
         <>
-          {/* Category KPI Carousel */}
-          <div className="mt-4">
+          {/* Category KPI Carousel (cleared of right-edge <<|| quick-drawer handle) */}
+          <div className="mt-4 pr-8">
             <SCategoryKpiCarousel
               items={categoryItems}
               activeKey={activeCategory}
