@@ -1,0 +1,310 @@
+@layer components {
+  /* ==========================================================================
+   * SAppShell Top Bar & Nested Sidebar Refinements
+   * ========================================================================== */
+  .omada-topbar-tab-active {
+    background-color: var(--omada-bg-surface);
+    color: var(--omada-brand-text);
+    border-radius: 6px 6px 0 0;
+  }
+
+  .omada-sidebar-popover .ant-popover-inner {
+    background-color: var(--omada-bg-popover);
+    border: 1px solid var(--omada-border-divider);
+    border-radius: 10px;
+    box-shadow: var(--omada-shadow-dropdown);
+    padding: 12px;
+  }
+
+  /* ==========================================================================
+   * SDropdown
+   * ========================================================================== */
+  .omada-dropdown-root .ant-dropdown-menu {
+    background-color: var(--omada-bg-popover);
+    border: 1px solid var(--omada-border-divider);
+    border-radius: 6px;
+    box-shadow: var(--omada-shadow-dropdown);
+    padding: 4px;
+  }
+
+  .omada-dropdown-root .ant-dropdown-menu-item-group-title {
+    color: var(--omada-text-tertiary);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 10px 4px;
+  }
+
+  .omada-dropdown-root .ant-dropdown-menu-item,
+  .omada-dropdown-root .ant-dropdown-menu-submenu-title {
+    border-radius: 4px;
+    min-height: 32px;
+    padding: 5px 10px;
+    color: var(--omada-text-primary);
+    font-size: 13px;
+  }
+
+  .omada-dropdown-root .ant-dropdown-menu-item:hover,
+  .omada-dropdown-root .ant-dropdown-menu-submenu-title:hover {
+    background-color: var(--omada-bg-field-hover);
+  }
+
+  .omada-dropdown-root .ant-dropdown-menu-item-selected {
+    background-color: var(--omada-brand-bg-subtlest);
+    color: var(--omada-brand-text);
+    font-weight: 600;
+  }
+
+  .omada-dropdown-root .ant-dropdown-menu-item-danger {
+    color: var(--omada-color-error);
+  }
+
+  .omada-dropdown-root .ant-dropdown-menu-item-danger:hover {
+    background-color: var(--omada-color-error-bg);
+    color: var(--omada-color-error);
+  }
+
+  .omada-dropdown-panel {
+    background-color: var(--omada-bg-popover);
+    border: 1px solid var(--omada-border-divider);
+    border-radius: 6px;
+    box-shadow: var(--omada-shadow-dropdown);
+    overflow: hidden;
+  }
+
+  .omada-dropdown-panel .ant-dropdown-menu {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* ==========================================================================
+   * SPagination (Default / Simple / Minimal)
+   * ========================================================================== */
+  .omada-pagination .ant-pagination-item,
+  .omada-pagination .ant-pagination-prev .ant-pagination-item-link,
+  .omada-pagination .ant-pagination-next .ant-pagination-item-link {
+    border-radius: 4px;
+    color: var(--omada-text-secondary);
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .omada-pagination .ant-pagination-item:not(.ant-pagination-item-active):hover,
+  .omada-pagination
+    .ant-pagination-prev:not(.ant-pagination-disabled):hover
+    .ant-pagination-item-link,
+  .omada-pagination
+    .ant-pagination-next:not(.ant-pagination-disabled):hover
+    .ant-pagination-item-link {
+    background-color: var(--omada-bg-field-hover);
+    color: var(--omada-text-primary);
+  }
+
+  .omada-pagination .ant-pagination-item-active {
+    background-color: var(--omada-brand-bg-subtle);
+    border-color: transparent;
+  }
+
+  .omada-pagination .ant-pagination-item-active a {
+    color: var(--omada-brand-text);
+    font-weight: 600;
+  }
+
+  .omada-pagination .ant-pagination-disabled .ant-pagination-item-link {
+    color: var(--omada-text-disabled);
+  }
+
+  .omada-pagination-minimal .ant-pagination-item {
+    border-color: transparent;
+    background-color: transparent;
+    min-width: 28px;
+    height: 28px;
+    line-height: 26px;
+  }
+
+  .omada-pagination-minimal .ant-pagination-prev,
+  .omada-pagination-minimal .ant-pagination-next {
+    min-width: 28px;
+    height: 28px;
+    line-height: 28px;
+  }
+
+  .omada-pagination-simple .ant-pagination-simple-pager input {
+    background-color: var(--omada-bg-field);
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: var(--omada-text-primary);
+  }
+
+  .omada-pagination-simple .ant-pagination-simple-pager input:focus {
+    border-color: var(--omada-border-focus);
+    outline: none;
+  }
+
+  /* ==========================================================================
+   * SSteps (Figma 3:64441 spacing & semantic colors)
+   * ========================================================================== */
+  .omada-steps.ant-steps-horizontal .ant-steps-item {
+    gap: 8px;
+  }
+
+  .omada-steps.ant-steps-horizontal:not(.ant-steps-navigation):not(.ant-steps-dot)
+    .ant-steps-item-rail {
+    min-width: 64px;
+    border-color: var(--omada-border-divider);
+  }
+
+  .omada-steps .ant-steps-item-finish .ant-steps-item-rail {
+    border-color: var(--omada-brand);
+  }
+
+  .omada-steps .ant-steps-item-title {
+    font-weight: 500;
+    color: var(--omada-text-primary);
+  }
+
+  .omada-steps .ant-steps-item-wait .ant-steps-item-title {
+    color: var(--omada-text-secondary);
+  }
+
+  .omada-steps .ant-steps-item-content {
+    color: var(--omada-text-secondary);
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .omada-steps .ant-steps-item-wait .ant-steps-item-icon {
+    background-color: var(--omada-bg-field);
+    border-color: var(--omada-border-divider);
+  }
+
+  .omada-steps .ant-steps-item-wait .ant-steps-item-icon > .ant-steps-icon {
+    color: var(--omada-text-tertiary);
+  }
+
+  .omada-steps .ant-steps-item-process .ant-steps-item-icon {
+    background-color: var(--omada-brand);
+    border-color: var(--omada-brand);
+  }
+
+  .omada-steps .ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon {
+    color: var(--omada-text-inverse);
+  }
+
+  .omada-steps .ant-steps-item-finish .ant-steps-item-icon {
+    background-color: var(--omada-brand-bg-subtle);
+    border-color: var(--omada-brand);
+  }
+
+  .omada-steps .ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon {
+    color: var(--omada-brand-text);
+  }
+
+  .omada-steps .ant-steps-item-error .ant-steps-item-icon {
+    background-color: var(--omada-color-error-bg);
+    border-color: var(--omada-color-error);
+  }
+
+  .omada-steps .ant-steps-item-error .ant-steps-item-icon > .ant-steps-icon,
+  .omada-steps .ant-steps-item-error .ant-steps-item-title {
+    color: var(--omada-color-error);
+  }
+
+  .omada-steps.ant-steps-navigation .ant-steps-item-active::before {
+    background-color: var(--omada-brand-text);
+  }
+
+  .omada-steps.ant-steps-vertical .ant-steps-item-rail {
+    min-height: 36px;
+    border-color: var(--omada-border-divider);
+  }
+
+  /* ==========================================================================
+   * SBreadcrumb
+   * ========================================================================== */
+  .omada-breadcrumb.ant-breadcrumb {
+    font-size: 13px;
+    color: var(--omada-text-secondary);
+  }
+
+  .omada-breadcrumb.ant-breadcrumb a,
+  .omada-breadcrumb.ant-breadcrumb .ant-breadcrumb-link {
+    color: var(--omada-text-secondary);
+    border-radius: 4px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .omada-breadcrumb.ant-breadcrumb a:hover {
+    background-color: var(--omada-bg-field-hover);
+    color: var(--omada-text-primary);
+  }
+
+  .omada-breadcrumb.ant-breadcrumb li:last-child .ant-breadcrumb-link,
+  .omada-breadcrumb.ant-breadcrumb li:last-child .ant-breadcrumb-link a {
+    color: var(--omada-text-primary);
+    font-weight: 600;
+  }
+
+  .omada-breadcrumb.ant-breadcrumb .ant-breadcrumb-separator {
+    color: var(--omada-text-tertiary);
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* ==========================================================================
+   * SAnchor (Figma 35368:149692 right-rail TOC)
+   * ========================================================================== */
+  .omada-anchor-wrapper .ant-anchor::before {
+    border-inline-start-color: var(--omada-border-divider);
+  }
+
+  .omada-anchor-wrapper .ant-anchor-ink {
+    background-color: var(--omada-brand-text);
+  }
+
+  .omada-anchor-wrapper .ant-anchor-link-title {
+    color: var(--omada-text-secondary);
+    font-size: 13px;
+    line-height: 20px;
+    transition: color 0.15s ease;
+  }
+
+  .omada-anchor-wrapper .ant-anchor-link-title:hover {
+    color: var(--omada-text-primary);
+  }
+
+  .omada-anchor-wrapper .ant-anchor-link-title-active {
+    color: var(--omada-brand-text);
+    font-weight: 600;
+  }
+
+  .omada-anchor-wrapper .omada-anchor-item-disabled .ant-anchor-link-title {
+    color: var(--omada-text-disabled);
+    cursor: not-allowed;
+  }
+
+  .omada-anchor-wrapper .omada-anchor-item-error .ant-anchor-link-title {
+    color: var(--omada-color-error);
+  }
+
+  /* ==========================================================================
+   * SDivider
+   * ========================================================================== */
+  .omada-divider.ant-divider {
+    border-color: var(--omada-border-divider);
+  }
+
+  .omada-divider .ant-divider-rail {
+    border-color: var(--omada-border-divider);
+  }
+
+  .omada-divider .ant-divider-inner-text {
+    color: var(--omada-text-tertiary);
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .omada-divider-inset.ant-divider-horizontal {
+    padding-inline: 24px;
+  }
+}
