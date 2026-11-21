@@ -10,7 +10,7 @@ description: >-
 
 # Omada UI Kit — PRD Demo & Component Skill
 
-Build authentic **Omada Controller v6.3** demos using verified exports from `@lucienchen/omada-ui-kit` (check `references/catalog.json` via `query-catalog.mjs info` for the active version and CDN URLs).
+Build authentic **Omada Controller v6.3** demos using verified exports from `@chenyqthu/omada-ui-kit` (check `references/catalog.json` via `query-catalog.mjs info` for the active version and CDN URLs).
 
 ---
 
@@ -34,8 +34,8 @@ Use classic `<script>` tags (NOT `<script type="module">`) so local `file://` do
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Omada PRD Demo</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@lucienchen/omada-ui-kit@latest/dist/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@lucienchen/omada-ui-kit@latest/dist/standalone.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/standalone.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
   <body style="margin: 0;">
@@ -103,7 +103,7 @@ Use classic `<script>` tags (NOT `<script type="module">`) so local `file://` do
 ## 3. Mode B — React / Vite Project Starter
 
 ```tsx
-import '@lucienchen/omada-ui-kit/style.css';
+import '@chenyqthu/omada-ui-kit/style.css';
 import {
   OmadaProvider,
   SEmulatorShell,
@@ -112,7 +112,7 @@ import {
   SButton,
   SIcon,
   SProductImage,
-} from '@lucienchen/omada-ui-kit';
+} from '@chenyqthu/omada-ui-kit';
 ```
 
 Wrap the application root with `<OmadaProvider defaultThemeMode="light">` (never nest multiple providers).

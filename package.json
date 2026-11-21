@@ -1,8 +1,16 @@
 {
-  "name": "@lucienchen/omada-ui-kit",
+  "name": "@chenyqthu/omada-ui-kit",
   "version": "0.1.0",
   "description": "Omada Controller v6.3 React UI component library (Ant Design 6 + Design Tokens + Figma Assets + Single-file HTML standalone bundle)",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChenyqThu/omada-ui-kit.git"
+  },
+  "homepage": "https://github.com/ChenyqThu/omada-ui-kit#readme",
+  "bugs": {
+    "url": "https://github.com/ChenyqThu/omada-ui-kit/issues"
+  },
   "type": "module",
   "sideEffects": ["**/*.css"],
   "main": "./dist/index.js",

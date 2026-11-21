@@ -5,13 +5,13 @@ High-fidelity **TP-Link Omada Controller v6.3** React UI component library built
 ## 1. Usage in React / Vite Projects (like `antd`)
 
 ```bash
-pnpm add @lucienchen/omada-ui-kit
+pnpm add @chenyqthu/omada-ui-kit
 ```
 
 Import the stylesheet once at app entry and use components directly:
 
 ```tsx
-import '@lucienchen/omada-ui-kit/style.css';
+import '@chenyqthu/omada-ui-kit/style.css';
 import {
   OmadaProvider,
   SEmulatorShell,
@@ -20,7 +20,7 @@ import {
   SButton,
   SIcon,
   SProductImage,
-} from '@lucienchen/omada-ui-kit';
+} from '@chenyqthu/omada-ui-kit';
 
 export function App() {
   return (
@@ -42,8 +42,8 @@ For quick PRD prototypes, load `dist/style.css` and `dist/standalone.js` (bundle
 <html>
   <head>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@lucienchen/omada-ui-kit@latest/dist/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@lucienchen/omada-ui-kit@latest/dist/standalone.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/standalone.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
   <body style="margin: 0;">
@@ -68,7 +68,13 @@ See [examples/single-file-demo.html](./examples/single-file-demo.html) for a ful
 
 ## 3. Agent Skill & Component Catalog
 
-The npm package includes `skills/omada-ui-kit/` containing `SKILL.md`, `references/catalog.json`, and `scripts/query-catalog.mjs` so coding agents can inspect component props, icons, hardware product images, and design tokens without guessing:
+Install the Skill directly from GitHub into Antigravity / Claude Code / Codex / Cursor:
+
+```bash
+npx skills add ChenyqThu/omada-ui-kit
+```
+
+The npm package also bundles `skills/omada-ui-kit/` containing `SKILL.md`, `references/catalog.json`, and `scripts/query-catalog.mjs` so coding agents can inspect component props, icons, hardware product images, and design tokens without guessing:
 
 ```bash
 node skills/omada-ui-kit/scripts/query-catalog.mjs info
