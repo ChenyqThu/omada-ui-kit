@@ -242,7 +242,7 @@ const VlanTopologyStage: React.FC<VlanTopologyStageProps> = ({
             dashed: Boolean(child.linkDashed),
             portLabel: child.portLabel,
             speedLabel: child.speedLabel,
-            labelX: layout === 'horizontal' ? toX - 8 : toX - 10,
+            labelX: layout === 'horizontal' ? toX - 12 : toX - 10,
             labelY: layout === 'horizontal' ? toY - 6 : toY - 20,
           });
 
@@ -1291,7 +1291,7 @@ export const LanPage: React.FC<LanPageProps> = ({
             {/* 7-Column KPI Strip */}
             <div
               data-testid="lan-vlan-kpi-strip"
-              className="mt-4 flex flex-wrap items-start justify-between gap-x-5 gap-y-3 border-b border-[var(--omada-border-divider)] pb-4"
+              className="mt-4 flex flex-wrap items-start justify-between gap-x-5 gap-y-3 border-b border-[var(--omada-border-divider)] pb-4 pr-9"
             >
               <div className="flex flex-col gap-1">
                 <span className="text-[12px] text-[var(--omada-text-tertiary)]">VLAN</span>
@@ -1367,7 +1367,7 @@ export const LanPage: React.FC<LanPageProps> = ({
             </div>
 
             {/* Sub-Toolbar: Topology | Ports + Search + Full Topology */}
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pr-9">
               <div className="flex flex-wrap items-center gap-3">
                 <div
                   role="tablist"

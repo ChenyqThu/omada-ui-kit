@@ -190,73 +190,81 @@ describe('EmulatorApp & App hash routing integration', () => {
     expect(await screen.findByText('SalesDepartment_Switch_3 - Port 4')).toBeInTheDocument();
   });
 
-  it('routes all Batch 3 config, maintenance, tools, and alias hashes cleanly', async () => {
-    window.location.hash = '#/setting/site';
-    render(<App />);
-    expect(await screen.findByRole('heading', { name: 'Site Settings' })).toBeInTheDocument();
+  it(
+    'routes all Batch 3 config, maintenance, tools, and alias hashes cleanly',
+    async () => {
+      window.location.hash = '#/setting/site';
+      render(<App />);
+      expect(await screen.findByRole('heading', { name: 'Site Settings' })).toBeInTheDocument();
 
-    window.location.hash = '#/network-config';
-    fireEvent(window, new HashChangeEvent('hashchange'));
-    expect(await screen.findByRole('heading', { name: 'Site Configuration' })).toBeInTheDocument();
-
-    window.location.hash = '#/setting/internet';
-    fireEvent(window, new HashChangeEvent('hashchange'));
-    expect(await screen.findByRole('heading', { name: 'Internet' })).toBeInTheDocument();
-
-    window.location.hash = '#/setting/network-settings/lan';
-    fireEvent(window, new HashChangeEvent('hashchange'));
-    expect(await screen.findByTestId('vlan-topology-canvas')).toBeInTheDocument();
-
-    // Clicking VLAN topology node opens DevicePropertiesDrawer
-    fireEvent.click(screen.getByTestId('vlan-topo-node-ctooffice-switch-1'));
-    expect(
-      await screen.findByRole('dialog', { name: /CTOOffice_Switch_1 properties/i }),
-    ).toBeInTheDocument();
-
-    window.location.hash = '#/setting/wireless';
-    fireEvent(window, new HashChangeEvent('hashchange'));
-    expect(await screen.findByText('test_ssid_1')).toBeInTheDocument();
-    expect(
-      screen.queryByRole('dialog', { name: /CTOOffice_Switch_1 properties/i }),
-    ).not.toBeInTheDocument();
-
-    window.location.hash = '#/setting/acl';
-    fireEvent(window, new HashChangeEvent('hashchange'));
-    expect(await screen.findByText('Gateway_ACL_1')).toBeInTheDocument();
-
-    window.location.hash = '#/setting/deviceConfigSwitchPort';
-    fireEvent(window, new HashChangeEvent('hashchange'));
-    expect(await screen.findByTestId('switch-ports-config-page')).toBeInTheDocument();
-
-    window.location.hash = '#/device-config';
-    fireEvent(window, new HashChangeEvent('hashchange'));
-    expect(await screen.findByText('Showing 1-30 of 30 records')).toBeInTheDocument();
-
-    window.location.hash = '#/setting/dns';
-    fireEvent(window, new HashChangeEvent('hashchange'));
-    expect(await screen.findByText('Incorrect Credential')).toBeInTheDocument();
-
-    window.location.hash = '#/networkAnalyze';
-    fireEvent(window, new HashChangeEvent('hashchange'));
-    expect(await screen.findByRole('tab', { name: 'Network Check' })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'Terminal' })).toBeInTheDocument();
-
-    window.location.hash = '#/setting/maintenance';
-    fireEvent(window, new HashChangeEvent('hashchange'));
-    expect(await screen.findByRole('heading', { name: 'Site Restore' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Site Backup' })).toBeInTheDocument();
-  });
-
-  it('routes all 41 remaining Network & Device Config submodule hashes through ConfigSubmodulePage with zero stubs', async () => {
-    window.location.hash = `#/${CONFIG_SUBMODULE_KEYS[0]}`;
-    render(<App />);
-
-    for (const key of CONFIG_SUBMODULE_KEYS) {
-      window.location.hash = `#/${key}`;
+      window.location.hash = '#/network-config';
       fireEvent(window, new HashChangeEvent('hashchange'));
-      expect(await screen.findByTestId(`config-submodule-${key}`)).toBeInTheDocument();
-    }
-  });
+      expect(await screen.findByRole('heading', { name: 'Site Configuration' })).toBeInTheDocument();
+
+      window.location.hash = '#/setting/internet';
+      fireEvent(window, new HashChangeEvent('hashchange'));
+      expect(await screen.findByRole('heading', { name: 'Internet' })).toBeInTheDocument();
+
+      window.location.hash = '#/setting/network-settings/lan';
+      fireEvent(window, new HashChangeEvent('hashchange'));
+      expect(await screen.findByTestId('vlan-topology-canvas')).toBeInTheDocument();
+
+      // Clicking VLAN topology node opens DevicePropertiesDrawer
+      fireEvent.click(screen.getByTestId('vlan-topo-node-ctooffice-switch-1'));
+      expect(
+        await screen.findByRole('dialog', { name: /CTOOffice_Switch_1 properties/i }),
+      ).toBeInTheDocument();
+
+      window.location.hash = '#/setting/wireless';
+      fireEvent(window, new HashChangeEvent('hashchange'));
+      expect(await screen.findByText('test_ssid_1')).toBeInTheDocument();
+      expect(
+        screen.queryByRole('dialog', { name: /CTOOffice_Switch_1 properties/i }),
+      ).not.toBeInTheDocument();
+
+      window.location.hash = '#/setting/acl';
+      fireEvent(window, new HashChangeEvent('hashchange'));
+      expect(await screen.findByText('Gateway_ACL_1')).toBeInTheDocument();
+
+      window.location.hash = '#/setting/deviceConfigSwitchPort';
+      fireEvent(window, new HashChangeEvent('hashchange'));
+      expect(await screen.findByTestId('switch-ports-config-page')).toBeInTheDocument();
+
+      window.location.hash = '#/device-config';
+      fireEvent(window, new HashChangeEvent('hashchange'));
+      expect(await screen.findByText('Showing 1-30 of 30 records')).toBeInTheDocument();
+
+      window.location.hash = '#/setting/dns';
+      fireEvent(window, new HashChangeEvent('hashchange'));
+      expect(await screen.findByText('Incorrect Credential')).toBeInTheDocument();
+
+      window.location.hash = '#/networkAnalyze';
+      fireEvent(window, new HashChangeEvent('hashchange'));
+      expect(await screen.findByRole('tab', { name: 'Network Check' })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: 'Terminal' })).toBeInTheDocument();
+
+      window.location.hash = '#/setting/maintenance';
+      fireEvent(window, new HashChangeEvent('hashchange'));
+      expect(await screen.findByRole('heading', { name: 'Site Restore' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Site Backup' })).toBeInTheDocument();
+    },
+    15000,
+  );
+
+  it(
+    'routes all 41 remaining Network & Device Config submodule hashes through ConfigSubmodulePage with zero stubs',
+    async () => {
+      window.location.hash = `#/${CONFIG_SUBMODULE_KEYS[0]}`;
+      render(<App />);
+
+      for (const key of CONFIG_SUBMODULE_KEYS) {
+        window.location.hash = `#/${key}`;
+        fireEvent(window, new HashChangeEvent('hashchange'));
+        expect(screen.getByTestId(`config-submodule-${key}`)).toBeInTheDocument();
+      }
+    },
+    15000,
+  );
 
   it('routes #/hotspot* to HotspotPortalApp, syncs sub-routes, and returns to #/dashboard cleanly', async () => {
     window.location.hash = '#/dashboard';

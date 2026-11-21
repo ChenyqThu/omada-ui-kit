@@ -348,7 +348,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
         title: 'SSID Name',
         dataIndex: 'ssidName',
         key: 'ssidName',
-        width: 165,
+        width: 155,
         render: (name: string) => (
           <span className="font-normal text-[var(--omada-text-primary)]">{name}</span>
         ),
@@ -360,7 +360,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
         title: 'Enabled',
         dataIndex: 'enabled',
         key: 'enabled',
-        width: 112,
+        width: 105,
         render: (enabled: boolean, record) => (
           <SSwitch
             checked={enabled}
@@ -414,7 +414,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
         ),
         dataIndex: 'security',
         key: 'security',
-        width: 138,
+        width: 135,
       });
     }
 
@@ -460,7 +460,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
         ),
         dataIndex: 'bands',
         key: 'band',
-        width: 215,
+        width: 210,
         render: (bands: WlanBandKey[]) => (
           <div className="flex flex-wrap items-center gap-1.5">
             {bands.map((band) => (
@@ -517,7 +517,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
         ),
         dataIndex: 'devicesLabel',
         key: 'devices',
-        width: 170,
+        width: 160,
         render: (label: string, record) => (
           <button
             type="button"
@@ -535,7 +535,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
         title: 'Clients',
         dataIndex: 'clients',
         key: 'clients',
-        width: 100,
+        width: 95,
         render: (clients: number, record) => (
           <button
             type="button"
@@ -555,7 +555,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
         title: 'Traffic',
         dataIndex: 'traffic',
         key: 'traffic',
-        width: 86,
+        width: 80,
         render: (val: string) => (
           <span className="tabular-nums text-[var(--omada-text-secondary)]">{val}</span>
         ),
@@ -567,7 +567,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
         title: 'VLAN',
         dataIndex: 'vlan',
         key: 'vlan',
-        width: 78,
+        width: 75,
         render: (val: string) => (
           <span className="tabular-nums text-[var(--omada-text-secondary)]">{val}</span>
         ),
@@ -595,7 +595,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
         </div>
       ),
       key: 'action',
-      width: 104,
+      width: 100,
       render: (_, record) => (
         <div className="flex items-center gap-3">
           <Tooltip title="Edit SSID">
@@ -727,7 +727,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
       {/* Tab 1: SSID */}
       {subTab === 'ssid' && (
         <>
-          <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-3 pr-9">
+          <div className="mt-4 mb-5 flex flex-wrap items-center justify-between gap-3 pr-9">
             <SInput
               variant="filled"
               allowClear
@@ -756,22 +756,24 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
             </SButton>
           </div>
 
-          <div className="omada-cfg-table-shell">
-            <Table<WlanSsidRecord>
-              className="omada-cfg-table"
-              rowKey="key"
-              dataSource={filteredSsids}
-              columns={columns}
-              pagination={false}
-              locale={{
-                emptyText: (
-                  <SEmpty
-                    title="No SSIDs Found"
-                    description="Adjust search or column filters, or click + Add SSID to create a wireless network."
-                  />
-                ),
-              }}
-            />
+          <div className="pr-9">
+            <div className="omada-cfg-table-shell">
+              <Table<WlanSsidRecord>
+                className="omada-cfg-table"
+                rowKey="key"
+                dataSource={filteredSsids}
+                columns={columns}
+                pagination={false}
+                locale={{
+                  emptyText: (
+                    <SEmpty
+                      title="No SSIDs Found"
+                      description="Adjust search or column filters, or click + Add SSID to create a wireless network."
+                    />
+                  ),
+                }}
+              />
+            </div>
           </div>
         </>
       )}
