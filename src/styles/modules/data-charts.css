@@ -1,0 +1,154 @@
+@layer components {
+  /* STable Density & Expandable Row Refinements */
+  .omada-table-compact .ant-table-thead > tr > th {
+    height: 34px;
+    padding: 6px 10px;
+  }
+
+  .omada-table-compact .ant-table-tbody > tr > td {
+    padding: 6px 10px;
+  }
+
+  .omada-table .ant-table-expanded-row > td {
+    background-color: var(--omada-bg-page) !important;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--omada-border-divider) !important;
+  }
+
+  .omada-table .ant-table-row-expand-icon {
+    color: var(--omada-text-secondary);
+    border-color: var(--omada-border-strong);
+    background-color: var(--omada-bg-surface);
+  }
+
+  .omada-table .ant-table-row-expand-icon:hover,
+  .omada-table .ant-table-row-expand-icon:focus-visible {
+    color: var(--omada-brand-text);
+    border-color: var(--omada-brand);
+  }
+
+  /* SDescriptions */
+  .omada-descriptions.ant-descriptions-bordered .ant-descriptions-view {
+    border-color: var(--omada-border-divider);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .omada-descriptions.ant-descriptions-bordered .ant-descriptions-row {
+    border-bottom-color: var(--omada-border-divider);
+  }
+
+  .omada-descriptions.ant-descriptions-bordered .ant-descriptions-item-label {
+    background-color: var(--omada-bg-table-header);
+    color: var(--omada-text-secondary);
+    font-weight: 500;
+    border-inline-end-color: var(--omada-border-divider);
+  }
+
+  .omada-descriptions.ant-descriptions-bordered .ant-descriptions-item-content {
+    background-color: var(--omada-bg-surface);
+    color: var(--omada-text-primary);
+    border-inline-end-color: var(--omada-border-divider);
+  }
+
+  /* SCollapse */
+  .omada-collapse.ant-collapse {
+    background-color: var(--omada-bg-surface);
+    border-color: var(--omada-border-divider);
+    border-radius: 8px;
+  }
+
+  .omada-collapse .ant-collapse-item {
+    border-bottom-color: var(--omada-border-divider);
+  }
+
+  .omada-collapse .ant-collapse-header {
+    color: var(--omada-text-primary);
+    font-weight: 500;
+    align-items: center !important;
+    transition: background-color 0.15s ease;
+  }
+
+  .omada-collapse .ant-collapse-item:not(.ant-collapse-item-disabled) > .ant-collapse-header:hover {
+    background-color: var(--omada-bg-table-row-hover);
+  }
+
+  .omada-collapse .ant-collapse-panel {
+    background-color: var(--omada-bg-surface);
+    border-top-color: var(--omada-border-divider);
+    color: var(--omada-text-secondary);
+  }
+
+  .omada-collapse-card.ant-collapse {
+    background-color: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .omada-collapse-card > .ant-collapse-item {
+    background-color: var(--omada-bg-surface);
+    border: 1px solid var(--omada-border-divider);
+    border-radius: 8px !important;
+    overflow: hidden;
+  }
+
+  .omada-collapse-card > .ant-collapse-item > .ant-collapse-header {
+    border-radius: 0 !important;
+  }
+
+  .omada-collapse-ghost.ant-collapse {
+    background-color: transparent;
+    border: none;
+  }
+
+  .omada-collapse-ghost .ant-collapse-panel {
+    background-color: transparent;
+  }
+
+  /* SBadge */
+  .omada-badge .ant-badge-count {
+    height: 20px;
+    min-width: 20px;
+    line-height: 20px;
+    padding: 0 6px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 0 0 1px var(--omada-bg-surface);
+  }
+
+  .omada-badge .ant-badge-dot {
+    box-shadow: 0 0 0 1px var(--omada-bg-surface);
+  }
+
+  /* SRate */
+  .omada-rate.ant-rate {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--omada-color-warning-minor);
+    line-height: 1;
+  }
+
+  .omada-rate .ant-rate-star {
+    margin-inline-end: 0 !important;
+  }
+
+  .omada-rate .ant-rate-star-first,
+  .omada-rate .ant-rate-star-second {
+    color: var(--omada-text-disabled);
+    transition: color 0.15s ease, transform 0.15s ease;
+  }
+
+  .omada-rate .ant-rate-star-half .ant-rate-star-first,
+  .omada-rate .ant-rate-star-full .ant-rate-star-second {
+    color: var(--omada-color-warning-minor);
+  }
+
+  .omada-rate:not(.ant-rate-disabled) .ant-rate-star > div:hover {
+    transform: scale(1.12);
+  }
+}
