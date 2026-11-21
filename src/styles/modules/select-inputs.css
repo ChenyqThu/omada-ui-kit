@@ -1,0 +1,561 @@
+@layer components {
+  /* ========================================================================
+     Select / Cascader / TreeSelect (AntD 6 DOM structure)
+     ======================================================================== */
+  .omada-select.ant-select.ant-select-filled,
+  .omada-cascader.ant-cascader.ant-select.ant-select-filled,
+  .omada-tree-select.ant-tree-select.ant-select.ant-select-filled {
+    background-color: var(--omada-bg-field);
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: var(--omada-text-primary);
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .omada-select.ant-select.ant-select-filled:not(.ant-select-disabled):hover,
+  .omada-cascader.ant-cascader.ant-select.ant-select-filled:not(.ant-select-disabled):hover,
+  .omada-tree-select.ant-tree-select.ant-select.ant-select-filled:not(.ant-select-disabled):hover {
+    background-color: var(--omada-bg-field);
+    border-color: var(--omada-border-focus);
+  }
+
+  .omada-select.ant-select.ant-select-filled:not(.ant-select-disabled).ant-select-focused,
+  .omada-select.ant-select.ant-select-filled:not(.ant-select-disabled).ant-select-open,
+  .omada-cascader.ant-cascader.ant-select.ant-select-filled:not(.ant-select-disabled).ant-select-focused,
+  .omada-cascader.ant-cascader.ant-select.ant-select-filled:not(.ant-select-disabled).ant-select-open,
+  .omada-tree-select.ant-tree-select.ant-select.ant-select-filled:not(.ant-select-disabled).ant-select-focused,
+  .omada-tree-select.ant-tree-select.ant-select.ant-select-filled:not(.ant-select-disabled).ant-select-open {
+    background-color: var(--omada-bg-field);
+    border-color: var(--omada-border-focus);
+    box-shadow: none;
+  }
+
+  .omada-select.ant-select.ant-select-filled.ant-select-status-error,
+  .omada-cascader.ant-cascader.ant-select.ant-select-filled.ant-select-status-error,
+  .omada-tree-select.ant-tree-select.ant-select.ant-select-filled.ant-select-status-error {
+    background-color: var(--omada-bg-field);
+    border-color: var(--omada-color-error);
+  }
+
+  .omada-select.ant-select.ant-select-filled.ant-select-status-warning,
+  .omada-cascader.ant-cascader.ant-select.ant-select-filled.ant-select-status-warning,
+  .omada-tree-select.ant-tree-select.ant-select.ant-select-filled.ant-select-status-warning {
+    background-color: var(--omada-bg-field);
+    border-color: var(--omada-color-warning);
+  }
+
+  .omada-select.ant-select.ant-select-disabled,
+  .omada-cascader.ant-cascader.ant-select.ant-select-disabled,
+  .omada-tree-select.ant-tree-select.ant-select.ant-select-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .omada-select .ant-select-placeholder,
+  .omada-cascader .ant-select-placeholder,
+  .omada-tree-select .ant-select-placeholder {
+    color: var(--omada-text-tertiary);
+  }
+
+  .omada-select .ant-select-suffix,
+  .omada-cascader .ant-select-suffix,
+  .omada-tree-select .ant-select-suffix {
+    color: var(--omada-text-tertiary);
+  }
+
+  .omada-select .ant-select-clear,
+  .omada-cascader .ant-select-clear,
+  .omada-tree-select .ant-select-clear {
+    color: var(--omada-text-tertiary);
+    background-color: var(--omada-bg-field);
+  }
+
+  .omada-select .ant-select-clear:hover,
+  .omada-cascader .ant-select-clear:hover,
+  .omada-tree-select .ant-select-clear:hover {
+    color: var(--omada-text-primary);
+  }
+
+  /* Select / Cascader / TreeSelect Dropdown Popups */
+  .omada-select-popup.ant-select-dropdown,
+  .omada-cascader-popup.ant-cascader-dropdown,
+  .omada-tree-select-popup.ant-tree-select-dropdown {
+    background-color: var(--omada-bg-popover);
+    box-shadow: var(--omada-shadow-dropdown);
+    border-radius: 6px;
+    border: 1px solid var(--omada-border-divider);
+  }
+
+  .omada-select-popup .ant-select-item-group {
+    color: var(--omada-text-tertiary);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .omada-select-popup .ant-select-item-option {
+    border-radius: 4px;
+    color: var(--omada-text-primary);
+  }
+
+  .omada-select-popup .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+    background-color: var(--omada-bg-field-hover);
+  }
+
+  .omada-select-popup .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+    background-color: var(--omada-brand-bg-subtlest);
+    color: var(--omada-brand-text);
+    font-weight: 600;
+  }
+
+  .omada-select-popup .ant-select-item-option-disabled {
+    color: var(--omada-text-disabled);
+  }
+
+  /* Cascader Columns */
+  .omada-cascader-popup .ant-cascader-menu {
+    min-width: 148px;
+    height: 224px;
+    padding: 4px;
+    border-inline-end-color: var(--omada-border-divider);
+  }
+
+  .omada-cascader-popup .ant-cascader-menu-item {
+    border-radius: 4px;
+    color: var(--omada-text-primary);
+  }
+
+  .omada-cascader-popup .ant-cascader-menu-item:hover:not(.ant-cascader-menu-item-disabled) {
+    background-color: var(--omada-bg-field-hover);
+  }
+
+  .omada-cascader-popup .ant-cascader-menu-item-active:not(.ant-cascader-menu-item-disabled) {
+    background-color: var(--omada-brand-bg-subtlest);
+    color: var(--omada-brand-text);
+    font-weight: 600;
+  }
+
+  .omada-cascader-popup .ant-cascader-menu-item-disabled {
+    color: var(--omada-text-disabled);
+  }
+
+  .omada-cascader-popup .ant-cascader-checkbox:not(.ant-cascader-checkbox-checked) {
+    border-color: var(--omada-border-strong);
+    background-color: var(--omada-bg-surface);
+  }
+
+  .omada-cascader-popup .ant-cascader-checkbox-checked {
+    background-color: var(--omada-brand);
+    border-color: var(--omada-brand);
+  }
+
+  /* TreeSelect Tree */
+  .omada-tree-select-popup .ant-select-tree {
+    background-color: transparent;
+    color: var(--omada-text-primary);
+  }
+
+  .omada-tree-select-popup .ant-select-tree .ant-select-tree-node-content-wrapper {
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+  }
+
+  .omada-tree-select-popup .ant-select-tree .ant-select-tree-node-content-wrapper:hover {
+    background-color: var(--omada-bg-field-hover);
+  }
+
+  .omada-tree-select-popup .ant-select-tree .ant-select-tree-node-content-wrapper.ant-select-tree-node-selected {
+    background-color: var(--omada-brand-bg-subtlest);
+    color: var(--omada-brand-text);
+    font-weight: 600;
+  }
+
+  .omada-tree-select-popup .ant-select-tree-checkbox:not(.ant-select-tree-checkbox-checked) {
+    border-color: var(--omada-border-strong);
+    background-color: var(--omada-bg-surface);
+  }
+
+  .omada-tree-select-popup .ant-select-tree-checkbox-checked {
+    background-color: var(--omada-brand);
+    border-color: var(--omada-brand);
+  }
+
+  /* ========================================================================
+     Checkbox & Radio (AntD 6 DOM structure)
+     ======================================================================== */
+  .omada-checkbox-wrapper .ant-checkbox,
+  .omada-checkbox .ant-checkbox {
+    border-radius: 3px;
+    border-color: var(--omada-border-strong);
+    background-color: var(--omada-bg-surface);
+  }
+
+  .omada-checkbox-wrapper:hover:not(.ant-checkbox-wrapper-disabled) .ant-checkbox,
+  .omada-checkbox:hover:not(.ant-checkbox-disabled) .ant-checkbox {
+    border-color: var(--omada-brand);
+  }
+
+  .omada-checkbox-wrapper .ant-checkbox-checked,
+  .omada-checkbox .ant-checkbox-checked {
+    background-color: var(--omada-brand);
+    border-color: var(--omada-brand);
+  }
+
+  .omada-checkbox-wrapper .ant-checkbox-indeterminate,
+  .omada-checkbox .ant-checkbox-indeterminate {
+    background-color: var(--omada-bg-surface);
+    border-color: var(--omada-brand);
+  }
+
+  .omada-checkbox-wrapper .ant-checkbox-indeterminate::after,
+  .omada-checkbox .ant-checkbox-indeterminate::after {
+    background-color: var(--omada-brand);
+  }
+
+  .omada-radio-wrapper .ant-radio,
+  .omada-radio .ant-radio {
+    border-color: var(--omada-border-strong);
+    background-color: var(--omada-bg-surface);
+  }
+
+  .omada-radio-wrapper:hover:not(.ant-radio-wrapper-disabled) .ant-radio,
+  .omada-radio:hover:not(.ant-radio-disabled) .ant-radio {
+    border-color: var(--omada-brand);
+  }
+
+  .omada-radio-wrapper .ant-radio-checked,
+  .omada-radio .ant-radio-checked {
+    background-color: var(--omada-brand);
+    border-color: var(--omada-brand);
+  }
+
+  .omada-radio-button .ant-radio-button-wrapper {
+    background-color: var(--omada-bg-surface);
+    border-color: var(--omada-border-outline-btn);
+    color: var(--omada-text-primary);
+    box-shadow: none;
+  }
+
+  .omada-radio-button .ant-radio-button-wrapper:not(:first-child)::before {
+    background-color: var(--omada-border-outline-btn);
+  }
+
+  .omada-radio-button .ant-radio-button-wrapper:hover:not(.ant-radio-button-wrapper-disabled) {
+    color: var(--omada-brand-text);
+  }
+
+  .omada-radio-button .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+    background-color: var(--omada-brand-bg-subtlest) !important;
+    border-color: var(--omada-brand-text) !important;
+    color: var(--omada-brand-text) !important;
+    font-weight: 500;
+  }
+
+  /* ========================================================================
+     Slider (Figma 3px track, 18x18px handle, color-temp & stepped presets)
+     ======================================================================== */
+  .omada-slider.ant-slider-horizontal {
+    padding-block: 4px;
+    height: 12px;
+    margin: 10px 9px;
+  }
+
+  .omada-slider.ant-slider-horizontal.ant-slider-with-marks {
+    margin-bottom: 26px;
+  }
+
+  .omada-slider .ant-slider-rail {
+    height: 3px;
+    border-radius: 10px;
+    background-color: var(--omada-bg-field-hover);
+    top: 4.5px;
+  }
+
+  .omada-slider .ant-slider-track,
+  .omada-slider .ant-slider-tracks {
+    height: 3px;
+    border-radius: 10px;
+    background-color: var(--omada-brand);
+    top: 4.5px;
+  }
+
+  .omada-slider:hover:not(.ant-slider-disabled) .ant-slider-rail {
+    background-color: var(--omada-bg-field-hover);
+  }
+
+  .omada-slider:hover:not(.ant-slider-disabled) .ant-slider-track {
+    background-color: var(--omada-brand-hover);
+  }
+
+  .omada-slider .ant-slider-step {
+    top: 4.5px;
+    height: 3px;
+  }
+
+  .omada-slider .ant-slider-dot {
+    width: 8px;
+    height: 8px;
+    inset-block-start: -2.5px;
+    background-color: var(--omada-bg-surface);
+    border: 2px solid var(--omada-border-strong);
+  }
+
+  .omada-slider .ant-slider-dot-active {
+    border-color: var(--omada-brand);
+  }
+
+  .omada-slider .ant-slider-handle {
+    width: 18px;
+    height: 18px;
+    inset-block-start: -3px;
+  }
+
+  .omada-slider .ant-slider-handle::before {
+    width: 22px;
+    height: 22px;
+    inset-inline-start: -2px;
+    inset-block-start: -2px;
+  }
+
+  .omada-slider .ant-slider-handle::after {
+    width: 18px;
+    height: 18px;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    background-color: var(--omada-bg-surface);
+    box-shadow: 0 0 0 2px var(--omada-brand);
+  }
+
+  .omada-slider:hover:not(.ant-slider-disabled) .ant-slider-handle:not(.ant-slider-handle-disabled)::after {
+    box-shadow: 0 0 0 2px var(--omada-brand-hover);
+  }
+
+  .omada-slider .ant-slider-handle:hover:not(.ant-slider-handle-disabled)::after,
+  .omada-slider .ant-slider-handle:active:not(.ant-slider-handle-disabled)::after,
+  .omada-slider .ant-slider-handle:focus:not(.ant-slider-handle-disabled)::after {
+    width: 18px;
+    height: 18px;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    box-shadow: 0 0 0 2.5px var(--omada-brand-hover);
+    outline: 5px solid var(--omada-brand-bg-subtle);
+  }
+
+  .omada-slider.omada-slider-solid .ant-slider-handle::after {
+    background-color: var(--omada-brand);
+    box-shadow: 0 0 0 2px var(--omada-bg-surface), var(--omada-shadow-tooltip);
+  }
+
+  .omada-slider.omada-slider-solid .ant-slider-handle:hover:not(.ant-slider-handle-disabled)::after,
+  .omada-slider.omada-slider-solid .ant-slider-handle:active:not(.ant-slider-handle-disabled)::after,
+  .omada-slider.omada-slider-solid .ant-slider-handle:focus:not(.ant-slider-handle-disabled)::after {
+    background-color: var(--omada-brand-hover);
+    box-shadow: 0 0 0 2px var(--omada-bg-surface), var(--omada-shadow-tooltip);
+    outline: 5px solid var(--omada-brand-bg-subtle);
+  }
+
+  .omada-slider.ant-slider-disabled .ant-slider-rail {
+    background-color: var(--omada-bg-field-hover) !important;
+  }
+
+  .omada-slider.ant-slider-disabled .ant-slider-track {
+    background-color: var(--omada-text-disabled) !important;
+  }
+
+  .omada-slider.ant-slider-disabled .ant-slider-handle::after {
+    background-color: var(--omada-bg-surface);
+    box-shadow: 0 0 0 2px var(--omada-text-disabled);
+  }
+
+  .omada-slider .ant-slider-mark-text {
+    color: var(--omada-text-tertiary);
+    font-size: 12px;
+  }
+
+  .omada-slider .ant-slider-mark-text-active {
+    color: var(--omada-text-primary);
+    font-weight: 500;
+  }
+
+  /* Segmented stepped bar style */
+  .omada-slider.omada-slider-segmented .ant-slider-dot {
+    width: 2px;
+    height: 8px;
+    border-radius: 1px;
+    border: none;
+    background-color: var(--omada-border-strong);
+    inset-block-start: -2.5px;
+    margin-inline-start: -1px;
+  }
+
+  .omada-slider.omada-slider-segmented .ant-slider-dot-active {
+    background-color: var(--omada-brand);
+  }
+
+  /* Color Temperature & Spectrum Slider Presets */
+  .omada-slider-color-temp .ant-slider-rail {
+    height: 6px;
+    top: 3px;
+    background: linear-gradient(
+      90deg,
+      rgb(255 180 84) 0%,
+      var(--omada-text-inverse) 50%,
+      rgb(124 196 255) 100%
+    );
+    border: 1px solid var(--omada-border-divider);
+  }
+
+  .omada-slider-hue .ant-slider-rail {
+    height: 6px;
+    top: 3px;
+    background: linear-gradient(
+      90deg,
+      hsl(0 100% 50%) 0%,
+      hsl(60 100% 50%) 17%,
+      hsl(120 100% 50%) 33%,
+      hsl(180 100% 50%) 50%,
+      hsl(240 100% 50%) 67%,
+      hsl(300 100% 50%) 83%,
+      hsl(360 100% 50%) 100%
+    );
+  }
+
+  .omada-slider-brightness .ant-slider-rail {
+    height: 6px;
+    top: 3px;
+    background: linear-gradient(
+      90deg,
+      var(--omada-text-primary) 0%,
+      var(--omada-text-inverse) 100%
+    );
+    border: 1px solid var(--omada-border-divider);
+  }
+
+  .omada-slider-color-temp .ant-slider-track,
+  .omada-slider-hue .ant-slider-track,
+  .omada-slider-brightness .ant-slider-track {
+    background-color: transparent !important;
+  }
+
+  .omada-slider-color-temp:hover:not(.ant-slider-disabled) .ant-slider-rail {
+    background: linear-gradient(
+      90deg,
+      rgb(255 180 84) 0%,
+      var(--omada-text-inverse) 50%,
+      rgb(124 196 255) 100%
+    );
+  }
+
+  .omada-slider-hue:hover:not(.ant-slider-disabled) .ant-slider-rail {
+    background: linear-gradient(
+      90deg,
+      hsl(0 100% 50%) 0%,
+      hsl(60 100% 50%) 17%,
+      hsl(120 100% 50%) 33%,
+      hsl(180 100% 50%) 50%,
+      hsl(240 100% 50%) 67%,
+      hsl(300 100% 50%) 83%,
+      hsl(360 100% 50%) 100%
+    );
+  }
+
+  .omada-slider-brightness:hover:not(.ant-slider-disabled) .ant-slider-rail {
+    background: linear-gradient(
+      90deg,
+      var(--omada-text-primary) 0%,
+      var(--omada-text-inverse) 100%
+    );
+  }
+
+  /* ========================================================================
+     ColorPicker (Figma 32px filled trigger + Light/Dark popover)
+     ======================================================================== */
+  .omada-color-picker.ant-color-picker-trigger {
+    height: 32px;
+    min-height: 32px;
+    padding: 5px 11px;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-start;
+    border-radius: 4px;
+    background-color: var(--omada-bg-field);
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .omada-color-picker.omada-color-picker-with-text.ant-color-picker-trigger {
+    min-width: 171px;
+  }
+
+  .omada-color-picker.ant-color-picker-trigger.ant-color-picker-sm {
+    height: 24px;
+    min-height: 24px;
+    padding: 2px 8px;
+  }
+
+  .omada-color-picker.ant-color-picker-trigger.ant-color-picker-lg {
+    height: 40px;
+    min-height: 40px;
+    padding: 7px 12px;
+  }
+
+  .omada-color-picker.ant-color-picker-trigger:not(.ant-color-picker-trigger-disabled):hover {
+    border-color: var(--omada-border-focus);
+    background-color: var(--omada-bg-field);
+  }
+
+  .omada-color-picker.ant-color-picker-trigger.ant-color-picker-trigger-active {
+    border-color: var(--omada-border-focus);
+    box-shadow: none;
+  }
+
+  .omada-color-picker.ant-color-picker-trigger.ant-color-picker-status-error {
+    border-color: var(--omada-color-error);
+  }
+
+  .omada-color-picker.ant-color-picker-trigger.ant-color-picker-status-warning {
+    border-color: var(--omada-color-warning);
+  }
+
+  .omada-color-picker.ant-color-picker-trigger.ant-color-picker-trigger-disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background-color: var(--omada-bg-field);
+  }
+
+  .omada-color-picker .ant-color-picker-color-block {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    border: 1px solid var(--omada-border-divider);
+  }
+
+  .omada-color-picker .ant-color-picker-trigger-text {
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    font-family: var(--omada-font-mono);
+    font-size: 13px;
+    color: var(--omada-text-primary);
+  }
+
+  .omada-color-picker.ant-color-picker-trigger-disabled .ant-color-picker-trigger-text {
+    color: var(--omada-text-disabled);
+  }
+
+  .omada-color-picker-popup .ant-popover-inner,
+  .omada-color-picker-popup .ant-popover-container {
+    background-color: var(--omada-bg-popover);
+    box-shadow: var(--omada-shadow-popover);
+    border: 1px solid var(--omada-border-divider);
+    border-radius: 8px;
+  }
+
+  .omada-color-picker-popup .ant-color-picker-presets-label {
+    color: var(--omada-text-secondary);
+    font-weight: 500;
+  }
+
+  .omada-color-picker-popup .ant-color-picker-presets-color {
+    border: 1px solid var(--omada-border-divider);
+    border-radius: 4px;
+  }
+}
