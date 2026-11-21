@@ -1,0 +1,185 @@
+@layer theme, base, antd, components, utilities;
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  --omada-font-sans: 'Manrope', Arial, Geneva, Verdana, sans-serif;
+  --omada-font-mono: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+
+  /* Brand */
+  --omada-brand: #00A870;
+  --omada-brand-hover: #05C178;
+  --omada-brand-active: #008F5F;
+  --omada-brand-text: #00A870;
+  --omada-brand-bg-subtle: rgba(0, 168, 112, 0.12);
+  --omada-brand-bg-subtlest: rgba(0, 168, 112, 0.08);
+
+  /* Top Bar */
+  --omada-topbar-bg: linear-gradient(90deg, #038069 0%, #026E64 100%);
+  --omada-topbar-text: #FFFFFF;
+
+  /* Link */
+  --omada-link: #0069CB;
+  --omada-link-hover: #0D89FD;
+
+  /* Status */
+  --omada-color-success: #00A870;
+  --omada-color-success-bg: rgba(0, 168, 112, 0.12);
+  --omada-color-error: #EE385C;
+  --omada-color-error-hover: #FF476B;
+  --omada-color-error-bg: rgba(238, 56, 92, 0.12);
+  --omada-color-warning: #FF8C27;
+  --omada-color-warning-bg: rgba(255, 140, 39, 0.12);
+  --omada-color-warning-minor: #FFCB00;
+  --omada-color-warning-minor-bg: rgba(255, 203, 0, 0.14);
+  --omada-color-info: #0069CB;
+  --omada-color-info-bg: rgba(0, 105, 203, 0.12);
+  --omada-color-magenta: #C52AD4;
+  --omada-color-magenta-bg: rgba(244, 118, 255, 0.12);
+  --omada-color-purple: #2F2FFF;
+  --omada-color-purple-bg: rgba(47, 47, 255, 0.10);
+
+  /* Text */
+  --omada-text-primary: #2B2B2B;
+  --omada-text-secondary: #636363;
+  --omada-text-tertiary: #999999;
+  --omada-text-disabled: #CCCCCC;
+  --omada-text-inverse: #FFFFFF;
+
+  /* Surfaces & Fills */
+  --omada-bg-page: #F7F7F7;
+  --omada-bg-surface: #FFFFFF;
+  --omada-bg-sidebar: #F7F7F7;
+  --omada-bg-sidebar-active: #FFFFFF;
+  --omada-bg-field: #F4F4F4;
+  --omada-bg-field-hover: #ECECEC;
+  --omada-bg-secondary-btn: #F4F4F4;
+  --omada-bg-secondary-btn-hover: #ECECEC;
+  --omada-bg-table-header: #F7F7F7;
+  --omada-bg-table-row-hover: #FBFBFB;
+  --omada-bg-overlay: #FFFFFF;
+  --omada-bg-popover: #FFFFFF;
+  --omada-bg-tooltip: rgba(43, 43, 43, 0.96);
+  --omada-bg-switch-off: #CCCCCC;
+  --omada-bg-switch-off-hover: #BEBEBE;
+  --omada-bg-mask: rgba(43, 43, 43, 0.45);
+  --omada-scrollbar: #CCCCCC;
+
+  /* Borders */
+  --omada-border-divider: #ECECEC;
+  --omada-border-strong: #CCCCCC;
+  --omada-border-outline-btn: #E8E8E8;
+  --omada-border-field: #F4F4F4;
+  --omada-border-focus: #05C178;
+
+  /* Shadows */
+  --omada-shadow-tooltip: 0 2px 4px rgba(0, 0, 0, 0.10);
+  --omada-shadow-dropdown: 0 4px 10px rgba(43, 43, 43, 0.25);
+  --omada-shadow-popover: 0 2px 16px rgba(43, 43, 43, 0.14);
+  --omada-shadow-drawer: -4px 2px 24px rgba(43, 43, 43, 0.10);
+}
+
+[data-theme="dark"],
+.dark {
+  --omada-brand: #008055;
+  --omada-brand-hover: #00A163;
+  --omada-brand-active: #006B47;
+  --omada-brand-text: #00A870;
+  --omada-brand-bg-subtle: rgba(0, 168, 112, 0.20);
+  --omada-brand-bg-subtlest: rgba(0, 168, 112, 0.12);
+
+  --omada-topbar-bg: linear-gradient(90deg, #0D2F29 0%, #09231F 100%);
+  --omada-topbar-text: #FFFFFF;
+
+  --omada-link: #33A0E9;
+  --omada-link-hover: #297BCC;
+
+  --omada-color-success: #00A870;
+  --omada-color-success-bg: rgba(0, 168, 112, 0.20);
+  --omada-color-error: #FF4D62;
+  --omada-color-error-hover: #EE385C;
+  --omada-color-error-bg: rgba(238, 56, 92, 0.20);
+  --omada-color-warning: #F19151;
+  --omada-color-warning-bg: rgba(241, 145, 81, 0.20);
+  --omada-color-warning-minor: #CCA200;
+  --omada-color-warning-minor-bg: rgba(204, 162, 0, 0.20);
+  --omada-color-info: #33A0E9;
+  --omada-color-info-bg: rgba(51, 160, 233, 0.20);
+  --omada-color-magenta: #F476FF;
+  --omada-color-magenta-bg: rgba(244, 118, 255, 0.20);
+  --omada-color-purple: #9886FF;
+  --omada-color-purple-bg: rgba(152, 134, 255, 0.20);
+
+  --omada-text-primary: rgba(255, 255, 255, 0.90);
+  --omada-text-secondary: rgba(255, 255, 255, 0.64);
+  --omada-text-tertiary: rgba(255, 255, 255, 0.50);
+  --omada-text-disabled: rgba(255, 255, 255, 0.24);
+  --omada-text-inverse: #FFFFFF;
+
+  --omada-bg-page: #141414;
+  --omada-bg-surface: #1A1A1A;
+  --omada-bg-sidebar: #242424;
+  --omada-bg-sidebar-active: #303030;
+  --omada-bg-field: #272727;
+  --omada-bg-field-hover: #363636;
+  --omada-bg-secondary-btn: #272727;
+  --omada-bg-secondary-btn-hover: #363636;
+  --omada-bg-table-header: #212121;
+  --omada-bg-table-row-hover: rgba(255, 255, 255, 0.04);
+  --omada-bg-overlay: #1C1C1C;
+  --omada-bg-popover: #272727;
+  --omada-bg-tooltip: #333333;
+  --omada-bg-switch-off: rgba(255, 255, 255, 0.24);
+  --omada-bg-switch-off-hover: rgba(255, 255, 255, 0.40);
+  --omada-bg-mask: rgba(0, 0, 0, 0.65);
+  --omada-scrollbar: #636363;
+
+  --omada-border-divider: rgba(255, 255, 255, 0.10);
+  --omada-border-strong: #636363;
+  --omada-border-outline-btn: rgba(255, 255, 255, 0.24);
+  --omada-border-field: #272727;
+  --omada-border-focus: #00A870;
+
+  --omada-shadow-tooltip: 0 2px 4px rgba(0, 0, 0, 0.24);
+  --omada-shadow-dropdown: 0 3px 10px rgba(0, 0, 0, 0.20);
+  --omada-shadow-popover: 0 2px 16px rgba(0, 0, 0, 0.20);
+  --omada-shadow-drawer: -4px 2px 24px rgba(0, 0, 0, 0.24);
+}
+
+@layer base {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--omada-font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--omada-text-primary);
+    background-color: var(--omada-bg-page);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--omada-scrollbar);
+    border-radius: 9999px;
+  }
+}

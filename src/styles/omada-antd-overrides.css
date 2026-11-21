@@ -1,0 +1,269 @@
+@layer components {
+  /* Omada Button Extensions */
+  .s-btn {
+    font-weight: 500;
+    box-shadow: none !important;
+  }
+
+  .s-btn-secondary {
+    background-color: var(--omada-bg-secondary-btn) !important;
+    border-color: transparent !important;
+    color: var(--omada-text-primary) !important;
+  }
+
+  .s-btn-secondary:hover:not(:disabled) {
+    background-color: var(--omada-bg-secondary-btn-hover) !important;
+    border-color: transparent !important;
+    color: var(--omada-text-primary) !important;
+  }
+
+  .s-btn-secondary:disabled {
+    opacity: 0.45;
+  }
+
+  .s-btn-outline {
+    background-color: var(--omada-bg-surface) !important;
+    border: 1px solid var(--omada-brand) !important;
+    color: var(--omada-brand-text) !important;
+  }
+
+  .s-btn-outline:hover:not(:disabled) {
+    background-color: var(--omada-brand-bg-subtlest) !important;
+    border-color: var(--omada-brand-hover) !important;
+    color: var(--omada-brand-hover) !important;
+  }
+
+  .s-btn-danger-outline {
+    background-color: var(--omada-bg-surface) !important;
+    border: 1px solid var(--omada-color-error) !important;
+    color: var(--omada-color-error) !important;
+  }
+
+  .s-btn-danger-outline:hover:not(:disabled) {
+    background-color: var(--omada-color-error-bg) !important;
+    border-color: var(--omada-color-error-hover) !important;
+    color: var(--omada-color-error-hover) !important;
+  }
+
+  /* Omada Filled Controls (#F4F4F4 light / #272727 dark) */
+  .omada-input.ant-input-filled,
+  .omada-input.ant-input-affix-wrapper-filled,
+  .omada-input.ant-input-number-filled,
+  .omada-input.ant-select-filled .ant-select-selector,
+  .omada-input.ant-picker-filled,
+  .ant-input-filled,
+  .ant-input-affix-wrapper-filled,
+  .ant-input-number-filled,
+  .ant-select-filled .ant-select-selector,
+  .ant-picker-filled {
+    background-color: var(--omada-bg-field) !important;
+    border: 1px solid transparent !important;
+    border-radius: 4px;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .ant-input-filled:hover:not(:disabled),
+  .ant-input-affix-wrapper-filled:hover:not(.ant-input-affix-wrapper-disabled),
+  .ant-input-number-filled:hover:not(.ant-input-number-disabled),
+  .ant-select-filled:not(.ant-select-disabled):hover .ant-select-selector,
+  .ant-picker-filled:hover:not(.ant-picker-disabled) {
+    background-color: var(--omada-bg-field) !important;
+    border-color: var(--omada-border-focus) !important;
+  }
+
+  .ant-input-filled:focus,
+  .ant-input-affix-wrapper-filled:focus-within,
+  .ant-input-number-filled.ant-input-number-focused,
+  .ant-select-filled.ant-select-focused .ant-select-selector,
+  .ant-picker-filled.ant-picker-focused {
+    background-color: var(--omada-bg-field) !important;
+    border-color: var(--omada-border-focus) !important;
+    box-shadow: none !important;
+  }
+
+  .ant-input-filled.ant-input-status-error,
+  .ant-input-affix-wrapper-filled.ant-input-affix-wrapper-status-error,
+  .ant-input-number-filled.ant-input-number-status-error,
+  .ant-select-filled.ant-select-status-error .ant-select-selector,
+  .ant-picker-filled.ant-picker-status-error {
+    border-color: var(--omada-color-error) !important;
+  }
+
+  /* Composite IP / MAC Input Shell */
+  .omada-segmented-field {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--omada-bg-field);
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 0 10px;
+    transition: border-color 0.15s ease;
+    font-family: var(--omada-font-mono);
+  }
+
+  .omada-segmented-field:hover:not(.is-disabled) {
+    border-color: var(--omada-border-focus);
+  }
+
+  .omada-segmented-field:focus-within:not(.is-disabled) {
+    border-color: var(--omada-border-focus);
+  }
+
+  .omada-segmented-field.is-error {
+    border-color: var(--omada-color-error) !important;
+  }
+
+  .omada-segmented-field.is-warning {
+    border-color: var(--omada-color-warning) !important;
+  }
+
+  .omada-segmented-field.is-disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  /* Switch: exact 36x22 Omada geometry */
+  .ant-switch {
+    min-width: 36px;
+    height: 22px;
+    line-height: 22px;
+  }
+
+  .ant-switch:not(.ant-switch-checked) {
+    background-color: var(--omada-bg-switch-off);
+  }
+
+  .ant-switch:not(.ant-switch-checked):not(.ant-switch-disabled):hover {
+    background-color: var(--omada-bg-switch-off-hover) !important;
+  }
+
+  .ant-switch.ant-switch-checked {
+    background-color: var(--omada-brand);
+  }
+
+  .ant-switch.ant-switch-checked:not(.ant-switch-disabled):hover {
+    background-color: var(--omada-brand-hover) !important;
+  }
+
+  /* Radio Button active high-contrast brand text */
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+    color: var(--omada-brand-text) !important;
+    border-color: var(--omada-brand-text) !important;
+  }
+
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)::before {
+    background-color: var(--omada-brand-text) !important;
+  }
+
+  .ant-switch .ant-switch-handle {
+    width: 18px;
+    height: 18px;
+    top: 2px;
+  }
+
+  .ant-switch.ant-switch-checked .ant-switch-handle {
+    inset-inline-start: calc(100% - 20px);
+  }
+
+  .ant-switch.ant-switch-small {
+    min-width: 28px;
+    height: 16px;
+    line-height: 16px;
+  }
+
+  .ant-switch.ant-switch-small .ant-switch-handle {
+    width: 12px;
+    height: 12px;
+    top: 2px;
+  }
+
+  .ant-switch.ant-switch-small.ant-switch-checked .ant-switch-handle {
+    inset-inline-start: calc(100% - 14px);
+  }
+
+  /* Table Refinements */
+  .omada-table .ant-table-thead > tr > th {
+    background-color: var(--omada-bg-table-header) !important;
+    color: var(--omada-text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    height: 40px;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--omada-border-divider) !important;
+  }
+
+  .omada-table .ant-table-tbody > tr > td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--omada-border-divider) !important;
+  }
+
+  .omada-table .ant-table-tbody > tr:hover > td {
+    background-color: var(--omada-bg-table-row-hover) !important;
+  }
+
+  /* Pagination active green tint pill */
+  .ant-pagination .ant-pagination-item {
+    border-radius: 4px;
+    border-color: transparent;
+    background-color: transparent;
+  }
+
+  .ant-pagination .ant-pagination-item-active {
+    background-color: var(--omada-brand-bg-subtle) !important;
+    border-color: transparent !important;
+  }
+
+  .ant-pagination .ant-pagination-item-active a {
+    color: var(--omada-brand-text) !important;
+    font-weight: 600;
+  }
+
+  /* Alert borderless tinted surface */
+  .omada-alert {
+    border: none !important;
+    border-radius: 6px;
+    padding: 12px 16px;
+  }
+
+  /* Modal & Drawer Shadows & Radii */
+  .ant-modal .ant-modal-content {
+    border-radius: 8px;
+    box-shadow: var(--omada-shadow-dropdown);
+    background-color: var(--omada-bg-overlay);
+    padding: 24px;
+  }
+
+  .ant-modal.omada-modal-confirm .ant-modal-content {
+    border-radius: 10px;
+  }
+
+  .ant-drawer .ant-drawer-content {
+    background-color: var(--omada-bg-overlay);
+    box-shadow: var(--omada-shadow-drawer);
+  }
+
+  /* Message / Toast */
+  .ant-message .ant-message-notice-content {
+    border-radius: 8px;
+    padding: 12px 20px;
+    background-color: var(--omada-bg-popover);
+    box-shadow: var(--omada-shadow-popover);
+    color: var(--omada-text-primary);
+  }
+
+  /* Dropdown & Select Popup */
+  .ant-dropdown .ant-dropdown-menu,
+  .ant-select-dropdown {
+    box-shadow: var(--omada-shadow-dropdown);
+    border-radius: 6px;
+    background-color: var(--omada-bg-popover);
+  }
+
+  .ant-tooltip .ant-tooltip-inner {
+    background-color: var(--omada-bg-tooltip);
+    box-shadow: var(--omada-shadow-tooltip);
+    border-radius: 4px;
+    font-size: 12px;
+  }
+}
