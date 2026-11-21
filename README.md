@@ -5,13 +5,13 @@ High-fidelity **TP-Link Omada Controller v6.3** React UI component library built
 ## 1. Usage in React / Vite Projects (like `antd`)
 
 ```bash
-pnpm add @<npm-username>/omada-ui-kit
+pnpm add @lucienchen/omada-ui-kit
 ```
 
 Import the stylesheet once at app entry and use components directly:
 
 ```tsx
-import '@<npm-username>/omada-ui-kit/style.css';
+import '@lucienchen/omada-ui-kit/style.css';
 import {
   OmadaProvider,
   SEmulatorShell,
@@ -20,7 +20,7 @@ import {
   SButton,
   SIcon,
   SProductImage,
-} from '@<npm-username>/omada-ui-kit';
+} from '@lucienchen/omada-ui-kit';
 
 export function App() {
   return (
@@ -42,8 +42,8 @@ For quick PRD prototypes, load `dist/style.css` and `dist/standalone.js` (bundle
 <html>
   <head>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@<npm-username>/omada-ui-kit@latest/dist/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@<npm-username>/omada-ui-kit@latest/dist/standalone.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@lucienchen/omada-ui-kit@latest/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@lucienchen/omada-ui-kit@latest/dist/standalone.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
   <body style="margin: 0;">

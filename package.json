@@ -1,5 +1,5 @@
 {
-  "name": "omada-ui-kit",
+  "name": "@lucienchen/omada-ui-kit",
   "version": "0.1.0",
   "description": "Omada Controller v6.3 React UI component library (Ant Design 6 + Design Tokens + Figma Assets + Single-file HTML standalone bundle)",
   "license": "MIT",
