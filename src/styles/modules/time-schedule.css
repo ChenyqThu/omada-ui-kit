@@ -1,0 +1,132 @@
+@layer components {
+  /* DatePicker & TimePicker Capsule / Filled Extensions */
+  .omada-date-picker-capsule.ant-picker {
+    border-radius: 9999px !important;
+    padding-inline: 14px;
+  }
+
+  .omada-picker-popup .ant-picker-panel-container,
+  .omada-timepicker-popup .ant-picker-panel-container {
+    background-color: var(--omada-bg-popover);
+    border-radius: 8px;
+    box-shadow: var(--omada-shadow-dropdown);
+    border: 1px solid var(--omada-border-divider);
+  }
+
+  .omada-picker-popup .ant-picker-presets li {
+    color: var(--omada-text-primary);
+    border-radius: 4px;
+    font-size: 13px;
+  }
+
+  .omada-picker-popup .ant-picker-presets li:hover {
+    background-color: var(--omada-bg-field);
+    color: var(--omada-brand-text);
+  }
+
+  .omada-picker-popup .ant-picker-cell-selected .ant-picker-cell-inner,
+  .omada-picker-popup .ant-picker-cell-range-start .ant-picker-cell-inner,
+  .omada-picker-popup .ant-picker-cell-range-end .ant-picker-cell-inner {
+    background-color: var(--omada-brand) !important;
+    color: var(--omada-text-inverse) !important;
+  }
+
+  .omada-picker-popup .ant-picker-cell-in-range::before {
+    background-color: var(--omada-brand-bg-subtle) !important;
+  }
+
+  .omada-picker-popup .ant-picker-cell-today .ant-picker-cell-inner::before {
+    border-color: var(--omada-brand) !important;
+  }
+
+  /* TimePicker Wheel Popup (240x280px Figma Spec) */
+  .omada-timepicker-popup .ant-picker-time-panel {
+    min-width: 240px;
+  }
+
+  .omada-timepicker-popup .ant-picker-time-panel-column {
+    width: 80px;
+    max-height: 236px;
+    border-inline-start-color: var(--omada-border-divider) !important;
+  }
+
+  .omada-timepicker-popup .ant-picker-time-panel-cell {
+    margin: 2px 6px;
+  }
+
+  .omada-timepicker-popup .ant-picker-time-panel-cell-inner {
+    height: 32px !important;
+    line-height: 32px !important;
+    padding: 0 12px !important;
+    border-radius: 2px !important;
+    text-align: center;
+    color: var(--omada-text-primary);
+    font-variant-numeric: tabular-nums;
+    transition: background-color 0.12s ease, color 0.12s ease;
+  }
+
+  .omada-timepicker-popup .ant-picker-time-panel-cell:hover .ant-picker-time-panel-cell-inner {
+    background-color: var(--omada-bg-field) !important;
+  }
+
+  .omada-timepicker-popup .ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner {
+    background-color: var(--omada-brand-bg-subtlest) !important;
+    color: var(--omada-brand-text) !important;
+    font-weight: 600;
+  }
+
+  /* Transfer Dual-List Panel (240x368px Figma Baseline) */
+  .omada-transfer.ant-transfer .ant-transfer-section,
+  .omada-transfer.ant-transfer .ant-transfer-list {
+    border-radius: 6px;
+    border-color: var(--omada-border-divider);
+    background-color: var(--omada-bg-surface);
+  }
+
+  .omada-transfer .ant-transfer-list-header {
+    background-color: var(--omada-bg-table-header);
+    border-bottom-color: var(--omada-border-divider);
+    color: var(--omada-text-primary);
+  }
+
+  .omada-transfer .ant-transfer-list-body-search-wrapper .ant-input-affix-wrapper {
+    background-color: var(--omada-bg-field);
+    border-color: transparent;
+    border-radius: 4px;
+  }
+
+  .omada-transfer .ant-transfer-list-body-search-wrapper .ant-input-affix-wrapper:focus-within {
+    border-color: var(--omada-border-focus);
+  }
+
+  .omada-transfer .ant-transfer-list-content-item:hover:not(.ant-transfer-list-content-item-disabled) {
+    background-color: var(--omada-bg-field);
+  }
+
+  .omada-transfer .ant-transfer-list-content-item-checked {
+    background-color: var(--omada-brand-bg-subtlest);
+  }
+
+  /* Upload Dropzone & File List */
+  .omada-upload .ant-upload-drag {
+    background-color: var(--omada-bg-surface);
+    border: 1px dashed var(--omada-border-strong);
+    border-radius: 8px;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .omada-upload .ant-upload-drag:not(.ant-upload-disabled):hover,
+  .omada-upload .ant-upload-drag.ant-upload-drag-hover:not(.ant-upload-disabled) {
+    border-color: var(--omada-brand);
+    background-color: var(--omada-brand-bg-subtlest);
+  }
+
+  .omada-upload .ant-upload-list-item {
+    border-radius: 4px;
+    padding-inline: 8px;
+  }
+
+  .omada-upload .ant-upload-list-item:hover {
+    background-color: var(--omada-bg-field);
+  }
+}
