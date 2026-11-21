@@ -1,0 +1,383 @@
+@layer components {
+  /* ==========================================================================
+   * Omada Emulator Configuration: WLAN, ACL & Schema Submodules
+   * (`#/wlan`, `#/acl`, and remaining Network/Device Config routes)
+   * ========================================================================== */
+
+  .omada-cfg-subtab-btn {
+    position: relative;
+    border: none;
+    background: transparent;
+    color: var(--omada-text-secondary);
+    transition: color 0.15s ease;
+  }
+
+  .omada-cfg-subtab-btn:hover {
+    color: var(--omada-text-primary);
+  }
+
+  .omada-cfg-subtab-btn.is-active {
+    color: var(--omada-brand-text);
+  }
+
+  [data-theme='dark'] .omada-cfg-subtab-btn.is-active,
+  .dark .omada-cfg-subtab-btn.is-active {
+    color: var(--omada-brand-hover);
+  }
+
+  .omada-cfg-subtab-indicator {
+    background-color: var(--omada-brand-text);
+  }
+
+  [data-theme='dark'] .omada-cfg-subtab-indicator,
+  .dark .omada-cfg-subtab-indicator {
+    background-color: var(--omada-brand-hover);
+  }
+
+  .omada-cfg-help-btn {
+    display: inline-flex;
+    height: 28px;
+    width: 28px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 9999px;
+    background: transparent;
+    padding: 0;
+    color: var(--omada-brand-text);
+    transition: background-color 0.15s ease, opacity 0.15s ease;
+  }
+
+  .omada-cfg-help-btn:hover {
+    background-color: var(--omada-brand-bg-subtlest);
+  }
+
+  [data-theme='dark'] .omada-cfg-help-btn,
+  .dark .omada-cfg-help-btn {
+    color: var(--omada-brand-hover);
+  }
+
+  /* Filled Search Input (#F4F4F4 light / #272727 dark) */
+  .omada-cfg-search.ant-input-affix-wrapper {
+    width: 260px !important;
+    flex: 0 0 260px;
+    height: 32px;
+    border-radius: 4px;
+    background-color: var(--omada-bg-field) !important;
+    border: 1px solid transparent !important;
+    padding-inline: 10px;
+    font-size: 13px;
+  }
+
+  .omada-cfg-search.ant-input-affix-wrapper .ant-input {
+    background-color: transparent !important;
+    color: var(--omada-text-primary);
+  }
+
+  .omada-cfg-search.ant-input-affix-wrapper:hover,
+  .omada-cfg-search.ant-input-affix-wrapper-focused {
+    border-color: var(--omada-border-focus) !important;
+  }
+
+  /* Primary Solid Brand CTA */
+  .omada-cfg-primary-btn.ant-btn {
+    height: 32px !important;
+    border-radius: 3px !important;
+    padding-inline: 16px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    background-color: var(--omada-brand) !important;
+    border-color: var(--omada-brand) !important;
+    color: var(--omada-text-inverse) !important;
+    box-shadow: none !important;
+  }
+
+  .omada-cfg-primary-btn.ant-btn:hover:not(:disabled) {
+    background-color: var(--omada-brand-hover) !important;
+    border-color: var(--omada-brand-hover) !important;
+  }
+
+  .omada-cfg-ghost-action {
+    display: inline-flex;
+    height: 32px;
+    cursor: pointer;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    background: transparent;
+    padding: 0 4px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--omada-brand-text);
+    transition: opacity 0.15s ease;
+  }
+
+  .omada-cfg-ghost-action:hover {
+    opacity: 0.8;
+  }
+
+  [data-theme='dark'] .omada-cfg-ghost-action,
+  .dark .omada-cfg-ghost-action {
+    color: var(--omada-brand-hover);
+  }
+
+  /* Table Container & AntD Table Overrides */
+  .omada-cfg-table-shell {
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid var(--omada-border-divider);
+    background-color: var(--omada-bg-surface);
+  }
+
+  .omada-cfg-table .ant-table {
+    background-color: var(--omada-bg-surface);
+    color: var(--omada-text-primary);
+    font-size: 14px;
+  }
+
+  .omada-cfg-table .ant-table-container {
+    border-radius: 8px;
+  }
+
+  .omada-cfg-table .ant-table-thead > tr > th {
+    height: 41px;
+    padding: 0 12px !important;
+    background-color: var(--omada-bg-table-header) !important;
+    color: var(--omada-text-primary) !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+    line-height: 20px;
+    border-bottom: 1px solid var(--omada-border-divider) !important;
+    white-space: nowrap;
+  }
+
+  .omada-cfg-table .ant-table-thead > tr > th::before {
+    display: none !important;
+  }
+
+  .omada-cfg-table .ant-table-tbody > tr.ant-table-measure-row > td {
+    padding: 0 !important;
+    border: 0 !important;
+    height: 0 !important;
+    line-height: 0 !important;
+    font-size: 0 !important;
+  }
+
+  .omada-cfg-table .ant-table-tbody > tr:not(.ant-table-measure-row) > td {
+    height: 44px;
+    padding: 10px 12px !important;
+    background-color: var(--omada-bg-surface);
+    color: var(--omada-text-primary);
+    font-size: 14px;
+    line-height: 20px;
+    border-bottom: 1px solid var(--omada-border-divider) !important;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  .omada-cfg-table .ant-table-tbody > tr:not(.ant-table-measure-row):last-child > td {
+    border-bottom: none !important;
+  }
+
+  .omada-cfg-table .ant-table-tbody > tr:not(.ant-table-measure-row):hover > td {
+    background-color: var(--omada-bg-table-row-hover) !important;
+  }
+
+  /* WLAN Band Pills */
+  .omada-wlan-band-pill {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    border-radius: 3px;
+    padding: 0 7px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 18px;
+    white-space: nowrap;
+  }
+
+  .omada-wlan-band-pill.is-24g {
+    color: var(--omada-color-warning);
+    background-color: var(--omada-color-warning-bg);
+  }
+
+  .omada-wlan-band-pill.is-5g {
+    color: var(--omada-brand-text);
+    background-color: var(--omada-brand-bg-subtlest);
+  }
+
+  [data-theme='dark'] .omada-wlan-band-pill.is-5g,
+  .dark .omada-wlan-band-pill.is-5g {
+    color: var(--omada-brand-hover);
+    background-color: var(--omada-brand-bg-subtle);
+  }
+
+  .omada-wlan-band-pill.is-6g {
+    color: var(--omada-link);
+    background-color: var(--omada-color-info-bg);
+  }
+
+  /* Column Header Funnel Filter Button */
+  .omada-cfg-col-filter-btn {
+    display: inline-flex;
+    height: 18px;
+    width: 18px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 3px;
+    background: transparent;
+    padding: 0;
+    color: var(--omada-text-tertiary);
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .omada-cfg-col-filter-btn:hover {
+    color: var(--omada-text-primary);
+    background-color: var(--omada-bg-field-hover);
+  }
+
+  .omada-cfg-col-filter-btn.is-filtered {
+    color: var(--omada-brand-text);
+  }
+
+  /* Blue Link Cell Action */
+  .omada-cfg-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--omada-link);
+    transition: color 0.15s ease;
+  }
+
+  .omada-cfg-link-btn:hover {
+    color: var(--omada-link-hover);
+    text-decoration: underline;
+  }
+
+  /* Table Row Action Icon Buttons */
+  .omada-cfg-row-action-btn {
+    display: inline-flex;
+    height: 24px;
+    width: 24px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    padding: 0;
+    color: var(--omada-brand-text);
+    transition: background-color 0.15s ease, opacity 0.15s ease;
+  }
+
+  .omada-cfg-row-action-btn:hover:not(:disabled) {
+    background-color: var(--omada-brand-bg-subtlest);
+  }
+
+  .omada-cfg-row-action-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  [data-theme='dark'] .omada-cfg-row-action-btn,
+  .dark .omada-cfg-row-action-btn {
+    color: var(--omada-brand-hover);
+  }
+
+  /* ACL Drag-and-Drop Grip & Row Highlight */
+  .omada-acl-drag-handle {
+    display: inline-flex;
+    height: 24px;
+    width: 24px;
+    cursor: grab;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    padding: 0;
+    color: var(--omada-text-tertiary);
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .omada-acl-drag-handle:hover {
+    color: var(--omada-text-primary);
+    background-color: var(--omada-bg-field);
+  }
+
+  .omada-acl-drag-handle:active {
+    cursor: grabbing;
+  }
+
+  .omada-cfg-table .ant-table-tbody > tr.omada-acl-row-dragging > td {
+    opacity: 0.55;
+    background-color: var(--omada-brand-bg-subtlest) !important;
+  }
+
+  .omada-cfg-table .ant-table-tbody > tr.omada-acl-row-drag-over > td {
+    box-shadow: inset 0 2px 0 0 var(--omada-brand);
+  }
+
+  /* Schema-Driven ConfigSubmodulePage Layout */
+  .omada-cfg-info-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border-radius: 6px;
+    padding: 10px 14px;
+    background-color: color-mix(in srgb, var(--omada-color-info) 8%, var(--omada-bg-surface));
+    color: var(--omada-text-secondary);
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .omada-cfg-section-divider {
+    border-top: 1px solid var(--omada-border-divider);
+  }
+
+  .omada-cfg-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    min-height: 36px;
+  }
+
+  .omada-cfg-form-label {
+    width: 210px;
+    flex: 0 0 210px;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--omada-text-primary);
+  }
+
+  .omada-cfg-form-control {
+    width: 350px;
+    max-width: 100%;
+  }
+
+  /* Modal & Overlay dark contrast fixes */
+  .omada-cfg-modal-field-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .omada-cfg-modal-label {
+    width: 150px;
+    flex: 0 0 150px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--omada-text-primary);
+  }
+}

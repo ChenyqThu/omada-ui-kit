@@ -64,7 +64,7 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 
 ---
 
-## 3. Component Reference (`81` Visual Components + `4` Hooks)
+## 3. Component Reference (`83` Visual Components + `4` Hooks)
 
 ### Layout & Navigation (`nav-shell`)
 | Component | Purpose | Key Props / API |
@@ -147,7 +147,7 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 ### Omada Controller v6.3 Emulator (`emulator-v6`)
 | Component / Constant | Purpose | Key Props / API |
 |---|---|---|
-| `SEmulatorShell` / `EMULATOR_NAV_GROUPS` | Omada Controller v6.3.0.34 shell (`56px` Top Bar, `216px`/`52px` borderless Sidebar with 5 sections / 13 flush items, right-aligned grouped AntD Popovers for `Insights`, `Network Config` & `Device Config`, `<||` right-edge quick-drawer handle, `.omada-emulator-root` Light/Dark tokens) | `activeKey`, `onSelect`, `activeSite`, `onSiteChange`, `onRefresh`, `onOpenShowcase`, `onToggleQuickDrawer`, `collapsed`, `onCollapsedChange` |
+| `SEmulatorShell` / `EMULATOR_NAV_GROUPS` | Omada Controller v6.3.0.34 shell (`56px` Top Bar, `216px`/`52px` borderless Sidebar with 5 sections / 13 flush items, right-aligned grouped AntD Popovers for `Insights`, `Device Config` & 2-row `Network Config` mega-popover, `<||` right-edge quick-drawer handle, `.omada-emulator-root` Light/Dark tokens) | `activeKey`, `onSelect`, `activeSite`, `onSiteChange`, `onRefresh`, `onOpenShowcase`, `onToggleQuickDrawer`, `collapsed`, `onCollapsedChange` |
 | `SHealthGauge` / `SHealthRadar` | 180° semi-circular Network Health gauge (`0..100` ticks) & 4-axis concentric radar (`Wi-Fi`, `Client`, `WAN`, `Device`) | `score`, `maxScore`, `label`, `tooltip` / `wifi`, `client`, `wan`, `device`, `wanTooltip` |
 | `SHealthTrendBar` | Multi-row 24h Network Health Trend timeline (`~96` vertical status ticks per row) | `rows: SHealthTrendRow[]`, `tickLabels` |
 | `SApDistributionRuler` | `-90dBm..-30dBm` rainbow RSSI distribution ruler with clustered AP bubbles & count badges | `clusters: SApDistributionCluster[]`, `minDbm`, `maxDbm`, `step` |
@@ -158,6 +158,8 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 | `STopologyCanvas` | Interactive horizontal/vertical hierarchical network topology tree (`Internet` → Gateways → Switches → APs → Clients) with curved Bezier links, collapsible hubs, search/health dimming & zoom/pan | `root?: TopologyNodeData`, `layout`, `onLayoutChange`, `searchQuery`, `healthFilter`, `networkFilter`, `ssidFilter`, `displayOptions`, `onOpenDeviceByName`, `onSelectNode` |
 | `SDonutSummaryCard` | ECharts ring donut summary card with centered KPI overlay & either vertical interactive breakdown rows (`Application Analytics`) or compact side-by-side legend (`Reports`) | `title`, `centerValue`, `centerLabel`, `data: SDonutSummaryItem[]`, `layout?: 'vertical' \| 'horizontal'`, `legendColumns?: 1 \| 2`, `closable`, `onClose`, `onItemClick` |
 | `SCategoryKpiCarousel` | Horizontal scrollable 10-card incident category KPI strip (`Overview`..`Security`) with `<` / `>` scroll arrows & active `#00A870` highlight | `items?: CategoryKpiItem[]`, `activeKey`, `defaultActiveKey`, `onSelect` |
+| `SSettingsPageShell` / `SSettingsSection` / `SSettingsRow` / `SSettingsInfoBanner` | Reusable Omada v6.3 configuration page container (`20px` title + green `(?)` Help popover, `18px` underline tabs, `210px`/`350px` section rows, soft blue info banner, sticky dirty-state `Apply` / `Cancel` footer) | `title`, `tabs`, `activeTab`, `onTabChange`, `dirty`, `onApply`, `onCancel`, `helpTitle`, `helpDescription` |
+| `STerminalConsole` | Split diagnostic output & interactive CLI console (`200px` `Device List` rail, `#242424` monospace terminal box, Clear / Download / `A+` font-size cycling, search highlight, command history) | `title`, `sessions`, `activeKey`, `interactive`, `onSubmitCommand`, `onClear`, `onDownload`, `emptyText` |
 
 ### Pure Validators & Helpers
 - **IP / MAC**: `parseIpValue`, `validateIpv4`, `validateCidr`, `normalizeMac`, `validateMac`
@@ -179,6 +181,17 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 | `#/logs` or `#/log` | `EmulatorApp` → `LogsPage` | `Alerts` / `Events` (default) / `Audit Logs` tabs, module filter, clickable inline client (`Neffos_X20_Pro`) & device (`StorageRoom_Eap_3`) links opening drawers, Settings modal |
 | `#/incidents` or `#/abnormal` | `EmulatorApp` → `IncidentsPage` + `IncidentDetailDrawer` | `Incident Analysis` / `Notification` / `Settings` tabs, status/time/severity filters, `<SCategoryKpiCarousel>`, row click opens `800px` `IncidentDetailDrawer` with ECharts timeline & clickable `BreakRoom_Eap_2` link |
 | `#/intelli-recover` or `#/intellirecover` | `EmulatorApp` → `IntelliRecoverPage` | `intellirecover-2` hero banner + policy editor modal, `Devices` / `Clients` filter, `+ Add` modal, monitored PoE table with sticky Actions & clickable Uplink links |
+| `#/site-settings`, `#/setting/site`, `#/network-config` | `EmulatorApp` → `SiteSettingsPage` | 5 horizontal configuration sections (`Site Configuration`, `General Config`, `Wireless Features`, `Device Account`, `Auto Send Data to Email`), Inform URL copy, collapsible Time/Location blocks, dirty-state Apply/Cancel |
+| `#/internet` or `#/setting/internet` | `EmulatorApp` → `InternetPage` | `Mode Config` (`ER7412-M2 v1.0`, soft blue 2-point info banner), 13-row `Port Config` table with edit modal, `Load Balancing` port weights, `Link Backup` rules |
+| `#/lan` or `#/setting/network-settings/lan` | `EmulatorApp` → `LanPage` | `VLAN` (7 VLAN master list, 7-col KPI strip, interactive VLAN Topology SVG opening `DevicePropertiesDrawer`, `Ports` view), `Multicast Snooping`, `Isolation Settings`, `LAN DNS` |
+| `#/wlan` or `#/setting/wireless` | `EmulatorApp` → `WlanPage` | `SSID` (`test_ssid_1`, `Office_Staff`, colored band pills, column filter & `+ Add SSID` modal), `WLAN Optimization` (`Optimize Now`), `Optimization History` |
+| `#/acl` or `#/setting/acl` | `EmulatorApp` → `AclPage` | `Gateway ACL` / `Switch ACL` / `EAP ACL` tabs, drag-and-drop & keyboard row reordering, status switches, clickable object inspectors, `+ Create New Rule` modal |
+| `#/switch-ports`, `#/setting/deviceConfigSwitchPort`, `#/device-config` | `EmulatorApp` → `SwitchPortsConfigPage` | `Port Settings` (30 switch ports across 3 switches, `Overview`/`PoE`/`Counters` & link-status segmented controls, `SProductImage` thumbnails opening `DevicePropertiesDrawer`, PoE power cycle & edit modal) & `Port Profile` |
+| `#/dns` or `#/setting/dns` | `EmulatorApp` → `DnsConfigPage` | `Dynamic DNS` (DDNS entries + create/edit modal), `DNS Proxy` (`DoH`/`DoT` radio, DNSSEC/presets, custom DoH servers), `DNS Cache` |
+| `#/ssh`, `#/schedule`, `#/routing`, `#/nat`, `#/dhcp-reservation`, `#/firewall`, `#/ip-mac-binding`, … *(41 submodules)* | `EmulatorApp` → `ConfigSubmodulePage` | Schema-driven `Network Config` & `Device Config` workspaces with `<SSchedule>`, `<SIpInput>`, `<SMacInput>`, policy tables & create/edit modals |
+| `#/hotspot*` (`#/hotspot`, `#/hotspot/dashboard`, `#/hotspot/vouchers`, `#/hotspot/statistics`, `#/hotspot/authorized-clients`, `#/hotspot/local-users`, `#/hotspot/form-auth`, `#/hotspot/operators`) | `HotspotPortalApp` | Standalone `56px` Hotspot Management Portal (`Headquarters Building Hotspot Management` topbar link returns to `#/dashboard`), Dashboard ECharts (`Portal Authorizations Histories`, `Authentication Type`, `Hotspot Type`), Voucher Groups CRUD & print preview, Statistics, Authorized Clients, Local Users, Form Auth Data & Operators |
+| `#/network-tools` or `#/networkAnalyze` | `EmulatorApp` → `NetworkToolsPage` | `Network Check` (`Ping`/`Traceroute`/`DNS Lookup` + `<STerminalConsole>`), `Packet Capture`, interactive `Terminal`, `Cable Test`, `Interference Detection`, `Remote Access (BETA)` |
+| `#/maintenance` or `#/setting/maintenance` | `EmulatorApp` → `MaintenancePage` | `Site Restore` (Local File / File Server radios, `Browse` sample `.cfg` picker, Retain Device Info toggle) & `Site Backup` (`Settings`, `Authenticated Clients`, `Firmware Update Logs`, Export targets) |
 | `#/showcase` | `ShowcaseApp` | Full Component & Asset Library (`⋮` More → `Component Library` from Emulator; `← Omada Emulator` in Top Bar returns to `#/dashboard`) |
 
 ---

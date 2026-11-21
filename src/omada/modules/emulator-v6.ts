@@ -86,3 +86,21 @@ export {
   type PortBadgeTileProps,
   type SDevicePortGraphicProps,
 } from '../components/SDevicePortGraphic';
+
+export {
+  SSettingsInfoBanner,
+  SSettingsPageShell,
+  SSettingsRow,
+  SSettingsSection,
+  type SSettingsInfoBannerProps,
+  type SSettingsPageShellProps,
+  type SSettingsRowProps,
+  type SSettingsSectionProps,
+  type SSettingsTabItem,
+} from '../components/SSettingsPageShell';
+
+export {
+  STerminalConsole,
+  type STerminalConsoleProps,
+  type STerminalSessionItem,
+} from '../components/STerminalConsole';

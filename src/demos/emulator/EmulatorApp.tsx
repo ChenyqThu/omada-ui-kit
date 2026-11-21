@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   EMULATOR_NAV_GROUPS,
-  SButton,
-  SEmpty,
   SEmulatorShell,
   SIcon,
   SInput,
@@ -29,6 +27,17 @@ import { ReportsPage } from './insights/ReportsPage';
 import { LogsPage } from './logs/LogsPage';
 import { IncidentsPage } from './incidents/IncidentsPage';
 import { IntelliRecoverPage } from './intellirecover/IntelliRecoverPage';
+import { SiteSettingsPage } from './config/SiteSettingsPage';
+import { InternetPage } from './config/InternetPage';
+import { LanPage } from './config/LanPage';
+import { WlanPage } from './config/WlanPage';
+import { AclPage } from './config/AclPage';
+import { SwitchPortsConfigPage } from './config/SwitchPortsConfigPage';
+import { DnsConfigPage } from './config/DnsConfigPage';
+import { ConfigSubmodulePage } from './config/ConfigSubmodulePage';
+import { NetworkToolsPage } from './maintenance/NetworkToolsPage';
+import { MaintenancePage } from './maintenance/MaintenancePage';
+import { HotspotPortalApp } from './hotspot/HotspotPortalApp';
 
 const NAV_ITEM_META = new Map<string, { label: string; groupLabel: string }>();
 for (const group of EMULATOR_NAV_GROUPS) {
@@ -56,9 +65,22 @@ const ROUTE_ALIASES: Record<string, string> = {
   log: 'logs',
   abnormal: 'incidents',
   intellirecover: 'intelli-recover',
+  'network-config': 'site-settings',
+  'setting/site': 'site-settings',
+  'setting/internet': 'internet',
+  'setting/network-settings/lan': 'lan',
+  'setting/lan': 'lan',
+  'setting/wireless': 'wlan',
+  'setting/wlan': 'wlan',
+  'setting/acl': 'acl',
+  'device-config': 'switch-ports',
+  'setting/deviceconfigswitchport': 'switch-ports',
+  'setting/dns': 'dns',
+  networkanalyze: 'network-tools',
+  'setting/maintenance': 'maintenance',
 };
 
-const IMPLEMENTED_ROUTES = new Set([
+const DEDICATED_ROUTES = new Set([
   'dashboard',
   'devices',
   'clients',
@@ -68,6 +90,16 @@ const IMPLEMENTED_ROUTES = new Set([
   'logs',
   'incidents',
   'intelli-recover',
+  'site-settings',
+  'internet',
+  'lan',
+  'wlan',
+  'acl',
+  'switch-ports',
+  'dns',
+  'network-tools',
+  'maintenance',
+  'hotspot',
 ]);
 
 function parseEmulatorRoute(hashOrRoute: string): string {
@@ -75,8 +107,21 @@ function parseEmulatorRoute(hashOrRoute: string): string {
   if (!cleaned || cleaned === 'dashboard') {
     return 'dashboard';
   }
+  if (cleaned === 'hotspot' || cleaned.startsWith('hotspot/')) {
+    return 'hotspot';
+  }
   const aliased = ROUTE_ALIASES[cleaned] ?? cleaned;
-  return NAV_ITEM_META.has(aliased) ? aliased : 'dashboard';
+  if (NAV_ITEM_META.has(aliased)) {
+    return aliased;
+  }
+  if (cleaned.startsWith('setting/')) {
+    const stripped = cleaned.slice('setting/'.length);
+    const settingAlias = ROUTE_ALIASES[stripped] ?? stripped;
+    if (NAV_ITEM_META.has(settingAlias)) {
+      return settingAlias;
+    }
+  }
+  return 'dashboard';
 }
 
 export interface EmulatorAppProps {
@@ -85,10 +130,11 @@ export interface EmulatorAppProps {
 }
 
 /**
- * Integrated Omada Controller v6.3.0.34 Emulator application (`#/dashboard`, `#/devices`,
- * `#/clients`, `#/map`, `#/statistics`, `#/report`, `#/logs`, `#/incidents`,
- * `#/intelli-recover`, two-stage `420px`/`1224px` `DevicePropertiesDrawer`,
- * `420px` `ClientPropertiesDrawer`, `800px` `IncidentDetailDrawer`, and `#/showcase` switcher).
+ * Integrated Omada Controller v6.3.0.34 Emulator application covering 100% of sidebar &
+ * submenu routes (`#/dashboard`, `#/devices`, `#/clients`, `#/map`, `#/statistics`,
+ * `#/report`, `#/logs`, `#/incidents`, `#/intelli-recover`, `#/site-settings`, `#/internet`,
+ * `#/lan`, `#/wlan`, `#/acl`, `#/switch-ports`, `#/dns`, 41 `ConfigSubmodulePage` routes,
+ * `#/network-tools`, `#/maintenance`, `#/hotspot/*`, and `#/showcase`).
  */
 export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
   const notification = useOmadaNotification();
@@ -131,23 +177,39 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, [initialRoute]);
 
-  const navigateTo = useCallback((routeKey: string) => {
-    if (routeKey === 'showcase') {
+  const navigateTo = useCallback(
+    (routeKey: string) => {
+      if (routeKey === 'showcase') {
+        setDrawerOpen(false);
+        setClientDrawerOpen(false);
+        if (typeof window !== 'undefined') {
+          window.location.hash = '#/showcase';
+        }
+        return;
+      }
+      if (routeKey === 'hotspot' || routeKey.startsWith('hotspot/')) {
+        setDrawerOpen(false);
+        setClientDrawerOpen(false);
+        const targetHash =
+          routeKey === 'hotspot' ? '#/hotspot/dashboard' : `#/${routeKey.replace(/^#\/?/, '')}`;
+        if (typeof window !== 'undefined') {
+          window.location.hash = targetHash;
+        }
+        if (initialRoute) {
+          setActiveRoute('hotspot');
+        }
+        return;
+      }
+      const normalized = parseEmulatorRoute(routeKey);
+      setActiveRoute(normalized);
       setDrawerOpen(false);
       setClientDrawerOpen(false);
       if (typeof window !== 'undefined') {
-        window.location.hash = '#/showcase';
+        window.location.hash = `#/${normalized}`;
       }
-      return;
-    }
-    const normalized = parseEmulatorRoute(routeKey);
-    setActiveRoute(normalized);
-    setDrawerOpen(false);
-    setClientDrawerOpen(false);
-    if (typeof window !== 'undefined') {
-      window.location.hash = `#/${normalized}`;
-    }
-  }, []);
+    },
+    [initialRoute],
+  );
 
   const openQuickDrawerForDevice = useCallback((device: EmulatorDeviceRecord) => {
     setClientDrawerOpen(false);
@@ -269,6 +331,15 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
 
   const routeMeta = NAV_ITEM_META.get(activeRoute);
 
+  if (activeRoute === 'hotspot') {
+    return (
+      <HotspotPortalApp
+        initialRoute="dashboard"
+        onBackToController={() => navigateTo('dashboard')}
+      />
+    );
+  }
+
   return (
     <SEmulatorShell
       activeKey={activeRoute}
@@ -359,33 +430,34 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
         <IntelliRecoverPage onOpenDeviceByName={openDeviceByName} />
       )}
 
-      {!IMPLEMENTED_ROUTES.has(activeRoute) && (
-        <div className="p-6" data-testid={`emulator-route-${activeRoute}`}>
-          <div className="omada-dash-card p-6">
-            <div className="mb-4 flex items-center justify-between gap-4 border-b border-[var(--omada-border-divider)] pb-4">
-              <div>
-                <div className="text-[12px] font-medium text-[var(--omada-text-tertiary)]">
-                  {routeMeta?.groupLabel ?? 'Omada Controller'}
-                </div>
-                <h1 className="m-0 mt-0.5 text-[20px] font-semibold text-[var(--omada-text-primary)]">
-                  {routeMeta?.label ?? activeRoute}
-                </h1>
-              </div>
-              <div className="flex items-center gap-2">
-                <SButton variant="outline" onClick={() => navigateTo('dashboard')}>
-                  Back to Dashboard
-                </SButton>
-                <SButton variant="primary" onClick={() => navigateTo('devices')}>
-                  View Devices
-                </SButton>
-              </div>
-            </div>
-            <SEmpty
-              title={`${routeMeta?.label ?? activeRoute} Workspace`}
-              description="Simulated module view inside Omada Controller v6.3.0.34. Switch to Dashboard, Devices, Clients, Map, Insights, Logs, Incidents, or IntelliRecover to inspect live telemetry."
-            />
-          </div>
-        </div>
+      {activeRoute === 'site-settings' && <SiteSettingsPage />}
+
+      {activeRoute === 'internet' && <InternetPage />}
+
+      {activeRoute === 'lan' && (
+        <LanPage onOpenDeviceByName={openDeviceByName} onNavigate={navigateTo} />
+      )}
+
+      {activeRoute === 'wlan' && <WlanPage />}
+
+      {activeRoute === 'acl' && <AclPage />}
+
+      {activeRoute === 'switch-ports' && (
+        <SwitchPortsConfigPage onOpenDeviceByName={openDeviceByName} />
+      )}
+
+      {activeRoute === 'dns' && <DnsConfigPage />}
+
+      {activeRoute === 'network-tools' && <NetworkToolsPage />}
+
+      {activeRoute === 'maintenance' && <MaintenancePage />}
+
+      {!DEDICATED_ROUTES.has(activeRoute) && (
+        <ConfigSubmodulePage
+          routeKey={activeRoute}
+          routeLabel={routeMeta?.label}
+          onNavigate={navigateTo}
+        />
       )}
 
       <ClientPropertiesDrawer

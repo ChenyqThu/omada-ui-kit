@@ -168,7 +168,7 @@ export const EMULATOR_NAV_GROUPS: SEmulatorNavGroup[] = [
             items: [
               { key: 'portal', label: 'Portal' },
               { key: 'dot1x', label: '802.1X' },
-              { key: 'mac-auth', label: 'MAC-Based Auth' },
+              { key: 'mac-auth', label: 'MAC-Based Authentication' },
             ],
           },
           {
@@ -189,7 +189,7 @@ export const EMULATOR_NAV_GROUPS: SEmulatorNavGroup[] = [
               { key: 'ids-ips', label: 'IDS/IPS' },
               { key: 'wireless-ids-ips', label: 'Wireless IDS/IPS' },
               { key: 'firewall', label: 'Firewall' },
-              { key: 'impb', label: 'IP-MAC-Port Binding' },
+              { key: 'impb', label: 'IMPB' },
             ],
           },
           {
@@ -203,7 +203,7 @@ export const EMULATOR_NAV_GROUPS: SEmulatorNavGroup[] = [
               { key: 'session-limit', label: 'Session Limit' },
               { key: 'gateway-qos', label: 'Gateway QoS' },
               { key: 'switch-qos', label: 'Switch QoS' },
-              { key: 'oui-vlan', label: 'OUI-Based VLAN' },
+              { key: 'oui-vlan', label: 'OUI Based VLAN' },
             ],
           },
           {
@@ -217,7 +217,7 @@ export const EMULATOR_NAV_GROUPS: SEmulatorNavGroup[] = [
               { key: 'radius-profile', label: 'RADIUS Profile' },
               { key: 'ldap-profile', label: 'LDAP Profile' },
               { key: 'apn-profile', label: 'APN Profile' },
-              { key: 'cert-profile', label: 'Certificate' },
+              { key: 'cert-profile', label: 'Certificate Profile' },
             ],
           },
         ],
@@ -704,18 +704,19 @@ export const SEmulatorShell: React.FC<SEmulatorShellProps> = ({
 
                     if (hasPopoverSubmenu && submenuGroups && !item.disabled) {
                       const groupCount = submenuGroups.length;
+                      const isMega = groupCount > 1;
                       const panelWidthClass =
                         groupCount === 1
                           ? 'w-[228px] p-2'
                           : groupCount <= 3
-                            ? 'w-[500px] max-w-[calc(100vw-240px)] p-4'
-                            : 'w-[680px] max-w-[calc(100vw-240px)] max-h-[calc(100vh-80px)] overflow-y-auto p-4';
+                            ? 'omada-emulator-submenu-mega w-[560px] max-w-[calc(100vw-240px)] px-6 py-5'
+                            : 'omada-emulator-submenu-mega w-[860px] max-w-[calc(100vw-240px)] max-h-[calc(100vh-76px)] overflow-y-auto px-7 py-6';
                       const layoutGridClass =
                         groupCount === 1
                           ? 'flex flex-col gap-0.5'
                           : groupCount <= 3
-                            ? 'grid grid-cols-3 gap-5'
-                            : 'grid grid-cols-4 gap-x-5 gap-y-4';
+                            ? 'grid grid-cols-3 gap-x-6 gap-y-6'
+                            : 'grid grid-cols-4 gap-x-6 gap-y-8';
 
                       const popoverContent = (
                         <div
@@ -730,7 +731,7 @@ export const SEmulatorShell: React.FC<SEmulatorShellProps> = ({
                                     {subGroup.title}
                                   </div>
                                 )}
-                                <div className="flex flex-col gap-0.5">
+                                <div className={`flex flex-col ${isMega ? 'gap-1' : 'gap-0.5'}`}>
                                   {subGroup.items.map((subItem) => {
                                     const subActive = subItem.key === activeKey;
                                     const subIcon = subItem.iconName ? (
@@ -775,7 +776,7 @@ export const SEmulatorShell: React.FC<SEmulatorShellProps> = ({
                       return (
                         <Popover
                           key={item.key}
-                          placement="rightTop"
+                          placement={isMega ? 'right' : 'rightTop'}
                           trigger={['hover', 'click']}
                           arrow={false}
                           mouseEnterDelay={0.08}
