@@ -2,26 +2,41 @@ import React, { useState } from 'react';
 import {
   BarChart3,
   BellRing,
+  CalendarClock,
+  Compass,
   FormInput,
   Images,
+  Layers,
+  LayoutGrid,
   Palette,
   Server,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { SAppShell, useOmadaFeedback, type SNavGroup } from '@/omada';
 import { DeviceListDemo } from './demos/DeviceListDemo';
 import { AssetsSection } from './sections/AssetsSection';
+import { DataChartsSection } from './sections/DataChartsSection';
 import { DataDisplaySection } from './sections/DataDisplaySection';
+import { FeedbackOverlaysSection } from './sections/FeedbackOverlaysSection';
 import { FeedbackSection } from './sections/FeedbackSection';
 import { InputsSection } from './sections/InputsSection';
+import { NavShellSection } from './sections/NavShellSection';
+import { SelectInputsSection } from './sections/SelectInputsSection';
+import { TimeScheduleSection } from './sections/TimeScheduleSection';
 import { TokensSection } from './sections/TokensSection';
 
 type ShowcaseRoute =
   | 'devices-demo'
   | 'tokens'
   | 'assets'
+  | 'nav-shell'
   | 'inputs'
+  | 'select-inputs'
+  | 'time-schedule'
   | 'display'
-  | 'feedback';
+  | 'data-charts'
+  | 'feedback'
+  | 'feedback-overlays';
 
 const NAV_GROUPS: SNavGroup[] = [
   {
@@ -52,9 +67,24 @@ const NAV_GROUPS: SNavGroup[] = [
         badge: '998',
       },
       {
+        key: 'nav-shell',
+        label: 'Navigation & Shell',
+        icon: <Compass size={16} />,
+      },
+      {
         key: 'inputs',
         label: 'Inputs & Forms',
         icon: <FormInput size={16} />,
+      },
+      {
+        key: 'select-inputs',
+        label: 'Select, Toggles & Sliders',
+        icon: <SlidersHorizontal size={16} />,
+      },
+      {
+        key: 'time-schedule',
+        label: 'Time & Schedule',
+        icon: <CalendarClock size={16} />,
       },
       {
         key: 'display',
@@ -62,9 +92,19 @@ const NAV_GROUPS: SNavGroup[] = [
         icon: <BarChart3 size={16} />,
       },
       {
+        key: 'data-charts',
+        label: 'Advanced Table & Tiles',
+        icon: <LayoutGrid size={16} />,
+      },
+      {
         key: 'feedback',
         label: 'Feedback & Overlays',
         icon: <BellRing size={16} />,
+      },
+      {
+        key: 'feedback-overlays',
+        label: 'Overlays, Progress & Mask',
+        icon: <Layers size={16} />,
       },
     ],
   },
@@ -92,9 +132,14 @@ export const ShowcaseApp: React.FC = () => {
       {activeKey === 'devices-demo' && <DeviceListDemo />}
       {activeKey === 'tokens' && <TokensSection />}
       {activeKey === 'assets' && <AssetsSection />}
+      {activeKey === 'nav-shell' && <NavShellSection />}
       {activeKey === 'inputs' && <InputsSection />}
+      {activeKey === 'select-inputs' && <SelectInputsSection />}
+      {activeKey === 'time-schedule' && <TimeScheduleSection />}
       {activeKey === 'display' && <DataDisplaySection />}
+      {activeKey === 'data-charts' && <DataChartsSection />}
       {activeKey === 'feedback' && <FeedbackSection />}
+      {activeKey === 'feedback-overlays' && <FeedbackOverlaysSection />}
     </SAppShell>
   );
 };

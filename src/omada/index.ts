@@ -60,7 +60,11 @@ export {
 // Layout Shell
 export {
   SAppShell,
+  type SAppShellEdition,
   type SAppShellProps,
+  type SAppShellServiceItem,
+  type SAppShellTopNavItem,
+  type SAppShellVariant,
   type SNavGroup,
   type SNavItem,
   type SSiteOption,
@@ -70,11 +74,13 @@ export { SPageHeader, type SPageHeaderProps } from './layout/SPageHeader';
 // Omada Components
 export { SButton, type SButtonProps, type SButtonVariant } from './components/SButton';
 export {
+  DEFAULT_PASSWORD_RULES,
   SInput,
   SNumberInput,
   SPasswordInput,
   SSearchInput,
   STextArea,
+  type PasswordRuleConfig,
   type SInputProps,
   type SNumberInputProps,
   type SPasswordInputProps,
@@ -162,6 +168,13 @@ export {
 } from './components/SPortPanel';
 export { SChart, type SChartProps } from './components/SChart';
 export { SEmpty, type SEmptyProps } from './components/SEmpty';
+
+// Phase 1 Component Modules
+export * from './modules/nav-shell';
+export * from './modules/select-inputs';
+export * from './modules/time-schedule';
+export * from './modules/data-charts';
+export * from './modules/feedback-overlays';
 
 // Re-export standard AntD 6 primitives so PRD demos import everything from `@/omada`
 export {
