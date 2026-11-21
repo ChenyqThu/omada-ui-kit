@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Omada Multi-Tab Settings Template</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/standalone.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body style="margin: 0;">
+    <div id="root"></div>
+    <script type="text/babel">
+      const { useState } = OmadaUI.React;
+      const {
+        OmadaProvider,
+        SEmulatorShell,
+        SSettingsPageShell,
+        SSettingsSection,
+        SSettingsRow,
+        SSettingsInfoBanner,
+        SExpandableSection,
+        SInput,
+        SIpInput,
+        SSelect,
+        SSwitch,
+      } = window.OmadaUI;
+
+      function SettingsDemo() {
+        const [tab, setTab] = useState('dns-proxy');
+        const [enabled, setEnabled] = useState(true);
+        const [primaryDns, setPrimaryDns] = useState('1.1.1.1');
+        const [siteName, setSiteName] = useState('Main Office Floor');
+        const [dirty, setDirty] = useState(false);
+
+        return (
+          <SEmulatorShell activeKey="dns" onSelect={() => {}} controllerName="Headquarters Building">
+            <SSettingsPageShell
+              title="DNS & Network Services"
+              tabs={[
+                { key: 'dns-proxy', label: 'DNS Proxy' },
+                { key: 'dns-cache', label: 'DNS Cache' },
+              ]}
+              activeTab={tab}
+              onTabChange={setTab}
+              helpTitle="DNS Configuration"
+              helpDescription="Configure local DNS caching and upstream DoH resolvers for managed gateways."
+              dirty={dirty}
+              onApply={() => setDirty(false)}
+              onCancel={() => setDirty(false)}
+            >
+              <SSettingsInfoBanner>
+                DNS Proxy forwards client DNS lookups over encrypted DoH servers configured on the site gateway.
+              </SSettingsInfoBanner>
+
+              <SSettingsSection title={tab === 'dns-proxy' ? 'DNS Proxy Policy' : 'Cache Retention'}>
+                <SSettingsRow label="Service Status">
+                  <SSwitch
+                    checked={enabled}
+                    onChange={(v) => {
+                      setEnabled(v);
+                      setDirty(true);
+                    }}
+                  />
+                </SSettingsRow>
+                <SSettingsRow label="Site Identifier">
+                  <SInput
+                    value={siteName}
+                    onChange={(e) => {
+                      setSiteName(e.target.value);
+                      setDirty(true);
+                    }}
+                  />
+                </SSettingsRow>
+                <SSettingsRow label="Upstream DNS Server">
+                  <SIpInput
+                    value={primaryDns}
+                    onChange={(v) => {
+                      setPrimaryDns(v);
+                      setDirty(true);
+                    }}
+                  />
+                </SSettingsRow>
+              </SSettingsSection>
+
+              <SExpandableSection title="Advanced Options">
+                <SSettingsRow label="Resolver Mode">
+                  <SSelect
+                    defaultValue="doh"
+                    onChange={() => setDirty(true)}
+                    options={[
+                      { value: 'doh', label: 'DNS over HTTPS (DoH)' },
+                      { value: 'dot', label: 'DNS over TLS (DoT)' },
+                    ]}
+                  />
+                </SSettingsRow>
+              </SExpandableSection>
+            </SSettingsPageShell>
+          </SEmulatorShell>
+        );
+      }
+
+      OmadaUI.render(
+        <OmadaProvider defaultThemeMode="light">
+          <SettingsDemo />
+        </OmadaProvider>,
+        '#root',
+      );
+    </script>
+  </body>
+</html>

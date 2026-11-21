@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const CATALOG_PATH = path.resolve(__dirname, '../references/catalog.json');
+const TEMPLATES_DIR = path.resolve(__dirname, '../templates');
 
 function loadCatalog() {
   if (!fs.existsSync(CATALOG_PATH)) {
@@ -25,7 +26,9 @@ Usage:
   node query-catalog.mjs search-icons <keyword> [limit=25]
   node query-catalog.mjs search-assets <products|illustrations|clients|brand> [keyword] [limit=25]
   node query-catalog.mjs tokens [light|dark]
-  node query-catalog.mjs recipes [keyword]`);
+  node query-catalog.mjs recipes [keyword]
+  node query-catalog.mjs templates
+  node query-catalog.mjs template <id> [--html|--tsx]`);
 }
 
 function cmdInfo(catalog) {
@@ -171,6 +174,34 @@ function cmdRecipes(catalog, keyword = '') {
   }
 }
 
+function cmdTemplates(catalog) {
+  const templates = catalog.templates ?? [];
+  console.log(`Available Page Templates (${templates.length}):`);
+  for (const tpl of templates) {
+    console.log(`\n## ${tpl.id} — ${tpl.title}`);
+    console.log(tpl.summary);
+    console.log(`Blocks: ${tpl.blocks.join(', ')}`);
+    console.log(`Components: ${tpl.components.join(', ')}`);
+    console.log(`Pull source: node query-catalog.mjs template ${tpl.id} --html | --tsx`);
+  }
+}
+
+function cmdTemplate(catalog, id, formatFlag = '--html') {
+  const templates = catalog.templates ?? [];
+  const tpl = templates.find((t) => t.id === id);
+  if (!tpl) {
+    console.error(`Unknown template "${id}". Available: ${templates.map((t) => t.id).join(', ')}`);
+    process.exit(1);
+  }
+  const ext = formatFlag === '--tsx' ? 'tsx' : 'html';
+  const filePath = path.join(TEMPLATES_DIR, `${tpl.id}.${ext}`);
+  if (!fs.existsSync(filePath)) {
+    console.error(`Missing template file: ${filePath}. Run "pnpm build:catalog" first.`);
+    process.exit(1);
+  }
+  process.stdout.write(fs.readFileSync(filePath, 'utf8'));
+}
+
 const [, , subcmd, ...rest] = process.argv;
 const catalog = loadCatalog();
 
@@ -195,6 +226,12 @@ switch (subcmd) {
     break;
   case 'recipes':
     cmdRecipes(catalog, rest[0]);
+    break;
+  case 'templates':
+    cmdTemplates(catalog);
+    break;
+  case 'template':
+    cmdTemplate(catalog, rest[0], rest[1]);
     break;
   default:
     usage();

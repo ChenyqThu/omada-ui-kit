@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-21T21:51:23.353Z",
+  "generatedAt": "2026-11-21T23:46:10.181Z",
   "package": {
     "name": "@chenyqthu/omada-ui-kit",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "Omada Controller v6.3 React UI component library (Ant Design 6 + Design Tokens + Figma Assets + Single-file HTML standalone bundle)",
     "entries": {
       "import": "@chenyqthu/omada-ui-kit",
@@ -14,14 +14,16 @@
     "cdn": {
       "jsdelivrCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/style.css",
       "jsdelivrStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/standalone.js",
-      "pinnedCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.2.0/dist/style.css",
-      "pinnedStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.2.0/dist/standalone.js"
+      "pinnedCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.3.0/dist/style.css",
+      "pinnedStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.3.0/dist/standalone.js"
     }
   },
   "counts": {
-    "components": 106,
+    "components": 113,
+    "blocks": 7,
     "antdPrimitives": 27,
     "hooksAndHelpers": 24,
+    "templates": 5,
     "icons": 586,
     "products": 80,
     "illustrations": 107,
@@ -582,6 +584,514 @@
         {
           "name": "fallback",
           "type": "React.ReactNode",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "EMULATOR_GLOBAL_NAV_GROUPS",
+      "category": "blocks",
+      "kind": "data",
+      "sourcePath": "src/omada/layout/SEmulatorShell.tsx",
+      "description": "Official Omada Controller Global / Organization View navigation preset. Activated via `<SEmulatorShell scope=\"global\" />`."
+    },
+    {
+      "name": "SDetailInspectorDrawer",
+      "category": "blocks",
+      "kind": "component",
+      "sourcePath": "src/omada/blocks/SDetailInspectorDrawer.tsx",
+      "description": "Omada Controller 2-stage slide-out inspector drawer (`420px` <-> `1040px`) combining device/client title header, status dot, expand toggle, and underline tabs.",
+      "propsType": "SDetailInspectorDrawerProps",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "optional": false
+        },
+        {
+          "name": "onClose",
+          "type": "() => void",
+          "optional": false
+        },
+        {
+          "name": "title",
+          "type": "React.ReactNode",
+          "optional": false
+        },
+        {
+          "name": "subtitle",
+          "type": "React.ReactNode",
+          "optional": true
+        },
+        {
+          "name": "icon",
+          "type": "React.ReactNode",
+          "optional": true,
+          "description": "Optional leading icon/product thumbnail rendered before the title."
+        },
+        {
+          "name": "status",
+          "type": "DeviceStatusType",
+          "optional": true,
+          "description": "Semantic status dot + label displayed beside the title."
+        },
+        {
+          "name": "statusLabel",
+          "type": "string",
+          "optional": true,
+          "description": "Custom status label overriding `status` default text."
+        },
+        {
+          "name": "expandable",
+          "type": "boolean",
+          "optional": true,
+          "description": "Enables Omada's 2-stage `420px <-> 1040px` expand/collapse button (default `true`)."
+        },
+        {
+          "name": "defaultWidth",
+          "type": "number",
+          "optional": true
+        },
+        {
+          "name": "expandedWidth",
+          "type": "number",
+          "optional": true
+        },
+        {
+          "name": "tabs",
+          "type": "SDetailInspectorTab[]",
+          "optional": true,
+          "description": "Optional tabs rendered cleanly inside the inspector drawer."
+        },
+        {
+          "name": "activeTab",
+          "type": "string",
+          "optional": true
+        },
+        {
+          "name": "onTabChange",
+          "type": "(key: string) => void",
+          "optional": true
+        },
+        {
+          "name": "headerExtra",
+          "type": "React.ReactNode",
+          "optional": true
+        },
+        {
+          "name": "footer",
+          "type": "React.ReactNode",
+          "optional": true
+        },
+        {
+          "name": "children",
+          "type": "React.ReactNode",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "SFilterTableBlock",
+      "category": "blocks",
+      "kind": "component",
+      "sourcePath": "src/omada/blocks/SFilterTableBlock.tsx",
+      "description": "Reusable Omada Controller list + toolbar block combining optional underline tabs, search/filter toolbar, `<||` quick-drawer clearance, batch selection strip, and `<STable>`.",
+      "propsType": "SFilterTableBlockProps",
+      "props": [
+        {
+          "name": "title",
+          "type": "React.ReactNode",
+          "optional": true,
+          "description": "Optional section heading rendered to the left of the toolbar."
+        },
+        {
+          "name": "subtitle",
+          "type": "React.ReactNode",
+          "optional": true,
+          "description": "Optional helper/subtitle text placed beside `title`."
+        },
+        {
+          "name": "tabs",
+          "type": "SFilterTableTab[]",
+          "optional": true,
+          "description": "Optional top underline tabs rendered above the toolbar."
+        },
+        {
+          "name": "activeTab",
+          "type": "string",
+          "optional": true,
+          "description": "Controlled active tab key when `tabs` is provided."
+        },
+        {
+          "name": "onTabChange",
+          "type": "(key: string) => void",
+          "optional": true,
+          "description": "Invoked when a top underline tab is clicked."
+        },
+        {
+          "name": "searchPlaceholder",
+          "type": "string",
+          "optional": true,
+          "description": "Placeholder text for the integrated search input."
+        },
+        {
+          "name": "searchValue",
+          "type": "string",
+          "optional": true,
+          "description": "Controlled search string."
+        },
+        {
+          "name": "onSearchChange",
+          "type": "(value: string) => void",
+          "optional": true,
+          "description": "Callback invoked on search input change."
+        },
+        {
+          "name": "filters",
+          "type": "React.ReactNode",
+          "optional": true,
+          "description": "Filter controls placed alongside the search input."
+        },
+        {
+          "name": "primaryAction",
+          "type": "React.ReactNode",
+          "optional": true,
+          "description": "Primary right-side action button (e.g. `+ Create New Rule`)."
+        },
+        {
+          "name": "extraActions",
+          "type": "React.ReactNode",
+          "optional": true,
+          "description": "Secondary right-side actions before `primaryAction`."
+        },
+        {
+          "name": "selectedCount",
+          "type": "number",
+          "optional": true,
+          "description": "Number of selected rows to trigger the batch selection strip."
+        },
+        {
+          "name": "batchActions",
+          "type": "React.ReactNode",
+          "optional": true,
+          "description": "Batch actions displayed inside the selection strip when `selectedCount > 0`."
+        },
+        {
+          "name": "onClearSelection",
+          "type": "() => void",
+          "optional": true,
+          "description": "Callback to clear row selection."
+        },
+        {
+          "name": "tableProps",
+          "type": "STableProps<T>",
+          "optional": false,
+          "description": "Props forwarded to the underlying `<STable>`."
+        },
+        {
+          "name": "clearQuickDrawer",
+          "type": "boolean",
+          "optional": true,
+          "description": "Adds right padding (`pr-9`) on top header/toolbar rows to clear `<SEmulatorShell>`'s `<||` handle. Default `true`."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "SInlineFormRow",
+      "category": "blocks",
+      "kind": "component",
+      "sourcePath": "src/omada/blocks/SInlineRuleEditorLayout.tsx",
+      "description": "Standard Omada Controller `210px`-label / flexible-control row for inline rule & policy editors.",
+      "propsType": "SInlineFormRowProps",
+      "props": [
+        {
+          "name": "label",
+          "type": "React.ReactNode",
+          "optional": false,
+          "description": "Left-column label (`210px` fixed on desktop)."
+        },
+        {
+          "name": "htmlFor",
+          "type": "string",
+          "optional": true,
+          "description": "Optional `<label htmlFor>` target ID."
+        },
+        {
+          "name": "tooltip",
+          "type": "string",
+          "optional": true,
+          "description": "Optional green info icon tooltip placed next to the label."
+        },
+        {
+          "name": "children",
+          "type": "React.ReactNode",
+          "optional": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "SInlineRuleEditorLayout",
+      "category": "blocks",
+      "kind": "component",
+      "sourcePath": "src/omada/blocks/SInlineRuleEditorLayout.tsx",
+      "description": "Full-pane inline rule / profile editor layout with `<- Back` header, top-right `(?)` Help icon (`pr-9` clearance), structured `SInlineFormRow` stack, and `Create` / `Cancel` footer buttons.",
+      "propsType": "SInlineRuleEditorLayoutProps",
+      "props": [
+        {
+          "name": "title",
+          "type": "React.ReactNode",
+          "optional": false,
+          "description": "Heading rendered beside the `<-` back arrow (`Create New Rule`, `Edit Profile`, etc.)."
+        },
+        {
+          "name": "onBack",
+          "type": "() => void",
+          "optional": false,
+          "description": "Callback invoked when clicking the `<-` back title button."
+        },
+        {
+          "name": "onHelpClick",
+          "type": "() => void",
+          "optional": true,
+          "description": "Optional callback for the top-right circular green `(?)` Help button."
+        },
+        {
+          "name": "primaryText",
+          "type": "string",
+          "optional": true,
+          "description": "Primary action button label (default `'Create'`)."
+        },
+        {
+          "name": "cancelText",
+          "type": "string",
+          "optional": true,
+          "description": "Cancel button label (default `'Cancel'`)."
+        },
+        {
+          "name": "onSubmit",
+          "type": "() => void",
+          "optional": true,
+          "description": "Submit handler for the primary button."
+        },
+        {
+          "name": "onCancel",
+          "type": "() => void",
+          "optional": true,
+          "description": "Cancel handler (defaults to `onBack`)."
+        },
+        {
+          "name": "submitting",
+          "type": "boolean",
+          "optional": true,
+          "description": "Loading state for the primary action button."
+        },
+        {
+          "name": "footerExtra",
+          "type": "React.ReactNode",
+          "optional": true,
+          "description": "Optional extra actions rendered on the bottom action bar."
+        },
+        {
+          "name": "children",
+          "type": "React.ReactNode",
+          "optional": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "SMasterDetailSplitBlock",
+      "category": "blocks",
+      "kind": "component",
+      "sourcePath": "src/omada/blocks/SMasterDetailSplitBlock.tsx",
+      "description": "Split master-detail workspace combining a searchable left selection list and a bordered right detail/canvas surface (`LAN VLANs`, `Terminal`, `Switch Ports`).",
+      "propsType": "SMasterDetailSplitBlockProps",
+      "props": [
+        {
+          "name": "masterTitle",
+          "type": "React.ReactNode",
+          "optional": true,
+          "description": "Left rail heading."
+        },
+        {
+          "name": "masterExtra",
+          "type": "React.ReactNode",
+          "optional": true,
+          "description": "Optional control placed to the right of `masterTitle`."
+        },
+        {
+          "name": "masterWidth",
+          "type": "number",
+          "optional": true,
+          "description": "Width of the left master rail in pixels (default `260`)."
+        },
+        {
+          "name": "searchable",
+          "type": "boolean",
+          "optional": true,
+          "description": "Adds a compact filled search filter at the top of the left rail."
+        },
+        {
+          "name": "searchPlaceholder",
+          "type": "string",
+          "optional": true
+        },
+        {
+          "name": "items",
+          "type": "SMasterDetailItem[]",
+          "optional": false
+        },
+        {
+          "name": "activeKey",
+          "type": "string",
+          "optional": false
+        },
+        {
+          "name": "onSelect",
+          "type": "(key: string) => void",
+          "optional": false
+        },
+        {
+          "name": "detailTitle",
+          "type": "React.ReactNode",
+          "optional": true,
+          "description": "Right detail pane header title."
+        },
+        {
+          "name": "detailExtra",
+          "type": "React.ReactNode",
+          "optional": true,
+          "description": "Right detail pane header extra controls."
+        },
+        {
+          "name": "emptyDetail",
+          "type": "React.ReactNode",
+          "optional": true,
+          "description": "Empty placeholder rendered when `items` is empty and no detail applies."
+        },
+        {
+          "name": "children",
+          "type": "React.ReactNode",
+          "optional": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "SSwitchPortPicker",
+      "category": "blocks",
+      "kind": "component",
+      "sourcePath": "src/omada/blocks/SSwitchPortPicker.tsx",
+      "description": "Interactive multi-switch port selector composing a switch picker, `<SPortPanel selectable />`, batch `Select All` / `Clear` actions, and summary tags.",
+      "propsType": "SSwitchPortPickerProps",
+      "props": [
+        {
+          "name": "switches",
+          "type": "SSwitchPortDevice[]",
+          "optional": false,
+          "description": "Switch devices whose ports can be interactively picked."
+        },
+        {
+          "name": "value",
+          "type": "Record<string, number[]>",
+          "optional": true,
+          "description": "Controlled selection map `{ [switchId]: number[] }`."
+        },
+        {
+          "name": "defaultValue",
+          "type": "Record<string, number[]>",
+          "optional": true,
+          "description": "Uncontrolled initial selection map."
+        },
+        {
+          "name": "onChange",
+          "type": "(next: Record<string, number[]>) => void",
+          "optional": true,
+          "description": "Invoked whenever port selection changes across any switch."
+        },
+        {
+          "name": "showLegend",
+          "type": "boolean",
+          "optional": true,
+          "description": "Shows the Omada port link speed legend beneath the panel (default `true`)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "SWizardModal",
+      "category": "blocks",
+      "kind": "component",
+      "sourcePath": "src/omada/blocks/SWizardModal.tsx",
+      "description": "Multi-step Omada setup & adoption wizard modal combining `<SModal>`, `<SSteps>`, and Back / Next / Finish progression.",
+      "propsType": "SWizardModalProps",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "optional": false
+        },
+        {
+          "name": "title",
+          "type": "React.ReactNode",
+          "optional": false
+        },
+        {
+          "name": "steps",
+          "type": "SWizardStepItem[]",
+          "optional": false
+        },
+        {
+          "name": "onCancel",
+          "type": "() => void",
+          "optional": false
+        },
+        {
+          "name": "onFinish",
+          "type": "() => void",
+          "optional": false
+        },
+        {
+          "name": "finishText",
+          "type": "string",
+          "optional": true
+        },
+        {
+          "name": "onBeforeNext",
+          "type": "(stepIndex: number) => boolean",
+          "optional": true,
+          "description": "Optional guard returning `false` to prevent advancing from `stepIndex`."
+        },
+        {
+          "name": "size",
+          "type": "SModalSize",
+          "optional": true
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
           "optional": true
         }
       ]
@@ -2243,10 +2753,22 @@
           "description": "Invoked when a sidebar navigation item is selected."
         },
         {
+          "name": "scope",
+          "type": "'site' | 'global'",
+          "optional": true,
+          "description": "Shell context preset (`'site'` uses `EMULATOR_NAV_GROUPS`; `'global'` uses `EMULATOR_GLOBAL_NAV_GROUPS`)."
+        },
+        {
           "name": "navGroups",
           "type": "SEmulatorNavGroup[]",
           "optional": true,
-          "description": "Optional navigation groups override; defaults to `EMULATOR_NAV_GROUPS`."
+          "description": "Optional navigation groups override; defaults to `EMULATOR_NAV_GROUPS` or `EMULATOR_GLOBAL_NAV_GROUPS` by `scope`."
+        },
+        {
+          "name": "extraNavItems",
+          "type": "SEmulatorExtraNavItem[]",
+          "optional": true,
+          "description": "Inject additional nav items into existing or new sidebar groups without duplicating the full nav array."
         },
         {
           "name": "controllerName",
@@ -5628,6 +6150,106 @@
       "kind": "hook",
       "sourcePath": "src/omada/theme/OmadaProvider.tsx",
       "description": "Access current Omada theme mode (`light` | `dark` | `system`), resolved theme, and semantic tokens."
+    }
+  ],
+  "templates": [
+    {
+      "id": "dashboard",
+      "title": "Site Overview Dashboard",
+      "summary": "Full site telemetry homepage with KPI strip, 180-degree Health Gauge, 24h Trend Bar, WAN Line Chart, and Radio Channel Utilization.",
+      "blocks": [
+        "SEmulatorShell"
+      ],
+      "components": [
+        "OmadaProvider",
+        "SPageHeader",
+        "SKpiCard",
+        "SHealthGauge",
+        "SHealthTrendBar",
+        "SLineChart",
+        "SChannelUtilization"
+      ],
+      "htmlFile": "templates/dashboard.html",
+      "tsxFile": "templates/dashboard.tsx"
+    },
+    {
+      "id": "inventory",
+      "title": "Devices Inventory + 2-Stage Drawer",
+      "summary": "Searchable and filterable device inventory using SFilterTableBlock paired with a 420px/1040px expandable SDetailInspectorDrawer.",
+      "blocks": [
+        "SEmulatorShell",
+        "SFilterTableBlock",
+        "SDetailInspectorDrawer"
+      ],
+      "components": [
+        "SProductImage",
+        "SDeviceStatus",
+        "SDescriptions",
+        "SSelect",
+        "STag",
+        "SButton"
+      ],
+      "htmlFile": "templates/inventory.html",
+      "tsxFile": "templates/inventory.tsx"
+    },
+    {
+      "id": "acl-rules",
+      "title": "ACL Policy List + Inline Rule Builder",
+      "summary": "Tabbed Gateway/Switch/EAP ACL rules table transitioning inline into SInlineRuleEditorLayout + SAclRuleBuilder dual-card builder.",
+      "blocks": [
+        "SEmulatorShell",
+        "SFilterTableBlock",
+        "SInlineRuleEditorLayout",
+        "SInlineFormRow"
+      ],
+      "components": [
+        "SAclRuleBuilder",
+        "SExpandableSection",
+        "SSwitch",
+        "SInput",
+        "SSelect",
+        "SButton"
+      ],
+      "htmlFile": "templates/acl-rules.html",
+      "tsxFile": "templates/acl-rules.tsx"
+    },
+    {
+      "id": "settings",
+      "title": "Multi-Tab Network Settings Form",
+      "summary": "Settings workspace combining SSettingsPageShell sticky Apply/Cancel bar, SSettingsInfoBanner, SIpInput, SSwitch, and SExpandableSection.",
+      "blocks": [
+        "SEmulatorShell"
+      ],
+      "components": [
+        "SSettingsPageShell",
+        "SSettingsSection",
+        "SSettingsRow",
+        "SSettingsInfoBanner",
+        "SExpandableSection",
+        "SIpInput",
+        "SSwitch",
+        "SInput",
+        "SSelect"
+      ],
+      "htmlFile": "templates/settings.html",
+      "tsxFile": "templates/settings.tsx"
+    },
+    {
+      "id": "analytics-logs",
+      "title": "Incident & Event Analytics",
+      "summary": "Category KPI Carousel, horizontal Severity Donut summary card, and searchable live event timeline powered by SFilterTableBlock.",
+      "blocks": [
+        "SEmulatorShell",
+        "SFilterTableBlock"
+      ],
+      "components": [
+        "SPageHeader",
+        "SCategoryKpiCarousel",
+        "SDonutSummaryCard",
+        "STag"
+      ],
+      "htmlFile": "templates/analytics-logs.html",
+      "tsxFile": "templates/analytics-logs.tsx"
     }
   ],
   "tokens": {
@@ -13448,8 +14070,8 @@
         "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/standalone.js"
       },
       "pinnedUrls": {
-        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.2.0/dist/style.css",
-        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.2.0/dist/standalone.js"
+        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.3.0/dist/style.css",
+        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.3.0/dist/standalone.js"
       }
     },
     {

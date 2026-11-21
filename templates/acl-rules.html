@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Omada ACL Rules Template</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/standalone.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body style="margin: 0;">
+    <div id="root"></div>
+    <script type="text/babel">
+      const { useState } = OmadaUI.React;
+      const { Radio, Checkbox } = OmadaUI.antd;
+      const {
+        OmadaProvider,
+        SEmulatorShell,
+        SFilterTableBlock,
+        SInlineRuleEditorLayout,
+        SInlineFormRow,
+        SAclRuleBuilder,
+        SExpandableSection,
+        SButton,
+        SInput,
+        SSelect,
+        SSwitch,
+        SIcon,
+      } = window.OmadaUI;
+
+      const OBJECTS = {
+        Network: [
+          { value: 'Default', label: 'Default' },
+          { value: 'interface-vlan100', label: 'interface-vlan100' },
+          { value: 'interface-vlan4090', label: 'interface-vlan4090' },
+          { value: 'Guest_VLAN_200', label: 'Guest_VLAN_200' },
+        ],
+        'IP Group': [
+          { value: 'IPGroup_Any', label: 'IPGroup_Any' },
+          { value: 'ip-1', label: 'ip-1' },
+        ],
+      };
+
+      const INITIAL_RULES = [
+        { key: '1', enabled: true, description: 'Gateway_ACL_1', direction: 'LAN→WAN', policy: 'Permit', protocols: 'All', source: 'Network:interface-vlan100', destination: 'IP Group:ip-1' },
+        { key: '2', enabled: false, description: 'Gateway_ACL_2', direction: 'LAN→WAN', policy: 'Deny', protocols: 'TCP', source: 'Network:Guest_VLAN_200', destination: 'IP Group:IPGroup_Any' },
+      ];
+
+      function AclRulesDemo() {
+        const [activeTab, setActiveTab] = useState('gateway');
+        const [rules, setRules] = useState(INITIAL_RULES);
+        const [editing, setEditing] = useState(false);
+        const [desc, setDesc] = useState('Gateway_ACL_New');
+        const [enabled, setEnabled] = useState(true);
+        const [policy, setPolicy] = useState('Permit');
+        const [source, setSource] = useState({ type: 'Network', items: ['interface-vlan100'] });
+        const [dest, setDest] = useState({ type: 'IP Group', items: ['ip-1'] });
+
+        const handleSave = () => {
+          setRules((prev) => [
+            ...prev,
+            {
+              key: String(Date.now()),
+              enabled,
+              description: desc || 'ACL_Rule',
+              direction: 'LAN→WAN',
+              policy,
+              protocols: 'All',
+              source: `${source.type || 'Network'}:${source.items.join(', ')}`,
+              destination: `${dest.type || 'IP Group'}:${dest.items.join(', ')}`,
+            },
+          ]);
+          setEditing(false);
+        };
+
+        return (
+          <SEmulatorShell activeKey="acl" onSelect={() => {}} controllerName="Headquarters Building">
+            <div style={{ padding: '16px 24px' }}>
+              {editing ? (
+                <SInlineRuleEditorLayout
+                  title="Create New Rule"
+                  onBack={() => setEditing(false)}
+                  onSubmit={handleSave}
+                >
+                  <SInlineFormRow label="Description" htmlFor="acl-desc">
+                    <SInput id="acl-desc" value={desc} onChange={(e) => setDesc(e.target.value)} style={{ width: 350 }} />
+                  </SInlineFormRow>
+                  <SInlineFormRow label="Status">
+                    <Checkbox checked={enabled} onChange={(e) => setEnabled(e.target.checked)}>Enable</Checkbox>
+                  </SInlineFormRow>
+                  <SInlineFormRow label="Policy">
+                    <Radio.Group value={policy} onChange={(e) => setPolicy(e.target.value)}>
+                      <Radio value="Deny">Deny</Radio>
+                      <Radio value="Permit">Permit</Radio>
+                    </Radio.Group>
+                  </SInlineFormRow>
+                  <SInlineFormRow label="Rule">
+                    <SAclRuleBuilder
+                      policy={policy}
+                      source={source}
+                      onSourceChange={setSource}
+                      destination={dest}
+                      onDestinationChange={setDest}
+                      sourceTypeOptions={[{ value: 'Network', label: 'Network' }, { value: 'IP Group', label: 'IP Group', creatable: true }]}
+                      destinationTypeOptions={[{ value: 'IP Group', label: 'IP Group', creatable: true }]}
+                      getItemsForType={(t) => OBJECTS[t] || []}
+                    />
+                  </SInlineFormRow>
+                  <SExpandableSection title="Advanced Settings">
+                    <SInlineFormRow label="States Type">
+                      <SSelect defaultValue="auto" style={{ width: 350 }} options={[{ value: 'auto', label: 'Auto (New / Established / Related)' }]} />
+                    </SInlineFormRow>
+                  </SExpandableSection>
+                </SInlineRuleEditorLayout>
+              ) : (
+                <SFilterTableBlock
+                  tabs={[
+                    { key: 'gateway', label: 'Gateway ACL' },
+                    { key: 'switch', label: 'Switch ACL' },
+                    { key: 'eap', label: 'EAP ACL' },
+                  ]}
+                  activeTab={activeTab}
+                  onTabChange={setActiveTab}
+                  title="ACL Rules"
+                  primaryAction={
+                    <SButton variant="primary" onClick={() => setEditing(true)}>
+                      + Create New Rule
+                    </SButton>
+                  }
+                  tableProps={{
+                    rowKey: 'key',
+                    dataSource: rules,
+                    pagination: false,
+                    columns: [
+                      { title: 'Index', key: 'idx', render: (_, __, i) => i + 1 },
+                      { title: 'Enabled', dataIndex: 'enabled', key: 'enabled', render: (v) => <SSwitch checked={v} /> },
+                      { title: 'Description', dataIndex: 'description', key: 'description' },
+                      { title: 'Policy', dataIndex: 'policy', key: 'policy' },
+                      { title: 'Source', dataIndex: 'source', key: 'source' },
+                      { title: 'Destination', dataIndex: 'destination', key: 'destination' },
+                    ],
+                  }}
+                />
+              )}
+            </div>
+          </SEmulatorShell>
+        );
+      }
+
+      OmadaUI.render(
+        <OmadaProvider defaultThemeMode="light">
+          <AclRulesDemo />
+        </OmadaProvider>,
+        '#root',
+      );
+    </script>
+  </body>
+</html>

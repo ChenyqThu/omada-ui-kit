@@ -25,6 +25,7 @@ import './styles/modules/emulator-config-wlan-acl.css';
 import './styles/modules/emulator-dev-config.css';
 import './styles/modules/emulator-hotspot.css';
 import './styles/modules/emulator-tools-maint.css';
+import './styles/modules/blocks.css';
 import { App } from './App';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

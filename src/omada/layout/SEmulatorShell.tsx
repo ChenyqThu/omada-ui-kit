@@ -293,6 +293,100 @@ const DEFAULT_EMULATOR_SITES: SSiteOption[] = [
   { key: 'datacenter-core', label: 'Data Center Core', subtitle: '4 Devices · 12 Clients' },
 ];
 
+/**
+ * Official Omada Controller Global / Organization View navigation preset.
+ * Activated via `<SEmulatorShell scope="global" />`.
+ */
+export const EMULATOR_GLOBAL_NAV_GROUPS: SEmulatorNavGroup[] = [
+  {
+    key: 'overview',
+    label: 'Overview',
+    items: [
+      {
+        key: 'dashboard',
+        label: 'Dashboard',
+        iconName: 'sidebar-icon-icon-dashboard-off',
+        activeIconName: 'sidebar-icon-icon-dashboard-on',
+      },
+      {
+        key: 'site-list',
+        label: 'Site List',
+        iconName: 'sidebar-icon-icon-site-off',
+        activeIconName: 'sidebar-icon-icon-site-on',
+      },
+    ],
+  },
+  {
+    key: 'inventory',
+    label: 'Inventory',
+    items: [
+      {
+        key: 'devices',
+        label: 'Devices',
+        iconName: 'sidebar-icon-icon-device-off',
+        activeIconName: 'sidebar-icon-icon-device-on',
+      },
+      {
+        key: 'clients',
+        label: 'Clients',
+        iconName: 'sidebar-icon-icon-client-off',
+        activeIconName: 'sidebar-icon-icon-client-on',
+      },
+    ],
+  },
+  {
+    key: 'operations',
+    label: 'Operations',
+    items: [
+      {
+        key: 'logs',
+        label: 'Logs',
+        iconName: 'sidebar-icon-icon-log-off',
+        activeIconName: 'sidebar-icon-icon-log-on',
+      },
+      {
+        key: 'reports',
+        label: 'Reports',
+        iconName: 'sidebar-icon-icon-reports-off',
+        activeIconName: 'sidebar-icon-icon-reports-on',
+      },
+    ],
+  },
+  {
+    key: 'organization',
+    label: 'Organization',
+    items: [
+      {
+        key: 'admins',
+        label: 'Admins',
+        iconName: 'sidebar-icon-icon-account-off',
+        activeIconName: 'sidebar-icon-icon-account-on',
+      },
+      {
+        key: 'license',
+        label: 'License',
+        iconName: 'sidebar-icon-icon-license-off',
+        activeIconName: 'sidebar-icon-icon-license-on',
+      },
+      {
+        key: 'global-settings',
+        label: 'Global Settings',
+        iconName: 'sidebar-icon-icon-settings-off',
+        activeIconName: 'sidebar-icon-icon-settings-on',
+      },
+    ],
+  },
+];
+
+export interface SEmulatorExtraNavItem {
+  /** Target group key (`'management'`, `'monitoring'`, etc.) or a new group key. */
+  groupKey: string;
+  /** Group heading used if `groupKey` does not match an existing section. */
+  groupLabel?: string;
+  /** Navigation item injected into the sidebar group. */
+  item: SEmulatorNavItem;
+}
+
 const THEME_LABELS: Record<ThemeMode, string> = {
   light: 'Light',
   dark: 'Dark',
@@ -310,8 +404,12 @@ export interface SEmulatorShellProps {
   activeKey: string;
   /** Invoked when a sidebar navigation item is selected. */
   onSelect: (key: string) => void;
-  /** Optional navigation groups override; defaults to `EMULATOR_NAV_GROUPS`. */
+  /** Shell context preset (`'site'` uses `EMULATOR_NAV_GROUPS`; `'global'` uses `EMULATOR_GLOBAL_NAV_GROUPS`). */
+  scope?: 'site' | 'global';
+  /** Optional navigation groups override; defaults to `EMULATOR_NAV_GROUPS` or `EMULATOR_GLOBAL_NAV_GROUPS` by `scope`. */
   navGroups?: SEmulatorNavGroup[];
+  /** Inject additional nav items into existing or new sidebar groups without duplicating the full nav array. */
+  extraNavItems?: SEmulatorExtraNavItem[];
   /** Controller / organization name displayed on the left of the Top Bar. */
   controllerName?: string;
   /** Available site options shown in the sidebar site pill dropdown. */
@@ -356,7 +454,9 @@ export interface SEmulatorShellProps {
 export const SEmulatorShell: React.FC<SEmulatorShellProps> = ({
   activeKey,
   onSelect,
-  navGroups = EMULATOR_NAV_GROUPS,
+  scope = 'site',
+  navGroups,
+  extraNavItems,
   controllerName = 'Headquarters Building',
   sites = DEFAULT_EMULATOR_SITES,
   activeSite,
@@ -375,13 +475,41 @@ export const SEmulatorShell: React.FC<SEmulatorShellProps> = ({
   className = '',
   children,
 }) => {
+  const resolvedNavGroups = useMemo<SEmulatorNavGroup[]>(() => {
+    const baseGroups =
+      navGroups ?? (scope === 'global' ? EMULATOR_GLOBAL_NAV_GROUPS : EMULATOR_NAV_GROUPS);
+    if (!extraNavItems || extraNavItems.length === 0) {
+      return baseGroups;
+    }
+    const merged = baseGroups.map((g) => ({ ...g, items: [...g.items] }));
+    for (const entry of extraNavItems) {
+      const target = merged.find((g) => g.key === entry.groupKey);
+      if (target) {
+        if (!target.items.some((i) => i.key === entry.item.key)) {
+          target.items.push(entry.item);
+        }
+      } else {
+        merged.push({
+          key: entry.groupKey,
+          label: entry.groupLabel ?? entry.groupKey,
+          items: [entry.item],
+        });
+      }
+    }
+    return merged;
+  }, [navGroups, scope, extraNavItems]);
+
   const [innerCollapsed, setInnerCollapsed] = useState(defaultCollapsed);
   const collapsed = controlledCollapsed ?? innerCollapsed;
 
-  const [innerSiteKey, setInnerSiteKey] = useState(sites[0]?.key ?? 'main-office-floor');
-  const resolvedSiteKey = activeSite ?? innerSiteKey;
+  const [innerSiteKey, setInnerSiteKey] = useState(
+    scope === 'global' ? 'global-view' : (sites[0]?.key ?? 'main-office-floor'),
+  );
+  const resolvedSiteKey = activeSite ?? (scope === 'global' && !onSiteChange ? 'global-view' : innerSiteKey);
   const currentSite =
-    sites.find((s) => s.key === resolvedSiteKey || s.label === resolvedSiteKey) ?? sites[0];
+    resolvedSiteKey === 'global-view'
+      ? { key: 'global-view', label: 'Global View', subtitle: 'All Managed Sites' }
+      : (sites.find((s) => s.key === resolvedSiteKey || s.label === resolvedSiteKey) ?? sites[0]);
 
   const [openSubmenuKey, setOpenSubmenuKey] = useState<string | null>(null);
 
@@ -626,7 +754,7 @@ export const SEmulatorShell: React.FC<SEmulatorShellProps> = ({
             aria-label="Emulator navigation"
             className="flex-1 overflow-y-auto overflow-x-hidden pb-3"
           >
-            {navGroups.map((group, idx) => (
+            {resolvedNavGroups.map((group, idx) => (
               <div key={group.key}>
                 {group.label && !collapsed && (
                   <div

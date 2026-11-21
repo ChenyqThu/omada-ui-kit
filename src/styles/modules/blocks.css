@@ -1,0 +1,116 @@
+@layer components {
+  /* ==========================================================================
+   * Omada Reusable Blocks (`SFilterTableBlock`, `SInlineRuleEditorLayout`,
+   * `SMasterDetailSplitBlock`, `SWizardModal`, `SSwitchPortPicker`)
+   * ========================================================================== */
+
+  .omada-filter-table-toolbar-wrap .omada-table-toolbar {
+    margin-bottom: 12px;
+  }
+
+  .omada-master-detail {
+    display: flex;
+    flex-wrap: nowrap;
+    border: 1px solid var(--omada-border-divider);
+    border-radius: 8px;
+    background-color: var(--omada-bg-surface);
+    overflow: hidden;
+    min-height: 360px;
+  }
+
+  .omada-master-rail {
+    flex-shrink: 0;
+    border-right: 1px solid var(--omada-border-divider);
+    background-color: var(--omada-bg-page);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .omada-master-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+
+  .omada-master-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .omada-master-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 10px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+
+  .omada-master-item:hover {
+    background-color: var(--omada-bg-field);
+  }
+
+  .omada-master-item.is-active {
+    background-color: var(--omada-brand-bg-subtlest);
+  }
+
+  .omada-master-item.is-active span:first-child {
+    color: var(--omada-brand-text);
+  }
+
+  .omada-detail-pane {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--omada-bg-surface);
+  }
+
+  .omada-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--omada-border-divider);
+  }
+
+  .omada-detail-body {
+    flex: 1;
+    padding: 16px 20px;
+    overflow: auto;
+  }
+
+  .omada-port-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .omada-wizard-step-body {
+    padding-top: 4px;
+    min-height: 120px;
+  }
+
+  @media (max-width: 768px) {
+    .omada-master-detail {
+      flex-direction: column;
+    }
+
+    .omada-master-rail {
+      width: 100% !important;
+      border-right: none;
+      border-bottom: 1px solid var(--omada-border-divider);
+    }
+  }
+}

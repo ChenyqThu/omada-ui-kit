@@ -127,31 +127,43 @@ Wrap the application root with `<OmadaProvider defaultThemeMode="light">` (never
 # 1. Check active package name, CDN URLs, and counts
 node scripts/query-catalog.mjs info
 
-# 2. List all exported Omada components (or filter by category)
+# 2. List all exported Omada blocks or components
+node scripts/query-catalog.mjs list-components blocks
 node scripts/query-catalog.mjs list-components
 node scripts/query-catalog.mjs list-components emulator-v6
 
-# 3. Inspect exact Props interface and description for a component
-node scripts/query-catalog.mjs component SEmulatorShell
-node scripts/query-catalog.mjs component SSettingsPageShell
+# 3. Pull full-page starter templates (`dashboard`, `inventory`, `acl-rules`, `settings`, `analytics-logs`)
+node scripts/query-catalog.mjs templates
+node scripts/query-catalog.mjs template inventory --html > demo.html
+node scripts/query-catalog.mjs template inventory --tsx
 
-# 4. Search verified Figma asset slugs before writing <SIcon> or <SProductImage>
+# 4. Inspect exact Props interface and description for a block or component
+node scripts/query-catalog.mjs component SFilterTableBlock
+node scripts/query-catalog.mjs component SEmulatorShell
+
+# 5. Search verified Figma asset slugs before writing <SIcon> or <SProductImage>
 node scripts/query-catalog.mjs search-icons status 20
 node scripts/query-catalog.mjs search-icons sidebar 20
 node scripts/query-catalog.mjs search-assets products eap 20
 node scripts/query-catalog.mjs search-assets illustrations empty 20
 node scripts/query-catalog.mjs search-assets clients apple 20
 
-# 5. Inspect Light/Dark tokens or Omada v6.3 page recipes
+# 6. Inspect Light/Dark tokens or Omada v6.3 page recipes
 node scripts/query-catalog.mjs tokens light
 node scripts/query-catalog.mjs recipes
+
+# 7. Validate generated HTML / TSX demo before finishing (checks asset slugs, OmadaProvider, AntD 6 props)
+node scripts/verify-demo.mjs demo.html
 ```
+
+Online Showcase & Blocks/Templates Gallery: `https://chenyqthu.github.io/omada-ui-kit/#/showcase`
 
 ---
 
-## 5. Quick Component Map
+## 5. Quick Component & Block Map
 
-- **Theme & Layout**: `OmadaProvider`, `useOmadaTheme`, `SEmulatorShell`, `EMULATOR_NAV_GROUPS`, `SAppShell`, `SPageHeader`
+- **High-Level Blocks**: `SFilterTableBlock`, `SInlineRuleEditorLayout`, `SInlineFormRow`, `SDetailInspectorDrawer`, `SMasterDetailSplitBlock`, `SWizardModal`, `SSwitchPortPicker`, `SEmulatorShell` (`scope="site" | "global"`, `extraNavItems`)
+- **Theme & Layout**: `OmadaProvider`, `useOmadaTheme`, `SEmulatorShell`, `EMULATOR_NAV_GROUPS`, `EMULATOR_GLOBAL_NAV_GROUPS`, `SAppShell`, `SPageHeader`
 - **Data Display & Tables**: `SCard`, `SKpiCard`, `STable`, `STabs`, `STag`, `SCustomTag`, `SDeviceStatus`, `SDescriptions`, `SCollapse`, `SPortPanel`, `SDevicePortGraphic`, `STopologyCanvas`
 - **Charts & Health**: `SLineChart`, `SBarChart`, `SDonutChart`, `SSparkChart`, `SDonutSummaryCard`, `SHealthGauge`, `SHealthRadar`, `SHealthTrendBar`, `SApDistributionRuler`, `SChannelUtilization`, `SDeviceHealthSummary`, `SClientOverviewStrip`, `SCategoryKpiCarousel`
 - **Inputs & Settings**: `SButton`, `SInput`, `SSearchInput`, `SPasswordInput`, `SNumberInput`, `STextArea`, `SIpInput`, `SMacInput`, `SSelect`, `SSwitch`, `SSlider`, `SRadio`, `SCheckbox`, `SDatePicker`, `STimePicker`, `SSchedule`, `SForm`, `SFormSection`, `SFormItem`, `SSettingsPageShell`, `SSettingsSection`, `SSettingsRow`, `SSettingsInfoBanner`, `SExpandableSection`, `SAclRuleBuilder`

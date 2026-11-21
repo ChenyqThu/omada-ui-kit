@@ -66,7 +66,9 @@ For quick PRD prototypes, load `dist/style.css` and `dist/standalone.js` (bundle
 
 See [examples/single-file-demo.html](./examples/single-file-demo.html) for a full interactive AP Monitor example with drawer & Dark Mode toggle.
 
-## 3. Agent Skill & Component Catalog
+## 3. Agent Skill, Blocks, & Page Templates
+
+Live Showcase & Templates Gallery: **https://chenyqthu.github.io/omada-ui-kit/#/showcase**
 
 Install the Skill directly from GitHub into Antigravity / Claude Code / Codex / Cursor:
 
@@ -74,16 +76,18 @@ Install the Skill directly from GitHub into Antigravity / Claude Code / Codex / 
 npx skills add ChenyqThu/omada-ui-kit
 ```
 
-The npm package also bundles `skills/omada-ui-kit/` containing `SKILL.md`, `references/catalog.json`, and `scripts/query-catalog.mjs` so coding agents can inspect component props, icons, hardware product images, and design tokens without guessing:
+The npm package bundles `skills/omada-ui-kit/` containing `SKILL.md`, `references/catalog.json`, `templates/` (`dashboard`, `inventory`, `acl-rules`, `settings`, `analytics-logs` in both HTML & TSX), `scripts/query-catalog.mjs`, and `scripts/verify-demo.mjs`:
 
 ```bash
-node skills/omada-ui-kit/scripts/query-catalog.mjs info
-node skills/omada-ui-kit/scripts/query-catalog.mjs component SEmulatorShell
-node skills/omada-ui-kit/scripts/query-catalog.mjs search-assets products eap
+node skills/omada-ui-kit/scripts/query-catalog.mjs list-components blocks
+node skills/omada-ui-kit/scripts/query-catalog.mjs templates
+node skills/omada-ui-kit/scripts/query-catalog.mjs template inventory --html > demo.html
+node skills/omada-ui-kit/scripts/verify-demo.mjs demo.html
 ```
 
 ## 4. Development & Build Scripts
 
 - `pnpm dev` — Start local Showcase & Omada Controller v6.3 Emulator
 - `pnpm build:lib` — Build ESM (`dist/index.js`), CSS (`dist/style.css`), Standalone IIFE (`dist/standalone.js`), `.d.ts` (`dist/types/`), and `dist/catalog.json` (also syncs Skill bundles)
+- `pnpm build:pages` — Build static site for GitHub Pages (`dist-app/`)
 - `pnpm test` — Run unit test suite

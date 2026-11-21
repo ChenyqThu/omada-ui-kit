@@ -60,6 +60,9 @@ function classifySourcePath(relPath, symbolName) {
   if (normalized.includes('omada/theme/') || symbolName === 'OmadaProvider' || symbolName === 'useOmadaTheme') {
     return 'theme';
   }
+  if (normalized.includes('omada/blocks/') || symbolName === 'EMULATOR_GLOBAL_NAV_GROUPS') {
+    return 'blocks';
+  }
   if (normalized.includes('omada/layout/')) {
     return normalized.includes('SEmulatorShell') ? 'emulator-v6' : 'layout';
   }
@@ -382,6 +385,56 @@ function buildRecipes(pkgName, pkgVersion) {
   ];
 }
 
+function buildTemplatesMetadata() {
+  return [
+    {
+      id: 'dashboard',
+      title: 'Site Overview Dashboard',
+      summary: 'Full site telemetry homepage with KPI strip, 180-degree Health Gauge, 24h Trend Bar, WAN Line Chart, and Radio Channel Utilization.',
+      blocks: ['SEmulatorShell'],
+      components: ['OmadaProvider', 'SPageHeader', 'SKpiCard', 'SHealthGauge', 'SHealthTrendBar', 'SLineChart', 'SChannelUtilization'],
+      htmlFile: 'templates/dashboard.html',
+      tsxFile: 'templates/dashboard.tsx',
+    },
+    {
+      id: 'inventory',
+      title: 'Devices Inventory + 2-Stage Drawer',
+      summary: 'Searchable and filterable device inventory using SFilterTableBlock paired with a 420px/1040px expandable SDetailInspectorDrawer.',
+      blocks: ['SEmulatorShell', 'SFilterTableBlock', 'SDetailInspectorDrawer'],
+      components: ['SProductImage', 'SDeviceStatus', 'SDescriptions', 'SSelect', 'STag', 'SButton'],
+      htmlFile: 'templates/inventory.html',
+      tsxFile: 'templates/inventory.tsx',
+    },
+    {
+      id: 'acl-rules',
+      title: 'ACL Policy List + Inline Rule Builder',
+      summary: 'Tabbed Gateway/Switch/EAP ACL rules table transitioning inline into SInlineRuleEditorLayout + SAclRuleBuilder dual-card builder.',
+      blocks: ['SEmulatorShell', 'SFilterTableBlock', 'SInlineRuleEditorLayout', 'SInlineFormRow'],
+      components: ['SAclRuleBuilder', 'SExpandableSection', 'SSwitch', 'SInput', 'SSelect', 'SButton'],
+      htmlFile: 'templates/acl-rules.html',
+      tsxFile: 'templates/acl-rules.tsx',
+    },
+    {
+      id: 'settings',
+      title: 'Multi-Tab Network Settings Form',
+      summary: 'Settings workspace combining SSettingsPageShell sticky Apply/Cancel bar, SSettingsInfoBanner, SIpInput, SSwitch, and SExpandableSection.',
+      blocks: ['SEmulatorShell'],
+      components: ['SSettingsPageShell', 'SSettingsSection', 'SSettingsRow', 'SSettingsInfoBanner', 'SExpandableSection', 'SIpInput', 'SSwitch', 'SInput', 'SSelect'],
+      htmlFile: 'templates/settings.html',
+      tsxFile: 'templates/settings.tsx',
+    },
+    {
+      id: 'analytics-logs',
+      title: 'Incident & Event Analytics',
+      summary: 'Category KPI Carousel, horizontal Severity Donut summary card, and searchable live event timeline powered by SFilterTableBlock.',
+      blocks: ['SEmulatorShell', 'SFilterTableBlock'],
+      components: ['SPageHeader', 'SCategoryKpiCarousel', 'SDonutSummaryCard', 'STag'],
+      htmlFile: 'templates/analytics-logs.html',
+      tsxFile: 'templates/analytics-logs.tsx',
+    },
+  ];
+}
+
 function copyDirRecursive(srcDir, destDir) {
   fs.mkdirSync(destDir, { recursive: true });
   for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
@@ -437,8 +490,10 @@ function main() {
     },
     counts: {
       components: components.filter((c) => c.kind === 'component').length,
+      blocks: components.filter((c) => c.category === 'blocks' && c.kind === 'component').length,
       antdPrimitives: components.filter((c) => c.kind === 'antd-primitive').length,
       hooksAndHelpers: components.filter((c) => c.kind === 'hook' || c.kind === 'helper').length,
+      templates: buildTemplatesMetadata().length,
       icons: iconsRaw.length,
       products: dedupeAssetManifest(productsRaw).length,
       illustrations: dedupeAssetManifest(illustrationsRaw).length,
@@ -446,6 +501,7 @@ function main() {
       brand: dedupeAssetManifest(brandRaw).length,
     },
     components,
+    templates: buildTemplatesMetadata(),
     tokens: {
       layout: layoutTokens,
       radius: radiusTokens,
@@ -480,6 +536,12 @@ function main() {
   const skillRefPath = path.join(ROOT_DIR, 'skills/omada-ui-kit/references/catalog.json');
   fs.mkdirSync(path.dirname(skillRefPath), { recursive: true });
   fs.writeFileSync(skillRefPath, jsonPayload, 'utf8');
+
+  const templatesSrcDir = path.join(ROOT_DIR, 'templates');
+  const skillTemplatesDir = path.join(ROOT_DIR, 'skills/omada-ui-kit/templates');
+  if (fs.existsSync(templatesSrcDir)) {
+    copyDirRecursive(templatesSrcDir, skillTemplatesDir);
+  }
 
   // Sync canonical skill bundle (`skills/omada-ui-kit`) to `.agents/skills/` and `~/.gemini/config/skills/`
   const canonicalSkillDir = path.join(ROOT_DIR, 'skills/omada-ui-kit');

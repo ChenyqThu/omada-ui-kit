@@ -29,6 +29,7 @@ const LIB_STYLE_IMPORTS = [
   "../styles/modules/emulator-dev-config.css",
   "../styles/modules/emulator-hotspot.css",
   "../styles/modules/emulator-tools-maint.css",
+  "../styles/modules/blocks.css",
 ];
 
 function injectLibStyleImports(): Plugin {

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BarChart3,
   BellRing,
+  Blocks,
   CalendarClock,
   Compass,
+  FileCode2,
   FormInput,
   Images,
   Layers,
@@ -15,6 +17,7 @@ import {
 import { SAppShell, useOmadaFeedback, type SNavGroup } from '@/omada';
 import { DeviceListDemo } from './demos/DeviceListDemo';
 import { AssetsSection } from './sections/AssetsSection';
+import { BlocksSection } from './sections/BlocksSection';
 import { DataChartsSection } from './sections/DataChartsSection';
 import { DataDisplaySection } from './sections/DataDisplaySection';
 import { FeedbackOverlaysSection } from './sections/FeedbackOverlaysSection';
@@ -22,10 +25,13 @@ import { FeedbackSection } from './sections/FeedbackSection';
 import { InputsSection } from './sections/InputsSection';
 import { NavShellSection } from './sections/NavShellSection';
 import { SelectInputsSection } from './sections/SelectInputsSection';
+import { TemplatesSection } from './sections/TemplatesSection';
 import { TimeScheduleSection } from './sections/TimeScheduleSection';
 import { TokensSection } from './sections/TokensSection';
 
 type ShowcaseRoute =
+  | 'blocks'
+  | 'templates'
   | 'devices-demo'
   | 'tokens'
   | 'assets'
@@ -38,11 +44,51 @@ type ShowcaseRoute =
   | 'feedback'
   | 'feedback-overlays';
 
+const VALID_ROUTES = new Set<string>([
+  'blocks',
+  'templates',
+  'devices-demo',
+  'tokens',
+  'assets',
+  'nav-shell',
+  'inputs',
+  'select-inputs',
+  'time-schedule',
+  'display',
+  'data-charts',
+  'feedback',
+  'feedback-overlays',
+]);
+
+function parseShowcaseSubroute(): ShowcaseRoute {
+  if (typeof window === 'undefined') return 'blocks';
+  const cleaned = window.location.hash.replace(/^#\/?/, '').split('?')[0].trim().toLowerCase();
+  if (cleaned.startsWith('showcase/')) {
+    const sub = cleaned.slice('showcase/'.length);
+    if (VALID_ROUTES.has(sub)) {
+      return sub as ShowcaseRoute;
+    }
+  }
+  return 'blocks';
+}
+
 const NAV_GROUPS: SNavGroup[] = [
   {
-    key: 'demos',
-    label: 'Demo Workspace',
+    key: 'blocks-templates',
+    label: 'Blocks & Templates',
     items: [
+      {
+        key: 'blocks',
+        label: 'Blocks',
+        icon: <Blocks size={16} />,
+        badge: '6',
+      },
+      {
+        key: 'templates',
+        label: 'Page Templates',
+        icon: <FileCode2 size={16} />,
+        badge: '5',
+      },
       {
         key: 'devices-demo',
         label: 'Devices Demo',
@@ -64,7 +110,7 @@ const NAV_GROUPS: SNavGroup[] = [
         key: 'assets',
         label: 'Icons & Assets',
         icon: <Images size={16} />,
-        badge: '998',
+        badge: '859',
       },
       {
         key: 'nav-shell',
@@ -111,15 +157,30 @@ const NAV_GROUPS: SNavGroup[] = [
 ];
 
 export const ShowcaseApp: React.FC = () => {
-  const [activeKey, setActiveKey] = useState<ShowcaseRoute>('devices-demo');
+  const [activeKey, setActiveKey] = useState<ShowcaseRoute>(() => parseShowcaseSubroute());
   const [activeSite, setActiveSite] = useState<string>('hq');
   const { toast } = useOmadaFeedback();
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const onHash = () => setActiveKey(parseShowcaseSubroute());
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
+  const handleSelect = (key: string) => {
+    const next = VALID_ROUTES.has(key) ? (key as ShowcaseRoute) : 'blocks';
+    setActiveKey(next);
+    if (typeof window !== 'undefined') {
+      window.location.hash = `#/showcase/${next}`;
+    }
+  };
 
   return (
     <SAppShell
       navGroups={NAV_GROUPS}
       activeKey={activeKey}
-      onSelect={(key) => setActiveKey(key as ShowcaseRoute)}
+      onSelect={handleSelect}
       activeSite={activeSite}
       onSiteChange={(site) => {
         setActiveSite(site);
@@ -138,6 +199,8 @@ export const ShowcaseApp: React.FC = () => {
         toast.info('3 unread site events: 1 firmware alert, 2 adoption updates')
       }
     >
+      {activeKey === 'blocks' && <BlocksSection />}
+      {activeKey === 'templates' && <TemplatesSection />}
       {activeKey === 'devices-demo' && <DeviceListDemo />}
       {activeKey === 'tokens' && <TokensSection />}
       {activeKey === 'assets' && <AssetsSection />}
