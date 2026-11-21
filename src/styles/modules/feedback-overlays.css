@@ -1,0 +1,202 @@
+@layer components {
+  /* Spinner rotation & indeterminate progress animations */
+  @keyframes omada-spin-rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes omada-progress-indeterminate {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(350%);
+    }
+  }
+
+  @keyframes omada-skeleton-wave {
+    0% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .omada-spin {
+    animation: omada-spin-rotate 0.9s linear infinite;
+  }
+
+  [data-theme='dark'] .omada-spinner-neutral,
+  .dark .omada-spinner-neutral {
+    filter: invert(1) brightness(1.4);
+  }
+
+  .omada-progress-indeterminate-bar {
+    width: 32%;
+    animation: omada-progress-indeterminate 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  /* Shimmer gradient matching Light (#F7F7F7 -> #ECECEC) & Dark (--omada-bg-field -> --omada-bg-field-hover) */
+  .omada-skeleton-bar {
+    border-radius: 4px;
+    background-color: var(--omada-bg-field);
+  }
+
+  .omada-skeleton-bar.is-active {
+    background-image: linear-gradient(
+      90deg,
+      var(--omada-bg-field) 25%,
+      var(--omada-bg-field-hover) 50%,
+      var(--omada-bg-field) 75%
+    );
+    background-size: 200% 100%;
+    animation: omada-skeleton-wave 1.5s ease-in-out infinite;
+  }
+
+  /* AntD Drawer/Skeleton Light & Dark parity */
+  .ant-skeleton.ant-skeleton-active .ant-skeleton-title,
+  .ant-skeleton.ant-skeleton-active .ant-skeleton-paragraph > li,
+  .ant-skeleton.ant-skeleton-active .ant-skeleton-avatar {
+    background: linear-gradient(
+      90deg,
+      var(--omada-bg-field) 25%,
+      var(--omada-bg-field-hover) 50%,
+      var(--omada-bg-field) 75%
+    );
+    background-size: 400% 100%;
+  }
+
+  /* Figma Mask 43:34769: rgba(0, 0, 0, 0.40) in both Light & Dark */
+  .omada-mask {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  .omada-mask-blur {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  /* Modal AntD 6 container radii & shadows */
+  .omada-modal .ant-modal-container {
+    border-radius: 8px;
+    box-shadow: var(--omada-shadow-dropdown);
+    background-color: var(--omada-bg-overlay);
+    padding: 24px;
+  }
+
+  .omada-modal.omada-modal-confirm .ant-modal-container {
+    border-radius: 10px;
+  }
+
+  /* Popover & Popconfirm Omada Surface (AntD 6 .ant-popover-container) */
+  .omada-popover,
+  .omada-popconfirm {
+    --ant-tooltip-arrow-background-color: var(--omada-bg-popover);
+  }
+
+  .omada-popover .ant-popover-container,
+  .omada-popconfirm .ant-popover-container {
+    background-color: var(--omada-bg-popover);
+    box-shadow: var(--omada-shadow-popover);
+    border-radius: 8px;
+    border: 1px solid var(--omada-border-divider);
+    padding: 14px 16px;
+  }
+
+  .omada-popover .ant-popover-title {
+    color: var(--omada-text-primary);
+    font-weight: 600;
+    margin-bottom: 6px;
+    border-bottom: none;
+    padding: 0;
+  }
+
+  .omada-popover .ant-popover-content {
+    padding: 0;
+  }
+
+  .omada-popconfirm .ant-popconfirm-title {
+    color: var(--omada-text-primary);
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .omada-popconfirm .ant-popconfirm-description {
+    color: var(--omada-text-secondary);
+    font-size: 13px;
+    line-height: 18px;
+    margin-top: 4px;
+  }
+
+  .omada-popconfirm .ant-popconfirm-buttons {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  /* Tooltip Omada 4px radius, [6, 8] padding, clickable links (AntD 6 .ant-tooltip-container) */
+  .omada-tooltip {
+    --ant-tooltip-arrow-background-color: var(--omada-bg-tooltip);
+  }
+
+  .omada-tooltip .ant-tooltip-container {
+    background-color: var(--omada-bg-tooltip);
+    box-shadow: var(--omada-shadow-tooltip);
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 12px;
+    line-height: 16px;
+    min-height: 28px;
+    color: var(--omada-text-inverse);
+  }
+
+  .omada-tooltip a {
+    color: color-mix(in srgb, var(--omada-link) 72%, var(--omada-text-inverse));
+    text-decoration: none;
+  }
+
+  .omada-tooltip a:hover {
+    text-decoration: underline;
+  }
+
+  [data-theme='dark'] .omada-tooltip a,
+  .dark .omada-tooltip a {
+    color: var(--omada-link);
+  }
+
+  /* Static Notification Card */
+  .omada-notification-card {
+    background-color: var(--omada-bg-popover);
+    box-shadow: var(--omada-shadow-popover);
+    border: 1px solid var(--omada-border-divider);
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+
+  /* Notification Toast elevation & border */
+  .ant-notification .ant-notification-notice {
+    background-color: var(--omada-bg-popover);
+    box-shadow: var(--omada-shadow-popover);
+    border: 1px solid var(--omada-border-divider);
+    border-radius: 8px;
+  }
+
+  /* Circular progress label spacing & tabular numbers */
+  .omada-progress .ant-progress-text {
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--omada-text-primary);
+  }
+
+  .omada-progress.ant-progress-circle .ant-progress-text {
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
