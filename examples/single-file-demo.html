@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Omada UI Kit — Single-File PRD Demo</title>
+    <!-- Once published to npm, replace these two local ../dist/* paths with CDN URLs:
+      https://cdn.jsdelivr.net/npm/<pkg>@latest/dist/style.css
+      https://cdn.jsdelivr.net/npm/<pkg>@latest/dist/standalone.js
+    -->
+    <link rel="stylesheet" href="../dist/style.css" />
+    <script src="../dist/standalone.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body style="margin: 0; font-family: var(--omada-font-sans);">
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState } = OmadaUI.React;
+      const {
+        OmadaProvider,
+        SEmulatorShell,
+        SPageHeader,
+        SKpiCard,
+        SCard,
+        STable,
+        SDrawer,
+        SDescriptions,
+        SDeviceStatus,
+        SButton,
+        SIcon,
+        SProductImage,
+        STag,
+        useOmadaTheme,
+      } = window.OmadaUI;
+
+      const DEMO_DEVICES = [
+        {
+          key: 'ap-1',
+          name: 'EAP650-Lobby-01',
+          model: 'EAP650',
+          productSlug: 'eap650',
+          ip: '192.168.10.21',
+          status: 'connected',
+          clients: 38,
+          util: '24%',
+          channel: '36 (80 MHz)',
+        },
+        {
+          key: 'ap-2',
+          name: 'EAP650-ConfRoom-02',
+          model: 'EAP650',
+          productSlug: 'eap650',
+          ip: '192.168.10.22',
+          status: 'connected',
+          clients: 21,
+          util: '18%',
+          channel: '149 (80 MHz)',
+        },
+        {
+          key: 'ap-3',
+          name: 'EAP610-Outdoor-West',
+          model: 'EAP610-Outdoor',
+          productSlug: 'eap610-outdoor-un-1-30',
+          ip: '192.168.10.29',
+          status: 'heartbeat-missed',
+          clients: 4,
+          util: '9%',
+          channel: '6 (20 MHz)',
+        },
+      ];
+
+      function ApHealthDemo() {
+        const [activeNav, setActiveNav] = useState('devices');
+        const [selected, setSelected] = useState(null);
+        const { resolvedTheme, setThemeMode } = useOmadaTheme();
+
+        const columns = [
+          {
+            title: 'Device Name',
+            dataIndex: 'name',
+            key: 'name',
+            render: (text, row) => (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <SProductImage name={row.productSlug} size={32} />
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--omada-text-primary)' }}>{text}</div>
+                  <div style={{ fontSize: 12, color: 'var(--omada-text-tertiary)' }}>{row.model}</div>
+                </div>
+              </div>
+            ),
+          },
+          {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
+            render: (status) => <SDeviceStatus status={status} />,
+          },
+          { title: 'IP Address', dataIndex: 'ip', key: 'ip' },
+          { title: 'Channel', dataIndex: 'channel', key: 'channel' },
+          { title: 'Clients', dataIndex: 'clients', key: 'clients' },
+          {
+            title: '5G Util',
+            dataIndex: 'util',
+            key: 'util',
+            render: (val) => <STag color="blue">{val}</STag>,
+          },
+        ];
+
+        return (
+          <SEmulatorShell
+            activeKey={activeNav}
+            onSelect={setActiveNav}
+            controllerName="Headquarters Building"
+          >
+            <div style={{ padding: '20px 44px 24px 24px' }}>
+              <SPageHeader
+                title="AP Health Monitor (Single-File Demo)"
+                subtitle="Rendered directly from dist/standalone.js + dist/style.css"
+                extra={
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <SButton
+                      variant="secondary"
+                      onClick={() => setThemeMode(resolvedTheme === 'dark' ? 'light' : 'dark')}
+                    >
+                      Theme: {resolvedTheme === 'dark' ? 'Dark' : 'Light'}
+                    </SButton>
+                    <SButton variant="primary" icon={<SIcon name="refresh" size={14} />}>
+                      Refresh
+                    </SButton>
+                  </div>
+                }
+              />
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                  gap: 16,
+                  marginBottom: 16,
+                }}
+              >
+                <SKpiCard title="Managed APs" value={3} meta="2 healthy · 1 warning" />
+                <SKpiCard title="Connected Clients" value={63} meta="Across 2.4 / 5 GHz" />
+                <SKpiCard title="Avg Channel Util" value="17%" meta="Peak 24% on Ch 36" />
+              </div>
+
+              <SCard title="Access Points" padding="none">
+                <STable
+                  rowKey="key"
+                  dataSource={DEMO_DEVICES}
+                  columns={columns}
+                  pagination={false}
+                  onRow={(record) => ({
+                    onClick: () => setSelected(record),
+                    style: { cursor: 'pointer' },
+                  })}
+                />
+              </SCard>
+            </div>
+
+            <SDrawer
+              open={Boolean(selected)}
+              onClose={() => setSelected(null)}
+              size="sm"
+              title={selected?.name ?? ''}
+              subtitle={selected?.model}
+              statusSlot={selected ? <SDeviceStatus status={selected.status} /> : null}
+            >
+              {selected && (
+                <SDescriptions
+                  column={1}
+                  items={[
+                    { key: 'ip', label: 'IP Address', children: selected.ip },
+                    { key: 'ch', label: 'Radio Channel', children: selected.channel },
+                    { key: 'clients', label: 'Clients', children: selected.clients },
+                    { key: 'util', label: 'Utilization', children: selected.util },
+                  ]}
+                />
+              )}
+            </SDrawer>
+          </SEmulatorShell>
+        );
+      }
+
+      OmadaUI.render(
+        <OmadaProvider defaultThemeMode="light">
+          <ApHealthDemo />
+        </OmadaProvider>,
+        '#root',
+      );
+    </script>
+  </body>
+</html>

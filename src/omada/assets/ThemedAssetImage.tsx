@@ -38,6 +38,33 @@ export function resolveThemedAssetEntry(
 }
 
 /**
+ * Resolves relative asset paths emitted by library/IIFE builds against an explicit
+ * runtime base URL (`globalThis.__OMADA_ASSET_BASE__`), while leaving data URIs,
+ * blob URLs, HTTP(S) URLs, and root-relative paths untouched.
+ */
+function resolveRuntimeAssetUrl(url: string): string {
+  if (
+    !url ||
+    url.startsWith('data:') ||
+    url.startsWith('http://') ||
+    url.startsWith('https://') ||
+    url.startsWith('blob:') ||
+    url.startsWith('/')
+  ) {
+    return url;
+  }
+  const base = (globalThis as { __OMADA_ASSET_BASE__?: string }).__OMADA_ASSET_BASE__;
+  if (!base) {
+    return url;
+  }
+  try {
+    return new URL(url, base).href;
+  } catch {
+    return url;
+  }
+}
+
+/**
  * Shared image renderer for theme-aware Figma assets (illustrations, client icons,
  * product model images, and brand assets).
  */
@@ -63,10 +90,11 @@ export const ThemedAssetImage: React.FC<ThemedAssetImageProps> = ({
     return <>{fallback}</>;
   }
 
-  const url = urlMap[`${urlPrefix}${entry.relPath}`];
-  if (!url) {
+  const rawUrl = urlMap[`${urlPrefix}${entry.relPath}`];
+  if (!rawUrl) {
     return <>{fallback}</>;
   }
+  const url = resolveRuntimeAssetUrl(rawUrl);
 
   let resolvedWidth = width;
   let resolvedHeight = height;

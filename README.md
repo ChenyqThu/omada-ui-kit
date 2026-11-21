@@ -1,30 +1,83 @@
 # Omada UI Kit
 
-Reusable **Omada Web UI Component Library & Demo Workspace** built on **React 18 + TypeScript + Vite + Ant Design 5 + Tailwind CSS v4 + ECharts 5**.
+High-fidelity **TP-Link Omada Controller v6.3** React UI component library built on Ant Design 6, complete with Omada Design Tokens (Light/Dark), bundled Figma icons/illustrations/device photos, dual distribution formats (ESM + Single-File Browser Bundle), and an Agent Skill catalog.
 
-## Quick Start
+## 1. Usage in React / Vite Projects (like `antd`)
 
 ```bash
-pnpm install
-pnpm dev       # Start local dev server (default http://localhost:5173)
-pnpm test      # Run Vitest unit tests
-pnpm typecheck # Run strict TypeScript checks
-pnpm build     # Build production bundle into dist/
+pnpm add @<npm-username>/omada-ui-kit
 ```
 
-## Architecture & Design Token Reconciliation
+Import the stylesheet once at app entry and use components directly:
 
-The live **Omada Controller v6.3.0.34** runs on an Ant Design-based (`S*`) component system styled with `--s-color-*` CSS variables, `Manrope` typography, and `ECharts 5`. In the TP Web Figma library, the newer `Color` and `Size` variable collections currently contain unfilled placeholders (`#ffffff` / `"String value"` / empty collections), while production components bind to the `原内容` collection and `🌟Shadow 投影` / `✍️✅设备端口` / Local Text Styles.
+```tsx
+import '@<npm-username>/omada-ui-kit/style.css';
+import {
+  OmadaProvider,
+  SEmulatorShell,
+  SPageHeader,
+  STable,
+  SButton,
+  SIcon,
+  SProductImage,
+} from '@<npm-username>/omada-ui-kit';
 
-To prevent placeholder regressions, `src/omada/theme/tokens.ts` and `src/styles/tokens.css` establish a clean **three-layer token pipeline**:
-1. **L1 Primitives**: `Manrope` + monospace font stacks, spacing scale (`0..40px`), radius scale (`0..9999px`), 11 physical port speed colors, and the 20-color Omada categorical chart palette.
-2. **L2 Semantic Tokens**: Light & Dark `--omada-*` CSS variables verified against Figma `原内容` and the live Omada v6.3.0.34 emulator (`#00A870` brand green, `56px` gradient Top Bar, `216px`/`52px` Sidebar, `4`-level shadows).
-3. **L3 AntD 5 Theme + Overrides**: `buildOmadaAntdTheme()` (`ConfigProvider`) combined with `<StyleProvider layer>` and `src/styles/omada-antd-overrides.css` inside `@layer components` after `@layer antd`.
+export function App() {
+  return (
+    <OmadaProvider defaultThemeMode="light">
+      <SEmulatorShell activeKey="dashboard" onSelect={() => {}}>
+        <SPageHeader title="Site Overview" extra={<SButton variant="primary">Save</SButton>} />
+      </SEmulatorShell>
+    </OmadaProvider>
+  );
+}
+```
 
-## Directory Layout
+## 2. Usage in a Single HTML File (Zero Build)
 
-- `src/omada/` — Theme provider, tokens, Omada SVG logo, `SAppShell`, and all `S*` components (`index.ts` barrel export)
-- `src/styles/` — `tokens.css` (Tailwind v4 `@layer` ordering + CSS vars) and `omada-antd-overrides.css`
-- `src/showcase/` — Default live **Devices Demo** + interactive Showcase for Tokens, Inputs & Forms, Data Display & Charts, and Feedback & Overlays
-- `src/demos/` — Directory for future PRD product demos
-- `COMPONENTS.md` — Scannable component catalog & instructions for adding new PRD demos
+For quick PRD prototypes, load `dist/style.css` and `dist/standalone.js` (bundles React 19, AntD 6, ECharts, and all Omada `S*` components under `window.OmadaUI`):
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@<npm-username>/omada-ui-kit@latest/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@<npm-username>/omada-ui-kit@latest/dist/standalone.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body style="margin: 0;">
+    <div id="root"></div>
+    <script type="text/babel">
+      const { OmadaProvider, SEmulatorShell, SCard, SButton } = window.OmadaUI;
+      OmadaUI.render(
+        <OmadaProvider>
+          <SEmulatorShell activeKey="dashboard" onSelect={() => {}}>
+            <div style={{ padding: 24 }}>
+              <SCard title="PRD Demo"><SButton variant="primary">Action</SButton></SCard>
+            </div>
+          </SEmulatorShell>
+        </OmadaProvider>,
+      );
+    </script>
+  </body>
+</html>
+```
+
+See [examples/single-file-demo.html](./examples/single-file-demo.html) for a full interactive AP Monitor example with drawer & Dark Mode toggle.
+
+## 3. Agent Skill & Component Catalog
+
+The npm package includes `skills/omada-ui-kit/` containing `SKILL.md`, `references/catalog.json`, and `scripts/query-catalog.mjs` so coding agents can inspect component props, icons, hardware product images, and design tokens without guessing:
+
+```bash
+node skills/omada-ui-kit/scripts/query-catalog.mjs info
+node skills/omada-ui-kit/scripts/query-catalog.mjs component SEmulatorShell
+node skills/omada-ui-kit/scripts/query-catalog.mjs search-assets products eap
+```
+
+## 4. Development & Build Scripts
+
+- `pnpm dev` — Start local Showcase & Omada Controller v6.3 Emulator
+- `pnpm build:lib` — Build ESM (`dist/index.js`), CSS (`dist/style.css`), Standalone IIFE (`dist/standalone.js`), `.d.ts` (`dist/types/`), and `dist/catalog.json` (also syncs Skill bundles)
+- `pnpm test` — Run unit test suite
