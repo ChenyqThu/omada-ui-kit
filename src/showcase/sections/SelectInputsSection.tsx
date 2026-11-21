@@ -419,7 +419,7 @@ export const SelectInputsSection: React.FC = () => {
 
             <div className="border-t border-[var(--omada-border-divider)] pt-4">
               <div className="mb-2 text-xs font-medium text-[var(--omada-text-secondary)]">
-                Linear Button Variant (`variant="button"`)
+                Linear Button Variant (<code>variant="button"</code>)
               </div>
               <SCheckboxGroup
                 variant="button"
@@ -474,7 +474,7 @@ export const SelectInputsSection: React.FC = () => {
 
             <div className="border-t border-[var(--omada-border-divider)] pt-4">
               <div className="mb-2 text-xs font-medium text-[var(--omada-text-secondary)]">
-                Linear Button Group (`variant="button"`)
+                Linear Button Group (<code>variant="button"</code>)
               </div>
               <SRadioGroup
                 variant="button"
@@ -492,7 +492,7 @@ export const SelectInputsSection: React.FC = () => {
 
             <div className="border-t border-[var(--omada-border-divider)] pt-4">
               <div className="mb-2 text-xs font-medium text-[var(--omada-text-secondary)]">
-                Capsule Group (`variant="capsule"`) & Pill Variant
+                Capsule Group (<code>variant="capsule"</code>) &amp; Pill Variant
               </div>
               <div className="flex flex-wrap items-center gap-4">
                 <SRadioGroup
@@ -669,9 +669,9 @@ export const SelectInputsSection: React.FC = () => {
           <div className="space-y-5">
             <div>
               <div className="mb-1.5 text-xs font-medium text-[var(--omada-text-secondary)]">
-                Stepped Marks (`stepPreset="levels"` & `stepPreset="1-5"` Segmented)
+                Stepped Marks (<code>stepPreset="levels"</code> &amp; <code>stepPreset="1-5"</code> Segmented)
               </div>
-              <div className="space-y-4">
+              <div className="space-y-8 pb-4">
                 <SSlider stepPreset="levels" defaultValue={50} />
                 <SSlider stepPreset="1-5" segmented defaultValue={3} />
               </div>
@@ -679,7 +679,7 @@ export const SelectInputsSection: React.FC = () => {
 
             <div>
               <div className="mb-1.5 text-xs font-medium text-[var(--omada-text-secondary)]">
-                Color Temperature Preset (`preset="color-temp"` · 2700K–6500K)
+                Color Temperature Preset (<code>preset="color-temp"</code> · 2700K–6500K)
               </div>
               <SSlider
                 preset="color-temp"
@@ -695,7 +695,7 @@ export const SelectInputsSection: React.FC = () => {
 
             <div>
               <div className="mb-1.5 text-xs font-medium text-[var(--omada-text-secondary)]">
-                Hue Spectrum Preset (`preset="hue"`)
+                Hue Spectrum Preset (<code>preset="hue"</code>)
               </div>
               <SSlider preset="hue" min={0} max={360} defaultValue={160} unit="°" />
             </div>

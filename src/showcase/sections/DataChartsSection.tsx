@@ -642,7 +642,7 @@ export const DataChartsSection: React.FC = () => {
 
           <div>
             <div className="mb-2 text-xs font-medium text-[var(--omada-text-secondary)]">
-              Compact Device Selector Tiles (`size="sm"` · Selected: {selectedProduct})
+              Compact Device Selector Tiles (<code>size="sm"</code> · Selected: {selectedProduct})
             </div>
             <STileGroup
               mode="single"
@@ -703,7 +703,7 @@ export const DataChartsSection: React.FC = () => {
           <SDescriptions
             variant={descVariant}
             layout={descLayout}
-            column={descLayout === 'horizontal' && descVariant !== 'bordered' ? 1 : 2}
+            column={descLayout === 'horizontal' ? 1 : 2}
             items={[
               { key: 'model', label: 'Hardware Model', children: 'ER8411 v1.0' },
               { key: 'fw', label: 'Firmware Version', children: 'v1.2.4 Build 20261015' },
@@ -773,7 +773,7 @@ export const DataChartsSection: React.FC = () => {
             </div>
             <div className="border-t border-[var(--omada-border-divider)] pt-3">
               <div className="mb-2 text-xs text-[var(--omada-text-secondary)]">
-                Operator Team (`maxCount=3`)
+                Operator Team (maxCount=3)
               </div>
               <SAvatarGroup size="md" maxCount={3}>
                 <SAvatar name="Phoenix" />
@@ -817,7 +817,7 @@ export const DataChartsSection: React.FC = () => {
           <div className="space-y-3.5">
             <div>
               <div className="mb-1 text-xs text-[var(--omada-text-secondary)]">
-                Interactive Half-Star (`md` 20px + live caption)
+                Interactive Half-Star (<code>md</code> 20px + live caption)
               </div>
               <SRate
                 size="md"
@@ -829,11 +829,11 @@ export const DataChartsSection: React.FC = () => {
             </div>
             <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--omada-border-divider)] pt-3">
               <div>
-                <div className="mb-1 text-xs text-[var(--omada-text-secondary)]">Small (`12px`)</div>
+                <div className="mb-1 text-xs text-[var(--omada-text-secondary)]">Small (12px)</div>
                 <SRate size="sm" readonly defaultValue={4} />
               </div>
               <div>
-                <div className="mb-1 text-xs text-[var(--omada-text-secondary)]">Large (`32px`)</div>
+                <div className="mb-1 text-xs text-[var(--omada-text-secondary)]">Large (32px)</div>
                 <SRate size="lg" readonly defaultValue={5} />
               </div>
             </div>

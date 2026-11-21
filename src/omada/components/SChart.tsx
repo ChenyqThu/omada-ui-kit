@@ -346,10 +346,11 @@ export const SLineChart: React.FC<SLineChartProps> = ({
           }
         : undefined,
       grid: {
-        left: 44,
+        left: 12,
         right: 16,
         top: showLegend && legendPosition === 'top' ? 36 : 16,
         bottom: showLegend && legendPosition === 'bottom' ? 36 : 26,
+        containLabel: true,
       },
       xAxis: {
         type: 'category',
@@ -534,10 +535,11 @@ export const SBarChart: React.FC<SBarChartProps> = ({
           }
         : undefined,
       grid: {
-        left: isHorizontal ? 90 : 44,
+        left: 12,
         right: 18,
         top: resolvedShowLegend && legendPosition === 'top' ? 36 : 16,
         bottom: resolvedShowLegend && legendPosition === 'bottom' ? 36 : 26,
+        containLabel: true,
       },
       xAxis: isHorizontal ? (valueAxis as EChartsOption['xAxis']) : categoryAxis,
       yAxis: isHorizontal ? (categoryAxis as EChartsOption['yAxis']) : valueAxis,
@@ -790,10 +792,11 @@ export const SSparkChart: React.FC<SSparkChartProps> = ({
           : undefined,
       },
       grid: {
-        left: showAxisTicks ? 42 : 4,
+        left: showAxisTicks ? 8 : 4,
         right: 6,
         top: 10,
         bottom: 10,
+        containLabel: showAxisTicks,
       },
       xAxis: {
         type: 'category',

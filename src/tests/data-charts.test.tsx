@@ -1,7 +1,8 @@
 import React from 'react';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { OmadaProvider, STable } from '@/omada';
+import * as echarts from 'echarts';
+import { OmadaProvider, SIcon, STable } from '@/omada';
 import { DeviceListDemo } from '../showcase/demos/DeviceListDemo';
 import { DataChartsSection } from '../showcase/sections/DataChartsSection';
 import {
@@ -206,6 +207,34 @@ describe('data-charts module', () => {
       expect(screen.getByText('No VLAN traffic')).toBeInTheDocument();
       expect(screen.getAllByText('No chart data').length).toBe(2);
     });
+
+    it('configures containLabel: true on SLineChart and SBarChart grids to prevent Y-axis label clipping', () => {
+      const { container } = renderThemed(
+        <div>
+          <SLineChart
+            xData={['08:00', '10:00']}
+            yUnit=" Mbps"
+            series={[{ name: 'Down', data: [400, 1000] }]}
+          />
+          <SBarChart
+            categories={['Corp', 'Guest']}
+            unit=" GB"
+            series={[{ name: 'Rx', data: [420, 160] }]}
+          />
+        </div>,
+      );
+
+      const chartContainers = container.querySelectorAll('div[_echarts_instance_]');
+      expect(chartContainers).toHaveLength(2);
+
+      const lineInstance = echarts.getInstanceByDom(chartContainers[0] as HTMLElement);
+      const barInstance = echarts.getInstanceByDom(chartContainers[1] as HTMLElement);
+      const lineOption = lineInstance?.getOption() as { grid?: Array<{ containLabel?: boolean }> };
+      const barOption = barInstance?.getOption() as { grid?: Array<{ containLabel?: boolean }> };
+
+      expect(lineOption?.grid?.[0]?.containLabel).toBe(true);
+      expect(barOption?.grid?.[0]?.containLabel).toBe(true);
+    });
   });
 
   describe('SDescriptions & SCollapse', () => {
@@ -232,7 +261,16 @@ describe('data-charts module', () => {
       expect(screen.getByText('Gateway Info')).toBeInTheDocument();
       const ipCell = screen.getByText('192.168.0.1');
       expect(ipCell).toHaveClass('font-mono');
+      expect(ipCell).toHaveClass('whitespace-nowrap');
       expect(screen.getByText('HQ Building')).toBeInTheDocument();
+    });
+
+    it('renders duotone dashboard SIcon with currentColor outline and brand green accent', () => {
+      const { container } = renderThemed(<SIcon name="cloud" size={20} />, 'dark');
+      const html = container.innerHTML;
+      expect(html).toContain('currentColor');
+      expect(html).toContain('#00A870');
+      expect(html).not.toContain('#2B2B2B');
     });
 
     it('toggles SCollapse panels and respects disabled panels', () => {

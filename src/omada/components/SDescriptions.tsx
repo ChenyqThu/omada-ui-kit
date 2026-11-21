@@ -42,7 +42,7 @@ export const SDescriptions: React.FC<SDescriptionsProps> = ({
   const mappedItems: DescriptionsItemType[] = items.map(({ mono, children, ...itemRest }) => ({
     ...itemRest,
     children: mono ? (
-      <span className="font-mono text-[13px]">{children}</span>
+      <span className="whitespace-nowrap font-mono text-[13px]">{children}</span>
     ) : (
       children
     ),

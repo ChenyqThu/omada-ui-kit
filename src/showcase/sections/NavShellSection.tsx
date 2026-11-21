@@ -333,7 +333,7 @@ export const NavShellSection: React.FC = () => {
               </div>
               <SDivider />
               <p className="text-xs text-[var(--omada-text-secondary)]">
-                Level-1 items with <code>children</code> expand inline (`pad-left: 36px` on Level-2) and convert into floating popovers when collapsed to 52px.
+                Level-1 items with <code>children</code> expand inline (<code>padding-left: 36px</code> on Level-2) and convert into floating popovers when collapsed to 52px.
               </p>
             </div>
           </SAppShell>
@@ -376,7 +376,7 @@ export const NavShellSection: React.FC = () => {
 
             <div>
               <div className="mb-1.5 text-xs font-medium text-[var(--omada-text-secondary)]">
-                Collapsed `...` Dropdown (5+ Levels, `maxItems=4`)
+                Collapsed <code>...</code> Dropdown (5+ Levels, <code>maxItems=4</code>)
               </div>
               <SBreadcrumb
                 maxItems={4}
@@ -396,7 +396,7 @@ export const NavShellSection: React.FC = () => {
         <SCard title="SDivider (Plain, Titled, Variants, Inset & Vertical)">
           <div className="space-y-3">
             <div className="text-xs text-[var(--omada-text-secondary)]">
-              Solid & Dashed Hairline Dividers (`1px` `--omada-border-divider`)
+              Solid &amp; Dashed Hairline Dividers (1px <code>--omada-border-divider</code>)
             </div>
             <SDivider />
             <SDivider variant="dashed" titlePlacement="start">
