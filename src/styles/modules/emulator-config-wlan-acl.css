@@ -380,4 +380,310 @@
     font-weight: 500;
     color: var(--omada-text-primary);
   }
+
+  /* Expandable Section (`[+]` / `[-]` Omada Disclosure Block) */
+  .omada-expandable-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .omada-expandable-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .omada-expandable-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    color: var(--omada-text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+
+  .omada-expandable-trigger:hover .omada-expandable-box {
+    border-color: var(--omada-brand);
+    color: var(--omada-brand-text);
+  }
+
+  .omada-expandable-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    border: 1px solid var(--omada-border-strong);
+    background-color: var(--omada-bg-surface);
+    color: var(--omada-text-secondary);
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .omada-expandable-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 2px;
+  }
+
+  /* ACL Rule Builder Dual-Card Component (`SAclRuleBuilder`) */
+  .omada-acl-builder {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .omada-acl-card {
+    display: flex;
+    flex-direction: column;
+    width: 256px;
+    border: 1px solid var(--omada-border-divider);
+    border-radius: 4px;
+    background-color: var(--omada-bg-surface);
+    overflow: hidden;
+  }
+
+  .omada-acl-card-header {
+    padding: 10px 14px 12px;
+    border-bottom: 1px solid var(--omada-border-divider);
+  }
+
+  .omada-acl-card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .omada-acl-card-title {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    color: var(--omada-text-primary);
+  }
+
+  .omada-acl-info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--omada-brand-text);
+    cursor: help;
+  }
+
+  .omada-acl-card-type-label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--omada-text-secondary);
+  }
+
+  .omada-acl-card-body {
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .omada-acl-card-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    font-size: 13px;
+    color: var(--omada-text-tertiary);
+  }
+
+  .omada-acl-card-list-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .omada-acl-card-search {
+    padding: 10px 12px 6px;
+  }
+
+  .omada-acl-card-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .omada-acl-card-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 24px;
+  }
+
+  .omada-acl-card-checkbox {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .omada-acl-card-option-text {
+    display: inline-block;
+    max-width: 170px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+    font-size: 13px;
+    color: var(--omada-text-primary);
+  }
+
+  .omada-acl-card-inspect-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: 3px;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    color: var(--omada-brand-text);
+  }
+
+  .omada-acl-card-inspect-btn:hover {
+    background-color: var(--omada-brand-bg-subtlest);
+  }
+
+  .omada-acl-card-no-match {
+    padding: 24px 8px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--omada-text-tertiary);
+  }
+
+  .omada-acl-card-footer {
+    height: 38px;
+    padding: 0 12px;
+    border-top: 1px solid var(--omada-border-divider);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .omada-acl-card-count {
+    font-size: 12px;
+    color: var(--omada-text-secondary);
+  }
+
+  .omada-acl-card-create-btn {
+    border: none;
+    background: transparent;
+    padding: 2px 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--omada-text-secondary);
+    transition: color 0.15s ease;
+  }
+
+  .omada-acl-card-create-btn:hover {
+    color: var(--omada-brand-text);
+  }
+
+  .omada-acl-connector {
+    width: 100px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 0 8px;
+  }
+
+  .omada-acl-connector-label {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
+    color: var(--omada-text-primary);
+  }
+
+  /* Inline ACL Rule Editor Form */
+  .omada-acl-editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+  }
+
+  .omada-acl-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+    color: var(--omada-text-primary);
+    transition: opacity 0.15s ease;
+  }
+
+  .omada-acl-back-btn:hover {
+    color: var(--omada-brand-text);
+  }
+
+  .omada-acl-editor-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .omada-acl-editor-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 12px;
+    min-height: 32px;
+  }
+
+  .omada-acl-editor-label {
+    width: 210px;
+    flex: 0 0 210px;
+    padding-top: 5px;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--omada-text-primary);
+  }
+
+  .omada-acl-editor-control {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+  }
+
+  .omada-acl-field-box {
+    width: 350px;
+    max-width: 100%;
+  }
 }

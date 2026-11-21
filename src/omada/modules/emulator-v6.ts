@@ -104,3 +104,17 @@ export {
   type STerminalConsoleProps,
   type STerminalSessionItem,
 } from '../components/STerminalConsole';
+
+export {
+  SExpandableSection,
+  type SExpandableSectionProps,
+} from '../components/SExpandableSection';
+
+export {
+  SAclRuleBuilder,
+  type SAclEndpointTypeOption,
+  type SAclEndpointValue,
+  type SAclObjectOption,
+  type SAclPolicy,
+  type SAclRuleBuilderProps,
+} from '../components/SAclRuleBuilder';

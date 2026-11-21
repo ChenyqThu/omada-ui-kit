@@ -1,19 +1,31 @@
-import React, { useMemo, useState } from 'react';
-import { Checkbox, Table, Tooltip } from 'antd';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Checkbox, Radio, Table, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { Plus } from 'lucide-react';
+import { ArrowLeft, Info, Plus } from 'lucide-react';
 import {
+  SAclRuleBuilder,
   SButton,
   SEmpty,
+  SExpandableSection,
   SIcon,
   SInput,
   SModal,
   SSelect,
   SSwitch,
   useOmadaNotification,
+  type SAclEndpointTypeOption,
+  type SAclEndpointValue,
+  type SAclObjectOption,
 } from '@/omada';
 import {
+  ACL_DIRECTION_OPTIONS,
+  ACL_INITIAL_OBJECTS_BY_TYPE,
+  ACL_MANUAL_STATE_OPTIONS,
   ACL_OBJECT_DETAILS,
+  ACL_PROTOCOL_OPTIONS,
+  ACL_SWITCH_PORT_OPTIONS,
+  ACL_TIME_RANGE_OPTIONS,
+  ACL_VLAN_OPTIONS,
   INITIAL_EAP_ACL_RULES,
   INITIAL_GATEWAY_ACL_RULES,
   INITIAL_SWITCH_ACL_RULES,
@@ -33,37 +45,107 @@ const TAB_TITLE_MAP: Record<AclTabKey, string> = {
   eap: 'EAP ACL',
 };
 
-const SOURCE_OPTIONS_BY_TAB: Record<AclTabKey, Array<{ label: string; value: string }>> = {
-  gateway: [
-    { label: 'Network:interface-vlan100', value: 'Network:interface-vlan100' },
-    { label: 'Network:Default', value: 'Network:Default' },
-    { label: 'IP-Port Group:port-1', value: 'IP-Port Group:port-1' },
-    { label: 'IP Group:ip-1', value: 'IP Group:ip-1' },
-  ],
-  switch: [
-    { label: 'Network:interface-vlan100', value: 'Network:interface-vlan100' },
-    { label: 'IP Group:guest-subnet', value: 'IP Group:guest-subnet' },
-    { label: 'IP-Port Group:port-1', value: 'IP-Port Group:port-1' },
-  ],
-  eap: [
-    { label: 'SSID:test_ssid_1', value: 'SSID:test_ssid_1' },
-    { label: 'SSID:Office_Staff', value: 'SSID:Office_Staff' },
-    { label: 'Network:interface-vlan100', value: 'Network:interface-vlan100' },
-  ],
-};
+const CREATABLE_TYPES = new Set([
+  'IP Group',
+  'IP-Port Group',
+  'MAC Group',
+  'IPv6 Group',
+  'IPv6-Port Group',
+  'Location Group',
+]);
 
-const DEST_OPTIONS = [
-  { label: 'IP Group:ip-1', value: 'IP Group:ip-1' },
-  { label: 'Network:Default', value: 'Network:Default' },
-  { label: 'Network:interface-vlan100', value: 'Network:interface-vlan100' },
-  { label: 'Network:interface-vlan4090', value: 'Network:interface-vlan4090' },
-];
+function makeTypeOptions(types: readonly string[]): SAclEndpointTypeOption[] {
+  return types.map((value) => ({
+    value,
+    label: value,
+    creatable: CREATABLE_TYPES.has(value),
+  }));
+}
+
+function getEndpointTypes(
+  tab: AclTabKey,
+  directions: string[],
+  side: 'source' | 'destination',
+): SAclEndpointTypeOption[] {
+  if (tab === 'switch') {
+    return makeTypeOptions([
+      'Network',
+      'IP Group',
+      'IP-Port Group',
+      'MAC Group',
+      'IPv6 Group',
+      'IPv6-Port Group',
+    ]);
+  }
+  if (tab === 'eap') {
+    if (side === 'source') {
+      return makeTypeOptions([
+        'Network',
+        'IP Group',
+        'IP-Port Group',
+        'SSID',
+        'IPv6 Group',
+        'IPv6-Port Group',
+      ]);
+    }
+    return makeTypeOptions([
+      'Network',
+      'IP Group',
+      'IP-Port Group',
+      'IPv6 Group',
+      'IPv6-Port Group',
+    ]);
+  }
+
+  // Gateway ACL dynamic type options based on selected Direction(s)
+  const isPureLanToWan = directions.length === 1 && directions[0] === 'LAN→WAN';
+  if (isPureLanToWan) {
+    return side === 'source'
+      ? makeTypeOptions(['Network', 'IP Group', 'IP-Port Group'])
+      : makeTypeOptions(['IP Group', 'IP-Port Group', 'Location', 'Location Group']);
+  }
+
+  if (side === 'source') {
+    return makeTypeOptions([
+      'Network',
+      'IP Group',
+      'IP-Port Group',
+      'IPv6 Group',
+      'IPv6-Port Group',
+      'Location',
+      'Location Group',
+    ]);
+  }
+  return makeTypeOptions([
+    'Network',
+    'IP Group',
+    'IP-Port Group',
+    'IPv6 Group',
+    'IPv6-Port Group',
+    'Location',
+    'Location Group',
+    'Gateway Management',
+  ]);
+}
+
+function formatProtocolsDisplay(list: string[]): string {
+  if (list.length === 0 || list.includes('All')) return 'All';
+  if (list.length === 2 && list.includes('TCP') && list.includes('UDP')) {
+    return 'TCP & UDP';
+  }
+  return list.join(', ');
+}
+
+function formatEndpointSummary(endpoint: SAclEndpointValue): string {
+  const type = endpoint.type ?? 'Network';
+  return `${type}:${endpoint.items.join(', ')}`;
+}
 
 /**
- * Omada Controller v6.3.0.34 ACL Workspace (`#/acl`).
- * Replicates top `Gateway ACL | Switch ACL | EAP ACL` tabs, `(?)` help, `ACL Rules`
- * drag tip + `+ Create New Rule` toolbar, and the 10-column sortable/draggable rule
- * table with interactive row reordering, status switches, object inspectors, and modals.
+ * Omada Controller v6.3.0.34 ACL Settings Module (`#/acl`).
+ * Replicates `Gateway ACL | Switch ACL | EAP ACL` rule lists and the full-pane
+ * inline `<- Create New Rule` / `<- Edit Rule` rule builder (`SAclRuleBuilder`,
+ * dynamic Direction/Protocols, Switch `ACL Binding`, Gateway/Switch `Advanced Settings`).
  */
 export const AclPage: React.FC<AclPageProps> = ({ initialTab = 'gateway' }) => {
   const notification = useOmadaNotification();
@@ -75,28 +157,77 @@ export const AclPage: React.FC<AclPageProps> = ({ initialTab = 'gateway' }) => {
     eap: INITIAL_EAP_ACL_RULES,
   });
 
+  // Dynamic network objects (supports on-the-fly `+ Create` from SAclRuleBuilder)
+  const [objectsByType, setObjectsByType] = useState<Record<string, SAclObjectOption[]>>(
+    ACL_INITIAL_OBJECTS_BY_TYPE,
+  );
+  const [objectDetailsMap, setObjectDetailsMap] = useState(ACL_OBJECT_DETAILS);
+
   // Drag-and-drop state
   const [draggingKey, setDraggingKey] = useState<string | null>(null);
   const [dragOverKey, setDragOverKey] = useState<string | null>(null);
 
-  // Create / Edit Rule Modal state
-  const [ruleModalOpen, setRuleModalOpen] = useState(false);
+  // Inline Editor View state (`null` = list view, `'create' | 'edit'` = full-pane editor)
+  const [editorMode, setEditorMode] = useState<'create' | 'edit' | null>(null);
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [formDescription, setFormDescription] = useState('');
   const [formEnabled, setFormEnabled] = useState(true);
-  const [formDirection, setFormDirection] = useState('LAN→WAN');
-  const [formPolicy, setFormPolicy] = useState<AclPolicyType>('Permit');
-  const [formProtocols, setFormProtocols] = useState('All');
-  const [formSource, setFormSource] = useState('Network:interface-vlan100');
-  const [formDestination, setFormDestination] = useState('IP Group:ip-1');
-  const [formBinding, setFormBinding] = useState('All Switches');
-  const [formBiDirectional, setFormBiDirectional] = useState(false);
+  const [formDirections, setFormDirections] = useState<string[]>(['LAN→WAN']);
+  const [formPolicy, setFormPolicy] = useState<AclPolicyType>('Deny');
+  const [formProtocols, setFormProtocols] = useState<string[]>(['All']);
+  const [formSource, setFormSource] = useState<SAclEndpointValue>({ items: [] });
+  const [formDestination, setFormDestination] = useState<SAclEndpointValue>({ items: [] });
+  const [sourceError, setSourceError] = useState(false);
+  const [destinationError, setDestinationError] = useState(false);
 
-  // Inspection & Help Modals
+  // Switch ACL Binding state
+  const [bindingExpanded, setBindingExpanded] = useState(true);
+  const [formBindingType, setFormBindingType] = useState<'ports' | 'vlan'>('ports');
+  const [formPortScope, setFormPortScope] = useState<'all' | 'custom'>('all');
+  const [formCustomPorts, setFormCustomPorts] = useState<string[]>([
+    'CTOOffice_Switch_1 · Port 1-8',
+  ]);
+  const [formBindingVlans, setFormBindingVlans] = useState<string[]>(['interface-vlan100']);
+
+  // Advanced Settings state
+  const [advExpanded, setAdvExpanded] = useState(false);
+  const [formTimeScheduleEnabled, setFormTimeScheduleEnabled] = useState(false);
+  const [formTimeRange, setFormTimeRange] = useState('Workdays_09_18');
+  const [formBiDirectional, setFormBiDirectional] = useState(false);
+  const [formStatesType, setFormStatesType] = useState<'auto' | 'manual'>('auto');
+  const [formManualStates, setFormManualStates] = useState<string[]>([
+    'New',
+    'Established',
+    'Related',
+  ]);
+  const [formEthertypeEnabled, setFormEthertypeEnabled] = useState(false);
+  const [formEthertypeHex, setFormEthertypeHex] = useState('0800');
+
+  // Inspection, Quick Create Group, & Help Modals
   const [inspectedObject, setInspectedObject] = useState<string | null>(null);
+  const [quickCreateTarget, setQuickCreateTarget] = useState<{
+    type: string;
+    side: 'source' | 'destination';
+  } | null>(null);
+  const [quickCreateName, setQuickCreateName] = useState('');
+  const [quickCreateValue, setQuickCreateValue] = useState('');
   const [helpOpen, setHelpOpen] = useState(false);
 
   const currentRules = rulesByTab[activeTab];
+
+  const getItemsForType = useCallback(
+    (type: string) => objectsByType[type] ?? [],
+    [objectsByType],
+  );
+
+  const sourceTypeOptions = useMemo(
+    () => getEndpointTypes(activeTab, formDirections, 'source'),
+    [activeTab, formDirections],
+  );
+  const destinationTypeOptions = useMemo(
+    () => getEndpointTypes(activeTab, formDirections, 'destination'),
+    [activeTab, formDirections],
+  );
 
   const moveRule = (fromIndex: number, toIndex: number) => {
     if (
@@ -145,36 +276,108 @@ export const AclPage: React.FC<AclPageProps> = ({ initialTab = 'gateway' }) => {
     });
   };
 
-  const openCreateModal = () => {
+  const openCreateEditor = () => {
+    setEditorMode('create');
     setEditingKey(null);
-    const defaultPrefix =
-      activeTab === 'gateway' ? 'Gateway_ACL' : activeTab === 'switch' ? 'Switch_ACL' : 'EAP_ACL';
-    setFormDescription(`${defaultPrefix}_${currentRules.length + 1}`);
+    setFormDescription('');
     setFormEnabled(true);
-    setFormDirection(
-      activeTab === 'gateway' ? 'LAN→WAN' : activeTab === 'switch' ? 'Ingress' : 'Wireless→LAN',
-    );
-    setFormPolicy('Permit');
-    setFormProtocols('All');
-    setFormSource(SOURCE_OPTIONS_BY_TAB[activeTab][0]?.value ?? 'Network:interface-vlan100');
-    setFormDestination('IP Group:ip-1');
-    setFormBinding(activeTab === 'eap' ? 'test_ssid_1' : 'All Switches');
+    setFormDirections([]);
+    setFormPolicy('Deny');
+    setFormProtocols(['All']);
+    setFormSource({ items: [] });
+    setFormDestination({ items: [] });
+    setSourceError(false);
+    setDestinationError(false);
+    setBindingExpanded(true);
+    setFormBindingType('ports');
+    setFormPortScope('all');
+    setFormCustomPorts(['CTOOffice_Switch_1 · Port 1-8']);
+    setFormBindingVlans(['interface-vlan100']);
+    setAdvExpanded(false);
+    setFormTimeScheduleEnabled(false);
+    setFormTimeRange('Workdays_09_18');
     setFormBiDirectional(false);
-    setRuleModalOpen(true);
+    setFormStatesType('auto');
+    setFormManualStates([]);
+    setFormEthertypeEnabled(false);
+    setFormEthertypeHex('');
   };
 
-  const openEditModal = (record: AclRuleRecord) => {
+  const openEditEditor = (record: AclRuleRecord) => {
+    setEditorMode('edit');
     setEditingKey(record.key);
     setFormDescription(record.description);
     setFormEnabled(record.enabled);
-    setFormDirection(record.direction);
+    setFormDirections(
+      record.directions && record.directions.length > 0
+        ? record.directions
+        : [record.direction],
+    );
     setFormPolicy(record.policy);
-    setFormProtocols(record.protocols);
-    setFormSource(record.source);
-    setFormDestination(record.destination);
-    setFormBinding(record.binding ?? 'All Switches');
+    setFormProtocols(
+      record.protocolList && record.protocolList.length > 0
+        ? record.protocolList
+        : record.protocols === 'All'
+          ? ['All']
+          : record.protocols.split(/[&,]/).map((s) => s.trim()).filter(Boolean),
+    );
+    setFormSource({
+      type: record.sourceType,
+      items: record.sourceItems ?? [],
+    });
+    setFormDestination({
+      type: record.destinationType,
+      items: record.destinationItems ?? [],
+    });
+    setSourceError(false);
+    setDestinationError(false);
+    setBindingExpanded(true);
+    setFormBindingType(record.bindingType ?? 'ports');
+    setFormPortScope(record.portScope ?? 'all');
+    setFormCustomPorts(record.customPorts ?? ['CTOOffice_Switch_1 · Port 1-8']);
+    setFormBindingVlans(record.bindingVlans ?? ['interface-vlan100']);
+    setAdvExpanded(
+      Boolean(
+        record.timeScheduleEnabled ||
+          record.biDirectional ||
+          record.ethertypeEnabled ||
+          record.statesType === 'manual',
+      ),
+    );
+    setFormTimeScheduleEnabled(Boolean(record.timeScheduleEnabled));
+    setFormTimeRange(record.timeRange ?? 'Workdays_09_18');
     setFormBiDirectional(Boolean(record.biDirectional));
-    setRuleModalOpen(true);
+    setFormStatesType(record.statesType ?? 'auto');
+    setFormManualStates(record.manualStates ?? ['New', 'Established', 'Related']);
+    setFormEthertypeEnabled(Boolean(record.ethertypeEnabled));
+    setFormEthertypeHex(record.ethertypeHex ?? '0800');
+  };
+
+  const handleProtocolsChange = (nextValues: string[]) => {
+    if (nextValues.length === 0) {
+      setFormProtocols(['All']);
+      return;
+    }
+    const newlyPickedAll = !formProtocols.includes('All') && nextValues.includes('All');
+    if (newlyPickedAll) {
+      setFormProtocols(['All']);
+      return;
+    }
+    setFormProtocols(nextValues.filter((v) => v !== 'All'));
+  };
+
+  const handleDirectionsChange = (nextDirs: string[]) => {
+    setFormDirections(nextDirs);
+    const validSrc = new Set(getEndpointTypes(activeTab, nextDirs, 'source').map((t) => t.value));
+    const validDst = new Set(
+      getEndpointTypes(activeTab, nextDirs, 'destination').map((t) => t.value),
+    );
+    if (formSource.type && !validSrc.has(formSource.type)) {
+      setFormSource({ items: [] });
+    }
+    if (formDestination.type && !validDst.has(formDestination.type)) {
+      setFormDestination({ items: [] });
+    }
   };
 
   const handleSaveRule = () => {
@@ -187,24 +390,69 @@ export const AclPage: React.FC<AclPageProps> = ({ initialTab = 'gateway' }) => {
       return;
     }
 
+    const missingSrc = !formSource.type || formSource.items.length === 0;
+    const missingDst = !formDestination.type || formDestination.items.length === 0;
+    setSourceError(missingSrc);
+    setDestinationError(missingDst);
+    if (missingSrc || missingDst) {
+      notification.warning({
+        title: 'Rule Endpoints Required',
+        description: 'Please select a Type and at least one item for both Source and Destination.',
+      });
+      return;
+    }
+
+    if (
+      activeTab === 'switch' &&
+      formEthertypeEnabled &&
+      !/^[0-9a-fA-F]{4}$/.test(formEthertypeHex.trim())
+    ) {
+      notification.warning({
+        title: 'Invalid Ethertype',
+        description: 'Ethertype must be a 4-hex number (0-9, A-F), e.g. 0800 or 86DD.',
+      });
+      return;
+    }
+
+    const directionLabel =
+      activeTab === 'gateway'
+        ? (formDirections.length > 0 ? formDirections.join(', ') : 'LAN→WAN')
+        : activeTab === 'switch'
+          ? 'Ingress'
+          : 'Wireless→LAN';
+
+    const rulePayload: Omit<AclRuleRecord, 'key'> = {
+      description: cleanDesc,
+      enabled: formEnabled,
+      direction: directionLabel,
+      directions: activeTab === 'gateway' ? formDirections : undefined,
+      policy: formPolicy,
+      protocols: formatProtocolsDisplay(formProtocols),
+      protocolList: formProtocols,
+      source: formatEndpointSummary(formSource),
+      sourceType: formSource.type,
+      sourceItems: formSource.items,
+      destination: formatEndpointSummary(formDestination),
+      destinationType: formDestination.type,
+      destinationItems: formDestination.items,
+      bindingType: activeTab === 'switch' ? formBindingType : undefined,
+      portScope: activeTab === 'switch' ? formPortScope : undefined,
+      customPorts: activeTab === 'switch' ? formCustomPorts : undefined,
+      bindingVlans: activeTab === 'switch' ? formBindingVlans : undefined,
+      timeScheduleEnabled: activeTab !== 'eap' ? formTimeScheduleEnabled : undefined,
+      timeRange: activeTab !== 'eap' && formTimeScheduleEnabled ? formTimeRange : undefined,
+      biDirectional: activeTab !== 'eap' ? formBiDirectional : undefined,
+      statesType: activeTab === 'gateway' ? formStatesType : undefined,
+      manualStates: activeTab === 'gateway' ? formManualStates : undefined,
+      ethertypeEnabled: activeTab === 'switch' ? formEthertypeEnabled : undefined,
+      ethertypeHex: activeTab === 'switch' ? formEthertypeHex.trim().toUpperCase() : undefined,
+    };
+
     if (editingKey) {
       setRulesByTab((prev) => ({
         ...prev,
         [activeTab]: prev[activeTab].map((r) =>
-          r.key === editingKey
-            ? {
-                ...r,
-                description: cleanDesc,
-                enabled: formEnabled,
-                direction: formDirection,
-                policy: formPolicy,
-                protocols: formProtocols,
-                source: formSource,
-                destination: formDestination,
-                binding: activeTab === 'gateway' ? undefined : formBinding,
-                biDirectional: formBiDirectional,
-              }
-            : r,
+          r.key === editingKey ? { key: r.key, ...rulePayload } : r,
         ),
       }));
       notification.success({
@@ -214,16 +462,7 @@ export const AclPage: React.FC<AclPageProps> = ({ initialTab = 'gateway' }) => {
     } else {
       const next: AclRuleRecord = {
         key: `${activeTab}-acl-${Date.now()}`,
-        description: cleanDesc,
-        enabled: formEnabled,
-        direction: formDirection,
-        policy: formPolicy,
-        protocols: formProtocols,
-        source: formSource,
-        destination: formDestination,
-        binding: activeTab === 'gateway' ? undefined : formBinding,
-        biDirectional: formBiDirectional,
-        timeRange: 'Any',
+        ...rulePayload,
       };
       setRulesByTab((prev) => ({
         ...prev,
@@ -234,7 +473,69 @@ export const AclPage: React.FC<AclPageProps> = ({ initialTab = 'gateway' }) => {
         description: `Added "${cleanDesc}" at Index ${currentRules.length + 1}.`,
       });
     }
-    setRuleModalOpen(false);
+    setEditorMode(null);
+  };
+
+  const handleOpenQuickCreate = (type: string, side: 'source' | 'destination') => {
+    setQuickCreateTarget({ type, side });
+    setQuickCreateName('');
+    setQuickCreateValue(
+      type === 'MAC Group'
+        ? 'AA-BB-CC-DD-EE-10'
+        : type.includes('IPv6')
+          ? '2001:db8:200::/48'
+          : '10.30.0.0/24',
+    );
+  };
+
+  const handleConfirmQuickCreate = () => {
+    if (!quickCreateTarget) return;
+    const cleanName = quickCreateName.trim();
+    if (!cleanName) {
+      notification.warning({
+        title: 'Profile Name Required',
+        description: `Please enter a name for the new ${quickCreateTarget.type}.`,
+      });
+      return;
+    }
+
+    const { type, side } = quickCreateTarget;
+    setObjectsByType((prev) => {
+      const existing = prev[type] ?? [];
+      if (existing.some((item) => item.value === cleanName)) return prev;
+      return {
+        ...prev,
+        [type]: [...existing, { value: cleanName, label: cleanName }],
+      };
+    });
+    setObjectDetailsMap((prev) => ({
+      ...prev,
+      [`${type}:${cleanName}`]: {
+        type,
+        summary: `Custom ${type}`,
+        entries: [quickCreateValue.trim() || 'Any'],
+      },
+    }));
+
+    if (side === 'source') {
+      setFormSource((prev) => ({
+        type,
+        items: prev.items.includes(cleanName) ? prev.items : [...prev.items, cleanName],
+      }));
+      setSourceError(false);
+    } else {
+      setFormDestination((prev) => ({
+        type,
+        items: prev.items.includes(cleanName) ? prev.items : [...prev.items, cleanName],
+      }));
+      setDestinationError(false);
+    }
+
+    notification.success({
+      title: `${type} Created`,
+      description: `Added and selected "${cleanName}".`,
+    });
+    setQuickCreateTarget(null);
   };
 
   const columns: ColumnsType<AclRuleRecord> = useMemo(() => {
@@ -295,12 +596,16 @@ export const AclPage: React.FC<AclPageProps> = ({ initialTab = 'gateway' }) => {
           <span className="text-[var(--omada-text-primary)]">{desc}</span>
         ),
       },
-      {
-        title: 'Direction',
-        dataIndex: 'direction',
-        key: 'direction',
-        width: 110,
-      },
+      ...(activeTab === 'gateway'
+        ? [
+            {
+              title: 'Direction',
+              dataIndex: 'direction',
+              key: 'direction',
+              width: 118,
+            },
+          ]
+        : []),
       {
         title: 'Policy',
         dataIndex: 'policy',
@@ -311,17 +616,17 @@ export const AclPage: React.FC<AclPageProps> = ({ initialTab = 'gateway' }) => {
         title: 'Protocols',
         dataIndex: 'protocols',
         key: 'protocols',
-        width: 102,
+        width: 116,
       },
       {
         title: 'Source',
         dataIndex: 'source',
         key: 'source',
-        width: 205,
+        width: 220,
         render: (source: string) => (
           <button
             type="button"
-            className="omada-cfg-link-btn"
+            className="omada-cfg-link-btn text-left"
             onClick={() => setInspectedObject(source)}
           >
             {source}
@@ -332,330 +637,572 @@ export const AclPage: React.FC<AclPageProps> = ({ initialTab = 'gateway' }) => {
         title: 'Destination',
         dataIndex: 'destination',
         key: 'destination',
-        width: 158,
+        width: 210,
         render: (dest: string) => (
           <button
             type="button"
-            className="omada-cfg-link-btn"
+            className="omada-cfg-link-btn text-left"
             onClick={() => setInspectedObject(dest)}
           >
             {dest}
           </button>
         ),
       },
-    ];
-
-    if (activeTab !== 'gateway') {
-      list.splice(8, 0, {
-        title: activeTab === 'switch' ? 'Binding' : 'SSID Binding',
-        dataIndex: 'binding',
-        key: 'binding',
-        width: 145,
-        render: (val?: string) => (
-          <span className="text-[var(--omada-text-secondary)]">{val ?? 'All'}</span>
+      {
+        title: 'Action',
+        key: 'action',
+        width: 96,
+        render: (_, record) => (
+          <div className="flex items-center gap-3">
+            <Tooltip title="Edit Rule">
+              <button
+                type="button"
+                aria-label={`Edit ${record.description}`}
+                onClick={() => openEditEditor(record)}
+                className="omada-cfg-row-action-btn"
+              >
+                <SIcon name="edit" size={16} />
+              </button>
+            </Tooltip>
+            <Tooltip title="Delete Rule">
+              <button
+                type="button"
+                aria-label={`Delete ${record.description}`}
+                onClick={() => handleDeleteRule(record)}
+                className="omada-cfg-row-action-btn"
+              >
+                <SIcon name="delete" size={16} />
+              </button>
+            </Tooltip>
+          </div>
         ),
-      });
-    }
-
-    list.push({
-      title: 'Action',
-      key: 'action',
-      width: 96,
-      render: (_, record) => (
-        <div className="flex items-center gap-3">
-          <Tooltip title="Edit Rule">
-            <button
-              type="button"
-              aria-label={`Edit ${record.description}`}
-              onClick={() => openEditModal(record)}
-              className="omada-cfg-row-action-btn"
-            >
-              <SIcon name="edit" size={16} />
-            </button>
-          </Tooltip>
-          <Tooltip title="Delete Rule">
-            <button
-              type="button"
-              aria-label={`Delete ${record.description}`}
-              onClick={() => handleDeleteRule(record)}
-              className="omada-cfg-row-action-btn"
-            >
-              <SIcon name="delete" size={16} />
-            </button>
-          </Tooltip>
-        </div>
-      ),
-    });
+      },
+    ];
 
     return list;
   }, [activeTab, currentRules]);
 
-  const directionOptions =
-    activeTab === 'gateway'
-      ? [
-          { label: 'LAN→WAN', value: 'LAN→WAN' },
-          { label: 'LAN→LAN', value: 'LAN→LAN' },
-          { label: 'WAN→LAN', value: 'WAN→LAN' },
-        ]
-      : activeTab === 'switch'
-        ? [
-            { label: 'Ingress', value: 'Ingress' },
-            { label: 'Egress', value: 'Egress' },
-          ]
-        : [
-            { label: 'Wireless→LAN', value: 'Wireless→LAN' },
-            { label: 'Wireless→Wireless', value: 'Wireless→Wireless' },
-          ];
-
   const inspectedMeta = inspectedObject
-    ? ACL_OBJECT_DETAILS[inspectedObject] ?? {
+    ? objectDetailsMap[inspectedObject] ?? {
         type: 'Network Object',
         summary: inspectedObject,
         entries: ['Configured inside Site Profiles'],
       }
     : null;
 
+  const showBiDirectionalOnGateway =
+    activeTab === 'gateway' && formDirections.includes('LAN→LAN');
+
   return (
-    <div className="omada-acl-page px-6 pt-4 pb-6">
-      {/* Top Underline Tabs + Help Icon */}
-      <div className="flex items-center justify-between border-b border-[var(--omada-border-divider)]">
-        <div role="tablist" aria-label="ACL scopes" className="flex items-center gap-8">
-          {(
-            [
-              { key: 'gateway', label: 'Gateway ACL' },
-              { key: 'switch', label: 'Switch ACL' },
-              { key: 'eap', label: 'EAP ACL' },
-            ] as const
-          ).map((tab) => {
-            const isActive = activeTab === tab.key;
-            return (
+    <div className="omada-acl-page px-6 pt-4 pb-8">
+      {editorMode ? (
+        <div data-testid="acl-rule-editor">
+          {/* Inline Editor Header (`pr-9` clearance from `<||` quick-drawer handle) */}
+          <div className="omada-acl-editor-header pr-9">
+            <button
+              type="button"
+              onClick={() => setEditorMode(null)}
+              className="omada-acl-back-btn"
+            >
+              <ArrowLeft size={18} />
+              <span>{editorMode === 'edit' ? 'Edit Rule' : 'Create New Rule'}</span>
+            </button>
+
+            <Tooltip title="ACL Help">
               <button
-                key={tab.key}
                 type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setActiveTab(tab.key)}
-                className={`omada-cfg-subtab-btn cursor-pointer pb-2.5 text-[18px] leading-[26px] ${
-                  isActive ? 'is-active font-medium' : 'font-normal'
-                }`}
+                aria-label="ACL help"
+                onClick={() => setHelpOpen(true)}
+                className="omada-cfg-help-btn"
               >
-                <span>{tab.label}</span>
-                {isActive && (
-                  <span className="omada-cfg-subtab-indicator absolute inset-x-0 -bottom-[1px] h-[2px]" />
-                )}
+                <SIcon name="question" size={20} />
               </button>
-            );
-          })}
+            </Tooltip>
+          </div>
+
+          <div className="omada-acl-editor-form">
+            <div className="omada-acl-editor-row">
+              <label htmlFor="acl-desc-input" className="omada-acl-editor-label">
+                Description
+              </label>
+              <div className="omada-acl-editor-control">
+                <SInput
+                  id="acl-desc-input"
+                  variant="filled"
+                  value={formDescription}
+                  onChange={(e) => setFormDescription(e.target.value)}
+                  className="omada-acl-field-box"
+                />
+              </div>
+            </div>
+
+            <div className="omada-acl-editor-row">
+              <span className="omada-acl-editor-label">Status</span>
+              <div className="omada-acl-editor-control">
+                <Checkbox
+                  checked={formEnabled}
+                  onChange={(e) => setFormEnabled(e.target.checked)}
+                >
+                  Enable
+                </Checkbox>
+              </div>
+            </div>
+
+            {activeTab === 'gateway' && (
+              <div className="omada-acl-editor-row">
+                <span className="omada-acl-editor-label">Direction</span>
+                <div className="omada-acl-editor-control">
+                  <SSelect
+                    mode="multiple"
+                    aria-label="Direction"
+                    value={formDirections}
+                    placeholder="Please Select..."
+                    onChange={(vals) => handleDirectionsChange(vals as string[])}
+                    options={ACL_DIRECTION_OPTIONS}
+                    className="omada-acl-field-box"
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="omada-acl-editor-row">
+              <span className="omada-acl-editor-label">Policy</span>
+              <div className="omada-acl-editor-control">
+                <Radio.Group
+                  value={formPolicy}
+                  onChange={(e) => setFormPolicy(e.target.value as AclPolicyType)}
+                >
+                  <Radio value="Deny">Deny</Radio>
+                  <Radio value="Permit">Permit</Radio>
+                </Radio.Group>
+              </div>
+            </div>
+
+            <div className="omada-acl-editor-row">
+              <span className="omada-acl-editor-label">Protocols</span>
+              <div className="omada-acl-editor-control">
+                <SSelect
+                  mode="multiple"
+                  aria-label="Protocols"
+                  value={formProtocols}
+                  onChange={(vals) => handleProtocolsChange(vals as string[])}
+                  options={ACL_PROTOCOL_OPTIONS}
+                  className="omada-acl-field-box"
+                />
+              </div>
+            </div>
+
+            {/* Dual-Card Visual Rule Builder */}
+            <div className="omada-acl-editor-row pt-1">
+              <span className="omada-acl-editor-label inline-flex items-center gap-1.5">
+                <span>Rule</span>
+                <Tooltip title="Traffic matching Source is evaluated against Destination according to Policy.">
+                  <span className="omada-acl-info-icon">
+                    <Info size={14} />
+                  </span>
+                </Tooltip>
+              </span>
+              <div className="omada-acl-editor-control">
+                <SAclRuleBuilder
+                  policy={formPolicy}
+                  source={formSource}
+                  onSourceChange={(next) => {
+                    setFormSource(next);
+                    setSourceError(false);
+                  }}
+                  destination={formDestination}
+                  onDestinationChange={(next) => {
+                    setFormDestination(next);
+                    setDestinationError(false);
+                  }}
+                  sourceTypeOptions={sourceTypeOptions}
+                  destinationTypeOptions={destinationTypeOptions}
+                  getItemsForType={getItemsForType}
+                  sourceTooltip={
+                    activeTab === 'eap'
+                      ? 'Select wireless SSID or network traffic origin for this EAP policy.'
+                      : undefined
+                  }
+                  sourceError={sourceError}
+                  destinationError={destinationError}
+                  onInspectItem={(type, item) => setInspectedObject(`${type}:${item.label}`)}
+                  onCreateGroup={handleOpenQuickCreate}
+                />
+              </div>
+            </div>
+
+            {/* Switch ACL: Collapsible ACL Binding Section */}
+            {activeTab === 'switch' && (
+              <div className="pt-2">
+                <SExpandableSection
+                  title="ACL Binding"
+                  expanded={bindingExpanded}
+                  onExpandedChange={setBindingExpanded}
+                >
+                  <div className="omada-acl-editor-row">
+                    <span className="omada-acl-editor-label">Binding Type</span>
+                    <div className="omada-acl-editor-control">
+                      <Radio.Group
+                        value={formBindingType}
+                        onChange={(e) => setFormBindingType(e.target.value as 'ports' | 'vlan')}
+                      >
+                        <Radio value="ports">Ports</Radio>
+                        <Radio value="vlan">VLAN</Radio>
+                      </Radio.Group>
+                    </div>
+                  </div>
+
+                  {formBindingType === 'ports' ? (
+                    <>
+                      <div className="omada-acl-editor-row">
+                        <span className="omada-acl-editor-label">Ports</span>
+                        <div className="omada-acl-editor-control">
+                          <Radio.Group
+                            value={formPortScope}
+                            onChange={(e) => setFormPortScope(e.target.value as 'all' | 'custom')}
+                          >
+                            <Radio value="all">All ports</Radio>
+                            <Radio value="custom">Custom ports</Radio>
+                          </Radio.Group>
+                        </div>
+                      </div>
+                      {formPortScope === 'custom' && (
+                        <div className="omada-acl-editor-row">
+                          <span className="omada-acl-editor-label">Select Ports</span>
+                          <div className="omada-acl-editor-control">
+                            <SSelect
+                              mode="multiple"
+                              aria-label="Custom Ports"
+                              value={formCustomPorts}
+                              onChange={(vals) => setFormCustomPorts(vals as string[])}
+                              options={ACL_SWITCH_PORT_OPTIONS}
+                              className="omada-acl-field-box"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="omada-acl-editor-row">
+                      <span className="omada-acl-editor-label">VLAN</span>
+                      <div className="omada-acl-editor-control">
+                        <SSelect
+                          mode="multiple"
+                          aria-label="VLAN Binding"
+                          value={formBindingVlans}
+                          onChange={(vals) => setFormBindingVlans(vals as string[])}
+                          options={ACL_VLAN_OPTIONS}
+                          className="omada-acl-field-box"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </SExpandableSection>
+              </div>
+            )}
+
+            {/* Gateway ACL & Switch ACL: Collapsible Advanced Settings */}
+            {activeTab !== 'eap' && (
+              <div className="pt-2">
+                <SExpandableSection
+                  title="Advanced Settings"
+                  expanded={advExpanded}
+                  onExpandedChange={setAdvExpanded}
+                >
+                  <div className="omada-acl-editor-row">
+                    <span className="omada-acl-editor-label">Time Schedule</span>
+                    <div className="omada-acl-editor-control gap-2">
+                      <Checkbox
+                        checked={formTimeScheduleEnabled}
+                        onChange={(e) => setFormTimeScheduleEnabled(e.target.checked)}
+                      >
+                        Enable
+                      </Checkbox>
+                      {activeTab === 'switch' && (
+                        <Tooltip title="Restrict rule evaluation to an active weekly Time Range.">
+                          <span className="omada-acl-info-icon">
+                            <Info size={14} />
+                          </span>
+                        </Tooltip>
+                      )}
+                    </div>
+                  </div>
+
+                  {formTimeScheduleEnabled && (
+                    <div className="omada-acl-editor-row">
+                      <span className="omada-acl-editor-label">Time Range</span>
+                      <div className="omada-acl-editor-control">
+                        <SSelect
+                          aria-label="Time Range"
+                          value={formTimeRange}
+                          onChange={(val) => setFormTimeRange(String(val))}
+                          options={ACL_TIME_RANGE_OPTIONS}
+                          className="omada-acl-field-box"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'switch' && (
+                    <div className="omada-acl-editor-row">
+                      <span className="omada-acl-editor-label">Ethertype</span>
+                      <div className="omada-acl-editor-control flex-wrap gap-3">
+                        <Checkbox
+                          checked={formEthertypeEnabled}
+                          onChange={(e) => setFormEthertypeEnabled(e.target.checked)}
+                        >
+                          Enable
+                        </Checkbox>
+                        {formEthertypeEnabled && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-[var(--omada-text-secondary)]">0x</span>
+                            <SInput
+                              aria-label="Ethertype Hex"
+                              variant="filled"
+                              maxLength={4}
+                              value={formEthertypeHex}
+                              onChange={(e) => setFormEthertypeHex(e.target.value)}
+                              style={{ width: 96 }}
+                            />
+                            <span className="text-xs text-[var(--omada-text-tertiary)]">
+                              (4-hex number; 0-9, A-F)
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {(showBiDirectionalOnGateway || activeTab === 'switch') && (
+                    <div className="omada-acl-editor-row">
+                      <span className="omada-acl-editor-label">Bi-Directional</span>
+                      <div className="omada-acl-editor-control gap-2">
+                        <Checkbox
+                          checked={formBiDirectional}
+                          onChange={(e) => setFormBiDirectional(e.target.checked)}
+                        >
+                          Enable
+                        </Checkbox>
+                        <Tooltip title="Automatically mirror the rule in the reverse traffic direction.">
+                          <span className="omada-acl-info-icon">
+                            <Info size={14} />
+                          </span>
+                        </Tooltip>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'gateway' && (
+                    <>
+                      <div className="omada-acl-editor-row">
+                        <span className="omada-acl-editor-label">States Type</span>
+                        <div className="omada-acl-editor-control">
+                          <Radio.Group
+                            value={formStatesType}
+                            onChange={(e) =>
+                              setFormStatesType(e.target.value as 'auto' | 'manual')
+                            }
+                          >
+                            <Radio value="auto">
+                              Auto (Match State New / Established / Related)
+                            </Radio>
+                            <Radio value="manual">Manual</Radio>
+                          </Radio.Group>
+                        </div>
+                      </div>
+
+                      {formStatesType === 'manual' && (
+                        <div className="omada-acl-editor-row">
+                          <span className="omada-acl-editor-label">Choose States</span>
+                          <div className="omada-acl-editor-control">
+                            <Checkbox.Group
+                              value={formManualStates}
+                              options={ACL_MANUAL_STATE_OPTIONS}
+                              onChange={(vals) => setFormManualStates(vals as string[])}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </SExpandableSection>
+              </div>
+            )}
+
+            {/* Bottom Form Actions */}
+            <div className="flex items-center gap-3 pt-2">
+              <SButton variant="primary" onClick={handleSaveRule}>
+                {editorMode === 'edit' ? 'Save' : 'Create'}
+              </SButton>
+              <SButton variant="secondary" onClick={() => setEditorMode(null)}>
+                Cancel
+              </SButton>
+            </div>
+          </div>
         </div>
+      ) : (
+        <>
+          {/* Top Underline Tabs + Help Icon */}
+          <div className="flex items-center justify-between border-b border-[var(--omada-border-divider)]">
+            <div role="tablist" aria-label="ACL scopes" className="flex items-center gap-8">
+              {(
+                [
+                  { key: 'gateway', label: 'Gateway ACL' },
+                  { key: 'switch', label: 'Switch ACL' },
+                  { key: 'eap', label: 'EAP ACL' },
+                ] as const
+              ).map((tab) => {
+                const isActive = activeTab === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    onClick={() => setActiveTab(tab.key)}
+                    className={`omada-cfg-subtab-btn cursor-pointer pb-2.5 text-[18px] leading-[26px] ${
+                      isActive ? 'is-active font-medium' : 'font-normal'
+                    }`}
+                  >
+                    <span>{tab.label}</span>
+                    {isActive && (
+                      <span className="omada-cfg-subtab-indicator absolute inset-x-0 -bottom-[1px] h-[2px]" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
 
-        <Tooltip title="ACL Help">
-          <button
-            type="button"
-            aria-label="ACL help"
-            onClick={() => setHelpOpen(true)}
-            className="omada-cfg-help-btn mb-1.5"
-          >
-            <SIcon name="question" size={20} />
-          </button>
-        </Tooltip>
-      </div>
+            <Tooltip title="ACL Help">
+              <button
+                type="button"
+                aria-label="ACL help"
+                onClick={() => setHelpOpen(true)}
+                className="omada-cfg-help-btn mb-1.5"
+              >
+                <SIcon name="question" size={20} />
+              </button>
+            </Tooltip>
+          </div>
 
-      {/* Toolbar (`pr-9` clearance from right-edge `<||` handle!) */}
-      <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-3 pr-9">
-        <div className="flex flex-wrap items-center gap-3">
-          <h2 className="m-0 text-[16px] font-medium leading-6 text-[var(--omada-text-primary)]">
-            ACL Rules
-          </h2>
-          <span className="inline-flex items-center gap-1 text-[13px] text-[var(--omada-text-tertiary)]">
-            <span>Tip: Drag</span>
-            <SIcon
-              name="icon-icon-tabler-icon-grip-vertical"
-              size={14}
-              className="text-[var(--omada-text-tertiary)]"
+          {/* Toolbar (`pr-9` clearance from right-edge `<||` handle!) */}
+          <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-3 pr-9">
+            <div className="flex flex-wrap items-center gap-3">
+              <h2 className="m-0 text-[16px] font-medium leading-6 text-[var(--omada-text-primary)]">
+                ACL Rules
+              </h2>
+              <span className="inline-flex items-center gap-1 text-[13px] text-[var(--omada-text-tertiary)]">
+                <span>Tip: Drag</span>
+                <SIcon
+                  name="icon-icon-tabler-icon-grip-vertical"
+                  size={14}
+                  className="text-[var(--omada-text-tertiary)]"
+                />
+                <span>to re-order rows.</span>
+              </span>
+            </div>
+
+            <SButton
+              variant="primary"
+              className="omada-cfg-primary-btn"
+              icon={<Plus size={14} />}
+              onClick={openCreateEditor}
+            >
+              Create New Rule
+            </SButton>
+          </div>
+
+          {/* Draggable ACL Rules Table */}
+          <div className="omada-cfg-table-shell">
+            <Table<AclRuleRecord>
+              className="omada-cfg-table"
+              rowKey="key"
+              dataSource={currentRules}
+              columns={columns}
+              pagination={false}
+              rowClassName={(record) => {
+                const classes: string[] = [];
+                if (draggingKey === record.key) classes.push('omada-acl-row-dragging');
+                if (dragOverKey === record.key && draggingKey !== record.key) {
+                  classes.push('omada-acl-row-drag-over');
+                }
+                return classes.join(' ');
+              }}
+              onRow={(record, index) => ({
+                draggable: true,
+                onDragStart: (e) => {
+                  setDraggingKey(record.key);
+                  e.dataTransfer.effectAllowed = 'move';
+                  e.dataTransfer.setData('text/plain', String(index ?? 0));
+                },
+                onDragOver: (e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = 'move';
+                  if (dragOverKey !== record.key) {
+                    setDragOverKey(record.key);
+                  }
+                },
+                onDrop: (e) => {
+                  e.preventDefault();
+                  const fromIdx = currentRules.findIndex((r) => r.key === draggingKey);
+                  const toIdx = typeof index === 'number' ? index : -1;
+                  if (fromIdx !== -1 && toIdx !== -1) {
+                    moveRule(fromIdx, toIdx);
+                  }
+                  setDraggingKey(null);
+                  setDragOverKey(null);
+                },
+                onDragEnd: () => {
+                  setDraggingKey(null);
+                  setDragOverKey(null);
+                },
+              })}
+              locale={{
+                emptyText: (
+                  <SEmpty
+                    title={`No ${TAB_TITLE_MAP[activeTab]} Rules`}
+                    description="Click + Create New Rule to define traffic permit or deny rules."
+                  />
+                ),
+              }}
             />
-            <span>to re-order rows.</span>
-          </span>
-        </div>
+          </div>
+        </>
+      )}
 
-        <SButton
-          variant="primary"
-          className="omada-cfg-primary-btn"
-          icon={<Plus size={14} />}
-          onClick={openCreateModal}
-        >
-          Create New Rule
-        </SButton>
-      </div>
-
-      {/* Draggable ACL Rules Table */}
-      <div className="omada-cfg-table-shell">
-        <Table<AclRuleRecord>
-          className="omada-cfg-table"
-          rowKey="key"
-          dataSource={currentRules}
-          columns={columns}
-          pagination={false}
-          rowClassName={(record) => {
-            const classes: string[] = [];
-            if (draggingKey === record.key) classes.push('omada-acl-row-dragging');
-            if (dragOverKey === record.key && draggingKey !== record.key) {
-              classes.push('omada-acl-row-drag-over');
-            }
-            return classes.join(' ');
-          }}
-          onRow={(record, index) => ({
-            draggable: true,
-            onDragStart: (e) => {
-              setDraggingKey(record.key);
-              e.dataTransfer.effectAllowed = 'move';
-              e.dataTransfer.setData('text/plain', String(index ?? 0));
-            },
-            onDragOver: (e) => {
-              e.preventDefault();
-              e.dataTransfer.dropEffect = 'move';
-              if (dragOverKey !== record.key) {
-                setDragOverKey(record.key);
-              }
-            },
-            onDrop: (e) => {
-              e.preventDefault();
-              const fromIdx = currentRules.findIndex((r) => r.key === draggingKey);
-              const toIdx = typeof index === 'number' ? index : -1;
-              if (fromIdx !== -1 && toIdx !== -1) {
-                moveRule(fromIdx, toIdx);
-              }
-              setDraggingKey(null);
-              setDragOverKey(null);
-            },
-            onDragEnd: () => {
-              setDraggingKey(null);
-              setDragOverKey(null);
-            },
-          })}
-          locale={{
-            emptyText: (
-              <SEmpty
-                title={`No ${TAB_TITLE_MAP[activeTab]} Rules`}
-                description="Click + Create New Rule to define traffic permit or deny rules."
-              />
-            ),
-          }}
-        />
-      </div>
-
-      {/* Create / Edit ACL Rule Modal */}
+      {/* Quick Create Group Profile Modal (`+ Create` in SAclRuleBuilder footer) */}
       <SModal
-        size="default"
-        title={
-          editingKey
-            ? `Edit ${TAB_TITLE_MAP[activeTab]} Rule`
-            : `Create New ${TAB_TITLE_MAP[activeTab]} Rule`
-        }
-        open={ruleModalOpen}
-        onCancel={() => setRuleModalOpen(false)}
-        onOk={handleSaveRule}
-        okText={editingKey ? 'Save' : 'Create'}
+        size="sm"
+        title={quickCreateTarget ? `Create ${quickCreateTarget.type}` : 'Create Group'}
+        open={Boolean(quickCreateTarget)}
+        onCancel={() => setQuickCreateTarget(null)}
+        onOk={handleConfirmQuickCreate}
+        okText="Create"
         destroyOnHidden
       >
         <div className="space-y-3.5 py-1">
           <div className="omada-cfg-modal-field-row">
-            <label htmlFor="acl-desc-input" className="omada-cfg-modal-label">
-              Description
+            <label htmlFor="acl-quick-group-name" className="omada-cfg-modal-label">
+              Profile Name
             </label>
             <SInput
-              id="acl-desc-input"
+              id="acl-quick-group-name"
               variant="filled"
-              value={formDescription}
-              onChange={(e) => setFormDescription(e.target.value)}
-              placeholder="e.g. Gateway_ACL_4"
+              value={quickCreateName}
+              onChange={(e) => setQuickCreateName(e.target.value)}
+              placeholder="e.g. Corp_Servers"
             />
           </div>
-
           <div className="omada-cfg-modal-field-row">
-            <span className="omada-cfg-modal-label">Status</span>
-            <SSwitch checked={formEnabled} onChange={setFormEnabled} aria-label="Rule Status" />
-          </div>
-
-          <div className="omada-cfg-modal-field-row">
-            <span className="omada-cfg-modal-label">Direction</span>
-            <SSelect
-              value={formDirection}
-              onChange={setFormDirection}
-              className="w-full"
-              options={directionOptions}
+            <label htmlFor="acl-quick-group-entry" className="omada-cfg-modal-label">
+              Entry / Range
+            </label>
+            <SInput
+              id="acl-quick-group-entry"
+              variant="filled"
+              value={quickCreateValue}
+              onChange={(e) => setQuickCreateValue(e.target.value)}
             />
-          </div>
-
-          <div className="omada-cfg-modal-field-row">
-            <span className="omada-cfg-modal-label">Policy</span>
-            <SSelect
-              value={formPolicy}
-              onChange={(val) => setFormPolicy(val as AclPolicyType)}
-              className="w-full"
-              options={[
-                { label: 'Permit', value: 'Permit' },
-                { label: 'Deny', value: 'Deny' },
-              ]}
-            />
-          </div>
-
-          <div className="omada-cfg-modal-field-row">
-            <span className="omada-cfg-modal-label">Protocols</span>
-            <SSelect
-              value={formProtocols}
-              onChange={setFormProtocols}
-              className="w-full"
-              options={[
-                { label: 'All', value: 'All' },
-                { label: 'TCP', value: 'TCP' },
-                { label: 'UDP', value: 'UDP' },
-                { label: 'TCP, UDP', value: 'TCP, UDP' },
-                { label: 'ICMP', value: 'ICMP' },
-              ]}
-            />
-          </div>
-
-          <div className="omada-cfg-modal-field-row">
-            <span className="omada-cfg-modal-label">Source</span>
-            <SSelect
-              value={formSource}
-              onChange={setFormSource}
-              className="w-full"
-              options={SOURCE_OPTIONS_BY_TAB[activeTab]}
-            />
-          </div>
-
-          <div className="omada-cfg-modal-field-row">
-            <span className="omada-cfg-modal-label">Destination</span>
-            <SSelect
-              value={formDestination}
-              onChange={setFormDestination}
-              className="w-full"
-              options={DEST_OPTIONS}
-            />
-          </div>
-
-          {activeTab !== 'gateway' && (
-            <div className="omada-cfg-modal-field-row">
-              <span className="omada-cfg-modal-label">
-                {activeTab === 'switch' ? 'Switch Binding' : 'SSID Binding'}
-              </span>
-              <SInput
-                variant="filled"
-                value={formBinding}
-                onChange={(e) => setFormBinding(e.target.value)}
-              />
-            </div>
-          )}
-
-          <div className="omada-cfg-modal-field-row">
-            <span className="omada-cfg-modal-label">Bi-Directional</span>
-            <Checkbox
-              checked={formBiDirectional}
-              onChange={(e) => setFormBiDirectional(e.target.checked)}
-            >
-              Automatically mirror reverse return rule
-            </Checkbox>
           </div>
         </div>
       </SModal>

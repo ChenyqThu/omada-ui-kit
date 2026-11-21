@@ -223,14 +223,128 @@ export interface AclRuleRecord {
   enabled: boolean;
   description: string;
   direction: string;
+  directions?: string[];
   policy: AclPolicyType;
   protocols: string;
+  protocolList?: string[];
   source: string;
+  sourceType?: string;
+  sourceItems?: string[];
   destination: string;
-  binding?: string;
-  biDirectional?: boolean;
+  destinationType?: string;
+  destinationItems?: string[];
+  bindingType?: 'ports' | 'vlan';
+  portScope?: 'all' | 'custom';
+  customPorts?: string[];
+  bindingVlans?: string[];
+  timeScheduleEnabled?: boolean;
   timeRange?: string;
+  ethertypeEnabled?: boolean;
+  ethertypeHex?: string;
+  biDirectional?: boolean;
+  statesType?: 'auto' | 'manual';
+  manualStates?: string[];
 }
+
+export const ACL_DIRECTION_OPTIONS: Array<{ label: string; value: string }> = [
+  { label: 'LAN→LAN', value: 'LAN→LAN' },
+  { label: 'LAN→WAN', value: 'LAN→WAN' },
+  { label: '[WAN] In', value: '[WAN] In' },
+  { label: '[WAN/LAN2] In', value: '[WAN/LAN2] In' },
+  { label: '[WAN/LAN3] In', value: '[WAN/LAN3] In' },
+  { label: '[VPN6] In', value: '[VPN6] In' },
+  { label: '[VPN8] In', value: '[VPN8] In' },
+  { label: '[VPN9] In', value: '[VPN9] In' },
+];
+
+export const ACL_PROTOCOL_OPTIONS: Array<{ label: string; value: string }> = [
+  { label: 'All', value: 'All' },
+  { label: 'TCP', value: 'TCP' },
+  { label: 'UDP', value: 'UDP' },
+  { label: 'ICMP', value: 'ICMP' },
+  { label: 'GGP', value: 'GGP' },
+  { label: 'AH', value: 'AH' },
+  { label: 'AX.25', value: 'AX.25' },
+  { label: 'DCCP', value: 'DCCP' },
+  { label: 'DDP', value: 'DDP' },
+];
+
+export const ACL_TIME_RANGE_OPTIONS: Array<{ label: string; value: string }> = [
+  { label: 'Workdays_09_18', value: 'Workdays_09_18' },
+  { label: 'Office_PoE_Workhours', value: 'Office_PoE_Workhours' },
+  { label: 'Nightly_Maintenance', value: 'Nightly_Maintenance' },
+];
+
+export const ACL_MANUAL_STATE_OPTIONS: Array<{ label: string; value: string }> = [
+  { label: 'Match State New', value: 'New' },
+  { label: 'Match State Established', value: 'Established' },
+  { label: 'Match State Invalid', value: 'Invalid' },
+  { label: 'Match State Related', value: 'Related' },
+];
+
+export const ACL_SWITCH_PORT_OPTIONS: Array<{ label: string; value: string }> = [
+  { label: 'CTOOffice_Switch_1 · Port 1-8', value: 'CTOOffice_Switch_1 · Port 1-8' },
+  { label: 'CTOOffice_Switch_1 · SFP+ 9-10', value: 'CTOOffice_Switch_1 · SFP+ 9-10' },
+  { label: 'SalesDepartment_Switch_3 · Port 1-24', value: 'SalesDepartment_Switch_3 · Port 1-24' },
+];
+
+export const ACL_VLAN_OPTIONS: Array<{ label: string; value: string }> = [
+  { label: 'Default (VLAN 1)', value: 'Default' },
+  { label: 'interface-vlan100 (VLAN 100)', value: 'interface-vlan100' },
+  { label: 'interface-vlan4090 (VLAN 4090)', value: 'interface-vlan4090' },
+  { label: 'vlan20 (VLAN 20)', value: 'vlan20' },
+];
+
+export const ACL_INITIAL_OBJECTS_BY_TYPE: Record<
+  string,
+  Array<{ value: string; label: string }>
+> = {
+  Network: [
+    { value: 'Default', label: 'Default' },
+    { value: 'interface-vlan4090', label: 'interface-vlan4090' },
+    { value: 'interface-vlan100', label: 'interface-vlan100' },
+    { value: 'vlan20', label: 'vlan20' },
+    { value: 'Guest_VLAN_200', label: 'Guest_VLAN_200' },
+  ],
+  'IP Group': [
+    { value: 'IPGroup_Any', label: 'IPGroup_Any' },
+    { value: 'IP_Group_1', label: 'IP_Group_1' },
+    { value: 'ip-1', label: 'ip-1' },
+  ],
+  'IP-Port Group': [
+    { value: 'port-1', label: 'port-1' },
+    { value: 'Web_HTTPS_Ports', label: 'Web_HTTPS_Ports' },
+  ],
+  'MAC Group': [
+    { value: 'mac-1', label: 'mac-1' },
+    { value: 'Printers_MAC', label: 'Printers_MAC' },
+  ],
+  'IPv6 Group': [
+    { value: 'IPv6_Group_1', label: 'IPv6_Group_1' },
+    { value: 'IPv6_Any', label: 'IPv6_Any' },
+  ],
+  'IPv6-Port Group': [
+    { value: 'IPv6-Port_Group_1', label: 'IPv6-Port_Group_1' },
+  ],
+  SSID: [
+    { value: 'Guest_Network_2', label: 'Guest_Network_2' },
+    { value: '!!!sdn-4.3.5-v1-acl', label: '!!!sdn-4.3.5-v1-acl' },
+    { value: 'test_ssid_1', label: 'test_ssid_1' },
+    { value: 'Office_Staff', label: 'Office_Staff' },
+  ],
+  Location: [
+    { value: 'All Regions', label: 'All Regions' },
+    { value: 'United States', label: 'United States' },
+    { value: 'China', label: 'China' },
+  ],
+  'Location Group': [
+    { value: 'Loc_Group_Restricted', label: 'Loc_Group_Restricted' },
+  ],
+  'Gateway Management': [
+    { value: 'Gateway_Web_UI', label: 'Gateway_Web_UI' },
+    { value: 'Gateway_SSH_Mgmt', label: 'Gateway_SSH_Mgmt' },
+  ],
+};
 
 export const INITIAL_GATEWAY_ACL_RULES: AclRuleRecord[] = [
   {
@@ -238,35 +352,62 @@ export const INITIAL_GATEWAY_ACL_RULES: AclRuleRecord[] = [
     enabled: true,
     description: 'Gateway_ACL_1',
     direction: 'LAN→WAN',
+    directions: ['LAN→WAN'],
     policy: 'Permit',
     protocols: 'All',
+    protocolList: ['All'],
     source: 'Network:interface-vlan100',
+    sourceType: 'Network',
+    sourceItems: ['interface-vlan100'],
     destination: 'IP Group:ip-1',
+    destinationType: 'IP Group',
+    destinationItems: ['ip-1'],
     biDirectional: false,
-    timeRange: 'Any',
+    statesType: 'auto',
+    manualStates: ['New', 'Established', 'Related'],
+    timeScheduleEnabled: false,
+    timeRange: 'Workdays_09_18',
   },
   {
     key: 'gw-acl-2',
     enabled: false,
     description: 'Gateway_ACL_2',
     direction: 'LAN→WAN',
+    directions: ['LAN→WAN'],
     policy: 'Permit',
     protocols: 'All',
+    protocolList: ['All'],
     source: 'IP-Port Group:port-1',
+    sourceType: 'IP-Port Group',
+    sourceItems: ['port-1'],
     destination: 'IP Group:ip-1',
+    destinationType: 'IP Group',
+    destinationItems: ['ip-1'],
     biDirectional: false,
-    timeRange: 'Any',
+    statesType: 'auto',
+    manualStates: ['New', 'Established', 'Related'],
+    timeScheduleEnabled: false,
+    timeRange: 'Workdays_09_18',
   },
   {
     key: 'gw-acl-3',
     enabled: true,
     description: 'Gateway_ACL_3',
     direction: 'LAN→WAN',
+    directions: ['LAN→WAN'],
     policy: 'Permit',
     protocols: 'All',
+    protocolList: ['All'],
     source: 'Network:interface-vlan100',
+    sourceType: 'Network',
+    sourceItems: ['interface-vlan100'],
     destination: 'IP Group:ip-1',
+    destinationType: 'IP Group',
+    destinationItems: ['ip-1'],
     biDirectional: false,
+    statesType: 'auto',
+    manualStates: ['New', 'Established', 'Related'],
+    timeScheduleEnabled: true,
     timeRange: 'Workdays_09_18',
   },
 ];
@@ -277,13 +418,21 @@ export const INITIAL_SWITCH_ACL_RULES: AclRuleRecord[] = [
     enabled: true,
     description: 'Switch_ACL_1',
     direction: 'Ingress',
-    policy: 'Permit',
+    policy: 'Deny',
     protocols: 'All',
+    protocolList: ['All'],
     source: 'Network:interface-vlan100',
-    destination: 'Network:Default',
-    binding: 'All Switches',
-    biDirectional: true,
-    timeRange: 'Any',
+    sourceType: 'Network',
+    sourceItems: ['interface-vlan100'],
+    destination: 'MAC Group:mac-1',
+    destinationType: 'MAC Group',
+    destinationItems: ['mac-1'],
+    bindingType: 'ports',
+    portScope: 'all',
+    biDirectional: false,
+    timeScheduleEnabled: false,
+    ethertypeEnabled: false,
+    ethertypeHex: '0800',
   },
   {
     key: 'sw-acl-2',
@@ -291,25 +440,83 @@ export const INITIAL_SWITCH_ACL_RULES: AclRuleRecord[] = [
     description: 'Switch_ACL_2',
     direction: 'Ingress',
     policy: 'Deny',
-    protocols: 'TCP',
-    source: 'IP Group:guest-subnet',
-    destination: 'IP Group:ip-1',
-    binding: 'SalesDepartment_Switch_3',
+    protocols: 'All',
+    protocolList: ['All'],
+    source: 'MAC Group:mac-1',
+    sourceType: 'MAC Group',
+    sourceItems: ['mac-1'],
+    destination: 'Network:interface-vlan100',
+    destinationType: 'Network',
+    destinationItems: ['interface-vlan100'],
+    bindingType: 'ports',
+    portScope: 'all',
     biDirectional: false,
-    timeRange: 'Any',
+    timeScheduleEnabled: false,
+    ethertypeEnabled: false,
+    ethertypeHex: '0800',
   },
   {
     key: 'sw-acl-3',
-    enabled: false,
+    enabled: true,
     description: 'Switch_ACL_3',
     direction: 'Ingress',
-    policy: 'Permit',
-    protocols: 'UDP',
-    source: 'IP-Port Group:port-1',
-    destination: 'Network:interface-vlan4090',
-    binding: 'CTOOffice_Switch_1',
+    policy: 'Deny',
+    protocols: 'All',
+    protocolList: ['All'],
+    source: 'Network:interface-vlan100',
+    sourceType: 'Network',
+    sourceItems: ['interface-vlan100'],
+    destination: 'IP Group:ip-1',
+    destinationType: 'IP Group',
+    destinationItems: ['ip-1'],
+    bindingType: 'ports',
+    portScope: 'all',
     biDirectional: false,
-    timeRange: 'Workdays_09_18',
+    timeScheduleEnabled: false,
+    ethertypeEnabled: false,
+    ethertypeHex: '0800',
+  },
+  {
+    key: 'sw-acl-4',
+    enabled: true,
+    description: 'Switch_ACL_4',
+    direction: 'Ingress',
+    policy: 'Permit',
+    protocols: 'TCP',
+    protocolList: ['TCP'],
+    source: 'IP-Port Group:port-1',
+    sourceType: 'IP-Port Group',
+    sourceItems: ['port-1'],
+    destination: 'IP Group:ip-1',
+    destinationType: 'IP Group',
+    destinationItems: ['ip-1'],
+    bindingType: 'ports',
+    portScope: 'all',
+    biDirectional: false,
+    timeScheduleEnabled: false,
+    ethertypeEnabled: false,
+    ethertypeHex: '0800',
+  },
+  {
+    key: 'sw-acl-5',
+    enabled: true,
+    description: 'Switch_ACL_5',
+    direction: 'Ingress',
+    policy: 'Permit',
+    protocols: 'TCP & UDP',
+    protocolList: ['TCP', 'UDP'],
+    source: 'IPv6 Group:IPv6_Group_1',
+    sourceType: 'IPv6 Group',
+    sourceItems: ['IPv6_Group_1'],
+    destination: 'IPv6-Port Group:IPv6-Port_Group_1',
+    destinationType: 'IPv6-Port Group',
+    destinationItems: ['IPv6-Port_Group_1'],
+    bindingType: 'vlan',
+    bindingVlans: ['interface-vlan100'],
+    biDirectional: false,
+    timeScheduleEnabled: false,
+    ethertypeEnabled: true,
+    ethertypeHex: '86DD',
   },
 ];
 
@@ -321,24 +528,43 @@ export const INITIAL_EAP_ACL_RULES: AclRuleRecord[] = [
     direction: 'Wireless→LAN',
     policy: 'Deny',
     protocols: 'All',
-    source: 'SSID:test_ssid_1',
-    destination: 'Network:Default',
-    binding: 'test_ssid_1',
-    biDirectional: false,
-    timeRange: 'Any',
+    protocolList: ['All'],
+    source: 'Network:interface-vlan100',
+    sourceType: 'Network',
+    sourceItems: ['interface-vlan100'],
+    destination: 'IP Group:ip-1',
+    destinationType: 'IP Group',
+    destinationItems: ['ip-1'],
   },
   {
     key: 'eap-acl-2',
     enabled: true,
     description: 'EAP_ACL_2',
     direction: 'Wireless→LAN',
-    policy: 'Permit',
-    protocols: 'TCP, UDP',
-    source: 'SSID:Office_Staff',
+    policy: 'Deny',
+    protocols: 'All',
+    protocolList: ['All'],
+    source: 'SSID:Guest_Network_2, !!!sdn-4.3.5-v1-acl',
+    sourceType: 'SSID',
+    sourceItems: ['Guest_Network_2', '!!!sdn-4.3.5-v1-acl'],
     destination: 'IP Group:ip-1',
-    binding: 'Office_Staff',
-    biDirectional: false,
-    timeRange: 'Any',
+    destinationType: 'IP Group',
+    destinationItems: ['ip-1'],
+  },
+  {
+    key: 'eap-acl-3',
+    enabled: true,
+    description: 'EAP_ACL_3',
+    direction: 'Wireless→LAN',
+    policy: 'Permit',
+    protocols: 'TCP',
+    protocolList: ['TCP'],
+    source: 'IPv6 Group:IPv6_Group_1',
+    sourceType: 'IPv6 Group',
+    sourceItems: ['IPv6_Group_1'],
+    destination: 'IPv6-Port Group:IPv6-Port_Group_1',
+    destinationType: 'IPv6-Port Group',
+    destinationItems: ['IPv6-Port_Group_1'],
   },
 ];
 
@@ -361,20 +587,70 @@ export const ACL_OBJECT_DETAILS: Record<
     summary: 'VLAN 4090 · Device Management',
     entries: ['Subnet: 192.168.90.1/24', 'Isolation: Disabled'],
   },
+  'Network:vlan20': {
+    type: 'LAN Network',
+    summary: 'VLAN 20 · Engineering Lab Subnet',
+    entries: ['Subnet: 192.168.20.1/24', 'Gateway: MainOffice_Gateway_2'],
+  },
+  'Network:Guest_VLAN_200': {
+    type: 'LAN Network',
+    summary: 'VLAN 200 · Isolated Guest Network',
+    entries: ['Subnet: 192.168.200.1/24', 'Client Isolation: Enabled'],
+  },
+  'IP Group:IPGroup_Any': {
+    type: 'IP Address Group',
+    summary: 'Any IPv4 Address',
+    entries: ['0.0.0.0/0'],
+  },
+  'IP Group:IP_Group_1': {
+    type: 'IP Address Group',
+    summary: 'Internal Application Servers',
+    entries: ['10.10.20.0/24'],
+  },
   'IP Group:ip-1': {
     type: 'IP Address Group',
     summary: 'Primary External & Server Destinations',
     entries: ['10.20.0.0/16 (Campus Core)', '172.16.40.10/32 (Auth Server)'],
   },
-  'IP Group:guest-subnet': {
-    type: 'IP Address Group',
-    summary: 'Guest Wireless Range',
-    entries: ['192.168.200.0/24'],
-  },
   'IP-Port Group:port-1': {
     type: 'IP-Port Group',
     summary: 'Web & App Management Ports',
     entries: ['0.0.0.0/0 · TCP 80, 443, 8080', '0.0.0.0/0 · UDP 443'],
+  },
+  'IP-Port Group:Web_HTTPS_Ports': {
+    type: 'IP-Port Group',
+    summary: 'HTTPS & DNS Standard Services',
+    entries: ['0.0.0.0/0 · TCP 443', '0.0.0.0/0 · UDP 53'],
+  },
+  'MAC Group:mac-1': {
+    type: 'MAC Address Group',
+    summary: 'Restricted Endpoint MAC Group',
+    entries: ['AA-BB-CC-DD-EE-01', 'AA-BB-CC-DD-EE-02'],
+  },
+  'MAC Group:Printers_MAC': {
+    type: 'MAC Address Group',
+    summary: 'Floor Printers & Copiers',
+    entries: ['00-17-C8-44-10-08', '00-17-C8-44-10-09'],
+  },
+  'IPv6 Group:IPv6_Group_1': {
+    type: 'IPv6 Address Group',
+    summary: 'Corporate IPv6 Prefix',
+    entries: ['2001:db8:100::/48'],
+  },
+  'IPv6 Group:IPv6_Any': {
+    type: 'IPv6 Address Group',
+    summary: 'Any IPv6 Address',
+    entries: ['::/0'],
+  },
+  'IPv6-Port Group:IPv6-Port_Group_1': {
+    type: 'IPv6-Port Group',
+    summary: 'IPv6 Web & ICMPv6 Ports',
+    entries: ['::/0 · TCP 80, 443'],
+  },
+  'SSID:Guest_Network_2, !!!sdn-4.3.5-v1-acl': {
+    type: 'Wireless SSIDs',
+    summary: 'Guest & Regression Test SSIDs',
+    entries: ['Guest_Network_2 (Guest Isolation)', '!!!sdn-4.3.5-v1-acl (Test SSID)'],
   },
   'SSID:test_ssid_1': {
     type: 'Wireless SSID',

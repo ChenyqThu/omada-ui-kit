@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-21T21:21:32.695Z",
+  "generatedAt": "2026-11-21T21:51:23.353Z",
   "package": {
     "name": "@chenyqthu/omada-ui-kit",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Omada Controller v6.3 React UI component library (Ant Design 6 + Design Tokens + Figma Assets + Single-file HTML standalone bundle)",
     "entries": {
       "import": "@chenyqthu/omada-ui-kit",
@@ -14,12 +14,12 @@
     "cdn": {
       "jsdelivrCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/style.css",
       "jsdelivrStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/standalone.js",
-      "pinnedCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.1.0/dist/style.css",
-      "pinnedStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.1.0/dist/standalone.js"
+      "pinnedCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.2.0/dist/style.css",
+      "pinnedStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.2.0/dist/standalone.js"
     }
   },
   "counts": {
-    "components": 104,
+    "components": 106,
     "antdPrimitives": 27,
     "hooksAndHelpers": 24,
     "icons": 586,
@@ -1751,6 +1751,105 @@
       "description": "Resolves a valid `SProductImage` slug for a connected neighbor device."
     },
     {
+      "name": "SAclRuleBuilder",
+      "category": "emulator-v6",
+      "kind": "component",
+      "sourcePath": "src/omada/components/SAclRuleBuilder.tsx",
+      "description": "Omada Controller v6.3 visual `Source → Policy Arrow → Destination` dual-card selector used in Gateway ACL, Switch ACL, and EAP ACL rule configuration.",
+      "propsType": "SAclRuleBuilderProps",
+      "props": [
+        {
+          "name": "policy",
+          "type": "SAclPolicy",
+          "optional": false,
+          "description": "Traffic rule policy governing the visual center arrow (`Deny` vs `Permit`)."
+        },
+        {
+          "name": "source",
+          "type": "SAclEndpointValue",
+          "optional": false,
+          "description": "Current Source card type + checked item values."
+        },
+        {
+          "name": "onSourceChange",
+          "type": "(next: SAclEndpointValue) => void",
+          "optional": false,
+          "description": "Callback invoked when Source type or checked items change."
+        },
+        {
+          "name": "destination",
+          "type": "SAclEndpointValue",
+          "optional": false,
+          "description": "Current Destination card type + checked item values."
+        },
+        {
+          "name": "onDestinationChange",
+          "type": "(next: SAclEndpointValue) => void",
+          "optional": false,
+          "description": "Callback invoked when Destination type or checked item values change."
+        },
+        {
+          "name": "sourceTypeOptions",
+          "type": "SAclEndpointTypeOption[]",
+          "optional": false,
+          "description": "Selectable endpoint types for the Source card."
+        },
+        {
+          "name": "destinationTypeOptions",
+          "type": "SAclEndpointTypeOption[]",
+          "optional": false,
+          "description": "Selectable endpoint types for the Destination card."
+        },
+        {
+          "name": "getItemsForType",
+          "type": "(type: string, side: 'source' | 'destination') => SAclObjectOption[]",
+          "optional": false,
+          "description": "Returns checklist items belonging to the chosen endpoint type."
+        },
+        {
+          "name": "sourceTooltip",
+          "type": "string",
+          "optional": true,
+          "description": "Optional tooltip shown next to the Source card heading (e.g., EAP ACL)."
+        },
+        {
+          "name": "destinationTooltip",
+          "type": "string",
+          "optional": true,
+          "description": "Optional tooltip shown next to the Destination card heading."
+        },
+        {
+          "name": "sourceError",
+          "type": "boolean",
+          "optional": true,
+          "description": "Marks Source type selector with validation error border when true."
+        },
+        {
+          "name": "destinationError",
+          "type": "boolean",
+          "optional": true,
+          "description": "Marks Destination type selector with validation error border when true."
+        },
+        {
+          "name": "onInspectItem",
+          "type": "(type: string, item: SAclObjectOption, side: 'source' | 'destination') => void",
+          "optional": true,
+          "description": "Invoked when the per-row detail icon button is clicked inside either card."
+        },
+        {
+          "name": "onCreateGroup",
+          "type": "(type: string, side: 'source' | 'destination') => void",
+          "optional": true,
+          "description": "Invoked when `+ Create` in a card footer is clicked (for creatable Group types)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "optional": true
+        }
+      ]
+    },
+    {
       "name": "SApDistributionRuler",
       "category": "emulator-v6",
       "kind": "component",
@@ -2248,6 +2347,56 @@
           "name": "children",
           "type": "React.ReactNode",
           "optional": false
+        }
+      ]
+    },
+    {
+      "name": "SExpandableSection",
+      "category": "emulator-v6",
+      "kind": "component",
+      "sourcePath": "src/omada/components/SExpandableSection.tsx",
+      "description": "Omada Controller v6.3 square `[+]` / `[-]` expandable settings section (used for `Advanced Settings`, `ACL Binding`, and progressive disclosure blocks).",
+      "propsType": "SExpandableSectionProps",
+      "props": [
+        {
+          "name": "title",
+          "type": "React.ReactNode",
+          "optional": false,
+          "description": "Section heading displayed next to the `[+]` / `[-]` toggle square."
+        },
+        {
+          "name": "expanded",
+          "type": "boolean",
+          "optional": true,
+          "description": "Controlled expanded state."
+        },
+        {
+          "name": "defaultExpanded",
+          "type": "boolean",
+          "optional": true,
+          "description": "Initial uncontrolled expanded state (default `false`)."
+        },
+        {
+          "name": "onExpandedChange",
+          "type": "(expanded: boolean) => void",
+          "optional": true,
+          "description": "Invoked when the section toggle is clicked."
+        },
+        {
+          "name": "extra",
+          "type": "React.ReactNode",
+          "optional": true,
+          "description": "Optional trailing content rendered on the same row as the toggle header."
+        },
+        {
+          "name": "children",
+          "type": "React.ReactNode",
+          "optional": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "optional": true
         }
       ]
     },
@@ -13299,8 +13448,8 @@
         "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/standalone.js"
       },
       "pinnedUrls": {
-        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.1.0/dist/style.css",
-        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.1.0/dist/standalone.js"
+        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.2.0/dist/style.css",
+        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.2.0/dist/standalone.js"
       }
     },
     {
@@ -13371,12 +13520,27 @@
         "SSettingsSection",
         "SSettingsRow",
         "SSettingsInfoBanner",
+        "SExpandableSection",
         "SInput",
         "SIpInput",
         "SMacInput",
         "SSelect",
         "SSwitch",
         "SButton"
+      ]
+    },
+    {
+      "id": "acl-rule-editor",
+      "title": "ACL Security Rule Builder (Gateway / Switch / EAP ACL)",
+      "summary": "Inline full-pane rule editor with multi-select Direction/Protocols, Source → Policy Arrow → Destination dual-card builder, ACL Binding, and Advanced Settings.",
+      "components": [
+        "SAclRuleBuilder",
+        "SExpandableSection",
+        "SInput",
+        "SSelect",
+        "SButton",
+        "SModal",
+        "SIcon"
       ]
     },
     {

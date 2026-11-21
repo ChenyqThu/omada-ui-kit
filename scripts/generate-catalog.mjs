@@ -79,6 +79,8 @@ function classifySourcePath(relPath, symbolName) {
     'SDevicePortGraphic',
     'SSettingsPageShell',
     'STerminalConsole',
+    'SExpandableSection',
+    'SAclRuleBuilder',
     'SPortPanel',
     'SDeviceStatus',
   ]);
@@ -361,7 +363,14 @@ function buildRecipes(pkgName, pkgVersion) {
       title: 'Omada v6.3 Site / Network / Device Settings Page',
       summary:
         'Structured configuration sections with 200px left labels, 350px controls, contextual SSettingsInfoBanner, and sticky bottom Save/Cancel footer.',
-      components: ['SSettingsPageShell', 'SSettingsSection', 'SSettingsRow', 'SSettingsInfoBanner', 'SInput', 'SIpInput', 'SMacInput', 'SSelect', 'SSwitch', 'SButton'],
+      components: ['SSettingsPageShell', 'SSettingsSection', 'SSettingsRow', 'SSettingsInfoBanner', 'SExpandableSection', 'SInput', 'SIpInput', 'SMacInput', 'SSelect', 'SSwitch', 'SButton'],
+    },
+    {
+      id: 'acl-rule-editor',
+      title: 'ACL Security Rule Builder (Gateway / Switch / EAP ACL)',
+      summary:
+        'Inline full-pane rule editor with multi-select Direction/Protocols, Source → Policy Arrow → Destination dual-card builder, ACL Binding, and Advanced Settings.',
+      components: ['SAclRuleBuilder', 'SExpandableSection', 'SInput', 'SSelect', 'SButton', 'SModal', 'SIcon'],
     },
     {
       id: 'tools-terminal',

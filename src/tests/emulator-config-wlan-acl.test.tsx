@@ -179,19 +179,42 @@ describe('emulator-config-wlan-acl module', () => {
       expect(screen.getByText('EAP_ACL_1')).toBeInTheDocument();
     });
 
-    it('creates, edits, and deletes a Gateway ACL rule', async () => {
+    it('creates, edits, and deletes Gateway, Switch, and EAP ACL rules via inline builder', async () => {
       const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       renderThemed(<AclPage />);
 
+      // Open inline Create New Rule pane on Gateway ACL
       fireEvent.click(screen.getByRole('button', { name: /Create New Rule/i }));
-      const descInput = await screen.findByLabelText('Description');
+      expect(await screen.findByTestId('acl-rule-editor')).toBeInTheDocument();
+
+      const descInput = screen.getByLabelText('Description');
       fireEvent.change(descInput, { target: { value: 'Gateway_ACL_Custom' } });
+
+      // Switch policy to Permit and pick Source + Destination in SAclRuleBuilder
+      fireEvent.click(screen.getByRole('radio', { name: 'Permit' }));
+
+      const sourceCard = screen.getByTestId('acl-builder-source');
+      fireEvent.mouseDown(within(sourceCard).getByRole('combobox'));
+      fireEvent.click((await screen.findAllByText('Network')).slice(-1)[0]);
+      fireEvent.click(within(sourceCard).getByText('Default'));
+
+      const destCard = screen.getByTestId('acl-builder-destination');
+      fireEvent.mouseDown(within(destCard).getByRole('combobox'));
+      fireEvent.click((await screen.findAllByText('IP Group')).slice(-1)[0]);
+      fireEvent.click(within(destCard).getByText('ip-1'));
+
+      // Expand Advanced Settings and switch to Manual States
+      fireEvent.click(screen.getByRole('button', { name: 'Advanced Settings' }));
+      fireEvent.click(screen.getByRole('radio', { name: 'Manual' }));
+      fireEvent.click(screen.getByRole('checkbox', { name: 'Match State New' }));
+
       fireEvent.click(screen.getByRole('button', { name: 'Create' }));
 
       await waitFor(() => {
         expect(screen.getByText('Gateway_ACL_Custom')).toBeInTheDocument();
       });
 
+      // Edit existing Gateway_ACL_Custom via inline Edit Rule pane
       fireEvent.click(screen.getByRole('button', { name: 'Edit Gateway_ACL_Custom' }));
       const editInput = await screen.findByLabelText('Description');
       fireEvent.change(editInput, { target: { value: 'Gateway_ACL_Renamed' } });
@@ -205,6 +228,20 @@ describe('emulator-config-wlan-acl module', () => {
       await waitFor(() => {
         expect(screen.queryByText('Gateway_ACL_Renamed')).not.toBeInTheDocument();
       });
+
+      // Switch ACL inline editor verifies ACL Binding + Ethertype; EAP ACL omits Advanced Settings
+      fireEvent.click(screen.getByRole('tab', { name: 'Switch ACL' }));
+      fireEvent.click(screen.getByRole('button', { name: /Create New Rule/i }));
+      expect(screen.getByRole('button', { name: 'ACL Binding' })).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Advanced Settings' }));
+      expect(screen.getByText('Ethertype')).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+      fireEvent.click(screen.getByRole('tab', { name: 'EAP ACL' }));
+      fireEvent.click(screen.getByRole('button', { name: /Create New Rule/i }));
+      expect(screen.queryByRole('button', { name: 'Advanced Settings' })).not.toBeInTheDocument();
+      expect(screen.queryByText('Direction')).not.toBeInTheDocument();
+
       expect(warnSpy).not.toHaveBeenCalled();
     });
   });
