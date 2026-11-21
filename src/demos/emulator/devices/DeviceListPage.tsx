@@ -366,7 +366,7 @@ export const DeviceListPage: React.FC<DeviceListPageProps> = ({
         title: 'Device Name',
         dataIndex: 'name',
         key: 'name',
-        width: 280,
+        width: 294,
         defaultSortOrder: 'ascend',
         sorter: (a, b) => a.name.localeCompare(b.name),
         showSorterTooltip: false,
@@ -404,7 +404,7 @@ export const DeviceListPage: React.FC<DeviceListPageProps> = ({
         title: 'IPv6 Address',
         dataIndex: 'ipv6',
         key: 'ipv6',
-        width: 300,
+        width: 286,
         render: (ipv6: string) => (
           <span className="text-[14px] text-[var(--omada-text-primary)]">{ipv6}</span>
         ),

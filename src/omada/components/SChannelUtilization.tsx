@@ -52,65 +52,71 @@ export const SChannelUtilization: React.FC<SChannelUtilizationProps> = ({
   return (
     <div className={`w-full overflow-x-auto ${className}`.trim()} style={style}>
       <div className="flex min-w-[660px] items-start gap-2">
-        {bands.map((band) => (
-          <div
-            key={band.key}
-            className="flex min-w-0 flex-col"
-            style={{ flex: band.channels.length }}
-          >
-            {/* Channel Vertical Bars + Numbers */}
+        {bands.map((band) => {
+          const bandFlexWeight = band.channels.reduce(
+            (sum, ch) => sum + (ch.channel >= 100 ? 1.24 : 0.92),
+            0,
+          );
+          return (
             <div
-              className="grid items-end gap-[2px]"
-              style={{
-                gridTemplateColumns: `repeat(${band.channels.length}, minmax(0, 1fr))`,
-              }}
+              key={band.key}
+              className="flex min-w-0 flex-col"
+              style={{ flex: bandFlexWeight }}
             >
-              {band.channels.map((ch) => {
-                const pct = Math.max(0, Math.min(ch.utilization, 100));
-                const barColor = getChannelColor(ch);
+              {/* Channel Vertical Bars + Numbers */}
+              <div
+                className="grid items-end gap-[2px]"
+                style={{
+                  gridTemplateColumns: `repeat(${band.channels.length}, minmax(0, 1fr))`,
+                }}
+              >
+                {band.channels.map((ch) => {
+                  const pct = Math.max(0, Math.min(ch.utilization, 100));
+                  const barColor = getChannelColor(ch);
 
-                return (
-                  <STooltip
-                    key={`${band.key}-${ch.channel}`}
-                    title={`${band.label} · Ch ${ch.channel}: ${pct}% utilization`}
-                  >
-                    <div
-                      className="flex flex-col items-center gap-1"
-                      data-channel={`${band.key}-${ch.channel}`}
-                      data-utilization={pct}
+                  return (
+                    <STooltip
+                      key={`${band.key}-${ch.channel}`}
+                      title={`${band.label} · Ch ${ch.channel}: ${pct}% utilization`}
                     >
                       <div
-                        className="relative flex h-[22px] w-full items-end overflow-hidden rounded-t-[2px]"
-                        style={{
-                          backgroundColor:
-                            'var(--omada-dash-channel-track, rgba(0, 0, 0, 0.05))',
-                        }}
+                        className="flex min-w-0 flex-col items-center gap-1"
+                        data-channel={`${band.key}-${ch.channel}`}
+                        data-utilization={pct}
                       >
-                        {pct > 0 && (
-                          <span
-                            className="block w-full rounded-t-[2px] transition-all"
-                            style={{
-                              height: `${Math.max(pct, 14)}%`,
-                              backgroundColor: barColor,
-                            }}
-                          />
-                        )}
+                        <div
+                          className="relative flex h-[22px] w-full items-end overflow-hidden rounded-t-[2px]"
+                          style={{
+                            backgroundColor:
+                              'var(--omada-dash-channel-track, rgba(0, 0, 0, 0.05))',
+                          }}
+                        >
+                          {pct > 0 && (
+                            <span
+                              className="block w-full rounded-t-[2px] transition-all"
+                              style={{
+                                height: `${Math.max(pct, 14)}%`,
+                                backgroundColor: barColor,
+                              }}
+                            />
+                          )}
+                        </div>
+                        <span className="tabular-nums whitespace-nowrap text-[8.5px] leading-3 tracking-[-0.04em] text-[var(--omada-text-tertiary)]">
+                          {ch.channel}
+                        </span>
                       </div>
-                      <span className="tabular-nums whitespace-nowrap text-[9.5px] leading-3 tracking-tight text-[var(--omada-text-tertiary)]">
-                        {ch.channel}
-                      </span>
-                    </div>
-                  </STooltip>
-                );
-              })}
-            </div>
+                    </STooltip>
+                  );
+                })}
+              </div>
 
-            {/* Band Underline & Centered Label */}
-            <div className="mt-2 border-t border-[var(--omada-dash-card-border,var(--omada-border-divider))] pt-1.5 text-center text-[12px] leading-4 text-[var(--omada-text-secondary)]">
-              {band.label}
+              {/* Band Underline & Centered Label */}
+              <div className="mt-2 border-t border-[var(--omada-dash-card-border,var(--omada-border-divider))] pt-1.5 text-center text-[12px] leading-4 text-[var(--omada-text-secondary)]">
+                {band.label}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
