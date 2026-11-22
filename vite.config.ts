@@ -12,6 +12,31 @@ export default defineConfig({
       '@': path.resolve(import.meta.dirname, 'src'),
     },
   },
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: 'vendor-react',
+              priority: 30,
+              test: /node_modules\/(react|react-dom|scheduler)\//,
+            },
+            {
+              name: 'vendor-antd',
+              priority: 25,
+              test: /node_modules\/(antd|@ant-design|rc-|@rc-component)\//,
+            },
+            {
+              name: 'vendor-echarts',
+              priority: 25,
+              test: /node_modules\/(echarts|zrender)\//,
+            },
+          ],
+        },
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,

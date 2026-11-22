@@ -1,6 +1,6 @@
 {
   "name": "@chenyqthu/omada-ui-kit",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Omada Controller v6.3 React UI component library (Ant Design 6 + Design Tokens + Figma Assets + Single-file HTML standalone bundle)",
   "license": "MIT",
   "repository": {
@@ -20,6 +20,26 @@
     ".": {
       "types": "./dist/types/lib/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./core": {
+      "types": "./dist/types/lib/core.d.ts",
+      "import": "./dist/core.js"
+    },
+    "./blocks": {
+      "types": "./dist/types/lib/blocks.d.ts",
+      "import": "./dist/blocks.js"
+    },
+    "./charts": {
+      "types": "./dist/types/lib/charts.d.ts",
+      "import": "./dist/charts.js"
+    },
+    "./emulator": {
+      "types": "./dist/types/lib/emulator.d.ts",
+      "import": "./dist/emulator.js"
+    },
+    "./assets": {
+      "types": "./dist/types/lib/assets.d.ts",
+      "import": "./dist/assets.js"
     },
     "./style.css": "./dist/style.css",
     "./standalone": "./dist/standalone.js",

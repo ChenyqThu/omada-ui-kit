@@ -477,6 +477,11 @@ function main() {
       description: pkg.description ?? '',
       entries: {
         import: pkg.name,
+        core: `${pkg.name}/core`,
+        blocks: `${pkg.name}/blocks`,
+        charts: `${pkg.name}/charts`,
+        emulator: `${pkg.name}/emulator`,
+        assets: `${pkg.name}/assets`,
         styleCss: `${pkg.name}/style.css`,
         standalone: `${pkg.name}/standalone`,
         catalog: `${pkg.name}/catalog.json`,

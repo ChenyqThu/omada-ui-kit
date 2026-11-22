@@ -99,7 +99,7 @@ export const TemplatesSection: React.FC = () => {
     <div className="space-y-6">
       <SPageHeader
         title="Full-Page Starter Templates"
-        subtitle="Ready-to-run Single-File HTML (CDN zero-build) & React TSX page templates derived directly from templates/."
+        description="Ready-to-run Single-File HTML (CDN zero-build) & React TSX page templates derived directly from templates/."
       />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

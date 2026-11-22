@@ -3,7 +3,7 @@ import { Upload, type UploadProps } from 'antd';
 import type { RcFile } from 'antd/es/upload';
 import { Download } from 'lucide-react';
 import { SIcon } from '../assets/SIcon';
-import { SIllustration } from '../assets/SIllustration';
+import { SBuiltinIllustration } from '../assets/builtinIllustrations';
 import { SButton, type SButtonVariant } from './SButton';
 
 export type SUploadPreset = 'firmware' | 'config' | 'image';
@@ -262,7 +262,7 @@ const SUploadBase: React.FC<SUploadProps> = ({
           {children ?? (
             <div className="flex flex-col items-center justify-center px-4 py-4 text-center">
               {showIllustration ? (
-                <SIllustration
+                <SBuiltinIllustration
                   name="upgrade"
                   width={84}
                   className="mb-2 object-contain"

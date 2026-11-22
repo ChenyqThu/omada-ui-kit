@@ -7,7 +7,14 @@ const ILLUSTRATION_URL_MAP = import.meta.glob<string>(
   { eager: true, import: 'default' },
 );
 
-const ILLUSTRATION_NAMES = new Set<string>(OMADA_ILLUSTRATIONS.map((entry) => entry.name));
+let illustrationNamesCache: Set<string> | null = null;
+
+function getIllustrationNames(): Set<string> {
+  if (!illustrationNamesCache) {
+    illustrationNamesCache = new Set<string>(OMADA_ILLUSTRATIONS.map((entry) => entry.name));
+  }
+  return illustrationNamesCache;
+}
 
 export interface SIllustrationProps {
   name: OmadaIllustrationName;
@@ -25,7 +32,7 @@ export interface SIllustrationProps {
  * Checks whether an illustration slug exists in the bundled Figma illustration library.
  */
 export function hasOmadaIllustration(name: string): boolean {
-  return ILLUSTRATION_NAMES.has(name);
+  return getIllustrationNames().has(name);
 }
 
 /**

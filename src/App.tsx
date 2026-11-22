@@ -1,8 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { OmadaProvider } from '@/omada';
-import { EmulatorApp } from './demos/emulator/EmulatorApp';
-import { HotspotPortalApp } from './demos/emulator/hotspot/HotspotPortalApp';
-import { ShowcaseApp } from './showcase/ShowcaseApp';
+
+const EmulatorApp = React.lazy(() =>
+  import('./demos/emulator/EmulatorApp').then((m) => ({ default: m.EmulatorApp })),
+);
+const HotspotPortalApp = React.lazy(() =>
+  import('./demos/emulator/hotspot/HotspotPortalApp').then((m) => ({
+    default: m.HotspotPortalApp,
+  })),
+);
+const ShowcaseApp = React.lazy(() =>
+  import('./showcase/ShowcaseApp').then((m) => ({ default: m.ShowcaseApp })),
+);
 
 function isShowcaseRoute(hash: string): boolean {
   const cleaned = hash.replace(/^#\/?/, '').split('?')[0].trim().toLowerCase();
@@ -28,20 +37,28 @@ export const App: React.FC = () => {
 
   return (
     <OmadaProvider defaultThemeMode="light">
-      {isShowcaseRoute(hash) ? (
-        <ShowcaseApp />
-      ) : isHotspotRoute(hash) ? (
-        <HotspotPortalApp
-          onBackToController={() => {
-            if (typeof window !== 'undefined') {
-              window.location.hash = '#/dashboard';
-            }
-            setHash('#/dashboard');
-          }}
-        />
-      ) : (
-        <EmulatorApp />
-      )}
+      <React.Suspense
+        fallback={
+          <div className="flex h-screen items-center justify-center text-sm text-[var(--omada-text-secondary)]">
+            Loading Omada UI Kit…
+          </div>
+        }
+      >
+        {isShowcaseRoute(hash) ? (
+          <ShowcaseApp />
+        ) : isHotspotRoute(hash) ? (
+          <HotspotPortalApp
+            onBackToController={() => {
+              if (typeof window !== 'undefined') {
+                window.location.hash = '#/dashboard';
+              }
+              setHash('#/dashboard');
+            }}
+          />
+        ) : (
+          <EmulatorApp />
+        )}
+      </React.Suspense>
     </OmadaProvider>
   );
 };

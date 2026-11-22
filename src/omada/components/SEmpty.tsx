@@ -1,7 +1,11 @@
 import React from 'react';
 import { Inbox } from 'lucide-react';
-import { SIllustration } from '../assets/SIllustration';
+import { SBuiltinIllustration } from '../assets/builtinIllustrations';
 import type { OmadaIllustrationName } from '../assets/assetsManifest';
+
+const LazySIllustration = React.lazy(() =>
+  import('../assets/SIllustration').then((m) => ({ default: m.SIllustration })),
+);
 
 export interface SEmptyProps {
   title?: React.ReactNode;
@@ -35,12 +39,26 @@ export const SEmpty: React.FC<SEmptyProps> = ({
         <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--omada-bg-field)] text-[var(--omada-text-tertiary)]">
           {icon}
         </div>
-      ) : illustration !== false ? (
-        <SIllustration
-          name={illustration}
+      ) : illustration === 'no-data' ? (
+        <SBuiltinIllustration
+          name="no-data"
           width={illustrationWidth}
           className="mb-3 max-w-full object-contain"
         />
+      ) : illustration === 'upgrade' ? (
+        <SBuiltinIllustration
+          name="upgrade"
+          width={illustrationWidth}
+          className="mb-3 max-w-full object-contain"
+        />
+      ) : illustration !== false ? (
+        <React.Suspense fallback={null}>
+          <LazySIllustration
+            name={illustration}
+            width={illustrationWidth}
+            className="mb-3 max-w-full object-contain"
+          />
+        </React.Suspense>
       ) : (
         <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--omada-bg-field)] text-[var(--omada-text-tertiary)]">
           <Inbox size={22} />

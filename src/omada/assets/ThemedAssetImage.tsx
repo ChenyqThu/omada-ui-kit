@@ -42,7 +42,7 @@ export function resolveThemedAssetEntry(
  * runtime base URL (`globalThis.__OMADA_ASSET_BASE__`), while leaving data URIs,
  * blob URLs, HTTP(S) URLs, and root-relative paths untouched.
  */
-function resolveRuntimeAssetUrl(url: string): string {
+export function resolveRuntimeAssetUrl(url: string): string {
   if (
     !url ||
     url.startsWith('data:') ||

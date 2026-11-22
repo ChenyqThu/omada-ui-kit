@@ -2,10 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { App as AntdApp, Modal, Steps, type ModalProps, type StepsProps } from 'antd';
 import { AlertTriangle, HelpCircle, Info } from 'lucide-react';
 import { SIcon } from '../assets/SIcon';
-import { SIllustration } from '../assets/SIllustration';
+import { SBuiltinIllustration } from '../assets/builtinIllustrations';
 import type { OmadaIllustrationName } from '../assets/assetsManifest';
 import type { OmadaIconName } from '../assets/iconsManifest';
 import { SButton, type SButtonProps } from './SButton';
+
+const LazySIllustration = React.lazy(() =>
+  import('../assets/SIllustration').then((m) => ({ default: m.SIllustration })),
+);
 
 export type SModalSize = 'sm' | 'confirm' | 'default' | 'centered' | 'form' | 'xl';
 
@@ -287,12 +291,20 @@ export const SInfoDialog: React.FC<SInfoDialogProps> = ({
       {...rest}
     >
       <div className="flex flex-col items-center px-4 py-3 text-center">
-        {illustration ? (
-          <SIllustration
+        {illustration === 'no-data' || illustration === 'upgrade' ? (
+          <SBuiltinIllustration
             name={illustration}
             width={160}
             className="mb-4 max-w-full object-contain"
           />
+        ) : illustration ? (
+          <React.Suspense fallback={null}>
+            <LazySIllustration
+              name={illustration}
+              width={160}
+              className="mb-4 max-w-full object-contain"
+            />
+          </React.Suspense>
         ) : (
           resolvedIcon && <div className="mb-4 inline-flex">{resolvedIcon}</div>
         )}

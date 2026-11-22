@@ -7,7 +7,14 @@ const PRODUCT_URL_MAP = import.meta.glob<string>('../../assets/products/**/*.{sv
   import: 'default',
 });
 
-const PRODUCT_NAMES = new Set<string>(OMADA_PRODUCTS.map((entry) => entry.name));
+let productNamesCache: Set<string> | null = null;
+
+function getProductNames(): Set<string> {
+  if (!productNamesCache) {
+    productNamesCache = new Set<string>(OMADA_PRODUCTS.map((entry) => entry.name));
+  }
+  return productNamesCache;
+}
 
 export interface SProductImageProps {
   name: OmadaProductName;
@@ -24,7 +31,7 @@ export interface SProductImageProps {
  * Checks whether a hardware product slug exists in the bundled Figma product library.
  */
 export function hasOmadaProductImage(name: string): boolean {
-  return PRODUCT_NAMES.has(name);
+  return getProductNames().has(name);
 }
 
 /**

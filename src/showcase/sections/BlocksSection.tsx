@@ -139,7 +139,7 @@ export const BlocksSection: React.FC = () => {
     <div className="space-y-6">
       <SPageHeader
         title="Reusable Omada Blocks"
-        subtitle="High-reuse multi-component compositions for rapid PRD prototypes (bundled directly in @chenyqthu/omada-ui-kit)"
+        description="High-reuse multi-component compositions for rapid PRD prototypes (bundled directly in @chenyqthu/omada-ui-kit)"
       />
 
       {/* Block 1: SEmulatorShell scope="site" | "global" & extraNavItems */}
@@ -198,7 +198,7 @@ export const BlocksSection: React.FC = () => {
             <div className="p-5 pr-9">
               <SPageHeader
                 title={`Preview Context: ${shellScope === 'global' ? 'Global View' : 'Site View'} / ${shellNavKey}`}
-                subtitle="Rendered inside embedded SEmulatorShell with full Light/Dark theme parity."
+                description="Rendered inside embedded SEmulatorShell with full Light/Dark theme parity."
               />
             </div>
           </SEmulatorShell>

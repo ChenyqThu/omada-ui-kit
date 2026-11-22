@@ -15,19 +15,46 @@ import {
   SlidersHorizontal,
 } from 'lucide-react';
 import { SAppShell, useOmadaFeedback, type SNavGroup } from '@/omada';
-import { DeviceListDemo } from './demos/DeviceListDemo';
-import { AssetsSection } from './sections/AssetsSection';
 import { BlocksSection } from './sections/BlocksSection';
-import { DataChartsSection } from './sections/DataChartsSection';
-import { DataDisplaySection } from './sections/DataDisplaySection';
-import { FeedbackOverlaysSection } from './sections/FeedbackOverlaysSection';
-import { FeedbackSection } from './sections/FeedbackSection';
-import { InputsSection } from './sections/InputsSection';
-import { NavShellSection } from './sections/NavShellSection';
-import { SelectInputsSection } from './sections/SelectInputsSection';
-import { TemplatesSection } from './sections/TemplatesSection';
-import { TimeScheduleSection } from './sections/TimeScheduleSection';
-import { TokensSection } from './sections/TokensSection';
+
+const DeviceListDemo = React.lazy(() =>
+  import('./demos/DeviceListDemo').then((m) => ({ default: m.DeviceListDemo })),
+);
+const AssetsSection = React.lazy(() =>
+  import('./sections/AssetsSection').then((m) => ({ default: m.AssetsSection })),
+);
+const DataChartsSection = React.lazy(() =>
+  import('./sections/DataChartsSection').then((m) => ({ default: m.DataChartsSection })),
+);
+const DataDisplaySection = React.lazy(() =>
+  import('./sections/DataDisplaySection').then((m) => ({ default: m.DataDisplaySection })),
+);
+const FeedbackOverlaysSection = React.lazy(() =>
+  import('./sections/FeedbackOverlaysSection').then((m) => ({
+    default: m.FeedbackOverlaysSection,
+  })),
+);
+const FeedbackSection = React.lazy(() =>
+  import('./sections/FeedbackSection').then((m) => ({ default: m.FeedbackSection })),
+);
+const InputsSection = React.lazy(() =>
+  import('./sections/InputsSection').then((m) => ({ default: m.InputsSection })),
+);
+const NavShellSection = React.lazy(() =>
+  import('./sections/NavShellSection').then((m) => ({ default: m.NavShellSection })),
+);
+const SelectInputsSection = React.lazy(() =>
+  import('./sections/SelectInputsSection').then((m) => ({ default: m.SelectInputsSection })),
+);
+const TemplatesSection = React.lazy(() =>
+  import('./sections/TemplatesSection').then((m) => ({ default: m.TemplatesSection })),
+);
+const TimeScheduleSection = React.lazy(() =>
+  import('./sections/TimeScheduleSection').then((m) => ({ default: m.TimeScheduleSection })),
+);
+const TokensSection = React.lazy(() =>
+  import('./sections/TokensSection').then((m) => ({ default: m.TokensSection })),
+);
 
 type ShowcaseRoute =
   | 'blocks'
@@ -199,19 +226,27 @@ export const ShowcaseApp: React.FC = () => {
         toast.info('3 unread site events: 1 firmware alert, 2 adoption updates')
       }
     >
-      {activeKey === 'blocks' && <BlocksSection />}
-      {activeKey === 'templates' && <TemplatesSection />}
-      {activeKey === 'devices-demo' && <DeviceListDemo />}
-      {activeKey === 'tokens' && <TokensSection />}
-      {activeKey === 'assets' && <AssetsSection />}
-      {activeKey === 'nav-shell' && <NavShellSection />}
-      {activeKey === 'inputs' && <InputsSection />}
-      {activeKey === 'select-inputs' && <SelectInputsSection />}
-      {activeKey === 'time-schedule' && <TimeScheduleSection />}
-      {activeKey === 'display' && <DataDisplaySection />}
-      {activeKey === 'data-charts' && <DataChartsSection />}
-      {activeKey === 'feedback' && <FeedbackSection />}
-      {activeKey === 'feedback-overlays' && <FeedbackOverlaysSection />}
+      <React.Suspense
+        fallback={
+          <div className="p-8 text-sm text-[var(--omada-text-secondary)]">
+            Loading section…
+          </div>
+        }
+      >
+        {activeKey === 'blocks' && <BlocksSection />}
+        {activeKey === 'templates' && <TemplatesSection />}
+        {activeKey === 'devices-demo' && <DeviceListDemo />}
+        {activeKey === 'tokens' && <TokensSection />}
+        {activeKey === 'assets' && <AssetsSection />}
+        {activeKey === 'nav-shell' && <NavShellSection />}
+        {activeKey === 'inputs' && <InputsSection />}
+        {activeKey === 'select-inputs' && <SelectInputsSection />}
+        {activeKey === 'time-schedule' && <TimeScheduleSection />}
+        {activeKey === 'display' && <DataDisplaySection />}
+        {activeKey === 'data-charts' && <DataChartsSection />}
+        {activeKey === 'feedback' && <FeedbackSection />}
+        {activeKey === 'feedback-overlays' && <FeedbackOverlaysSection />}
+      </React.Suspense>
     </SAppShell>
   );
 };

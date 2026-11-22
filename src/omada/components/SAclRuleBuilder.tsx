@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Checkbox, Input, Tooltip } from 'antd';
 import { Info, Search } from 'lucide-react';
 import { SIcon } from '../assets/SIcon';
-import { SIllustration } from '../assets/SIllustration';
+import { SBuiltinIllustration } from '../assets/builtinIllustrations';
 import { SSelect } from './SSelect';
 
 export type SAclPolicy = 'Deny' | 'Permit';
@@ -163,7 +163,7 @@ const EndpointCard: React.FC<EndpointCardProps> = ({
       <div className="omada-acl-card-body">
         {!value.type ? (
           <div className="omada-acl-card-empty">
-            <SIllustration name="no-data" width={88} />
+            <SBuiltinIllustration name="no-data" width={88} />
             <span>Please Select the type</span>
           </div>
         ) : (

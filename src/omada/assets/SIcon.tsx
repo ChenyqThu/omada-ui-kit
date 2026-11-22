@@ -7,13 +7,19 @@ const ICON_RAW_MAP = import.meta.glob<string>('../../assets/icons/**/*.svg', {
   eager: true,
 });
 
-const ICON_LOOKUP = new Map<string, { meta: OmadaIconMeta; rawSvg: string }>();
+let iconLookupCache: Map<string, { meta: OmadaIconMeta; rawSvg: string }> | null = null;
 
-for (const meta of OMADA_ICONS) {
-  const rawSvg = ICON_RAW_MAP[`../../assets/icons/${meta.relPath}`];
-  if (rawSvg) {
-    ICON_LOOKUP.set(meta.name, { meta, rawSvg });
+function getIconLookup(): Map<string, { meta: OmadaIconMeta; rawSvg: string }> {
+  if (iconLookupCache) return iconLookupCache;
+  const map = new Map<string, { meta: OmadaIconMeta; rawSvg: string }>();
+  for (const meta of OMADA_ICONS) {
+    const rawSvg = ICON_RAW_MAP[`../../assets/icons/${meta.relPath}`];
+    if (rawSvg) {
+      map.set(meta.name, { meta, rawSvg });
+    }
   }
+  iconLookupCache = map;
+  return map;
 }
 
 export interface SIconProps {
@@ -31,7 +37,7 @@ export interface SIconProps {
  * Checks whether an icon slug exists in the bundled Figma icon library.
  */
 export function hasOmadaIcon(name: string): boolean {
-  return ICON_LOOKUP.has(name);
+  return getIconLookup().has(name);
 }
 
 /**
@@ -48,7 +54,7 @@ export const SIcon: React.FC<SIconProps> = ({
   'aria-label': ariaLabel,
   'aria-hidden': ariaHidden,
 }) => {
-  const entry = ICON_LOOKUP.get(name);
+  const entry = getIconLookup().get(name);
   if (!entry) {
     return null;
   }

@@ -1,9 +1,71 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import * as echarts from 'echarts';
-import type { ECharts, EChartsOption } from 'echarts';
+import * as echarts from 'echarts/core';
+import type { ECharts } from 'echarts/core';
+import type { EChartsOption } from 'echarts';
+import {
+  BarChart,
+  GaugeChart,
+  HeatmapChart,
+  LineChart,
+  PieChart,
+  RadarChart,
+  ScatterChart,
+} from 'echarts/charts';
+import {
+  DatasetComponent,
+  DataZoomComponent,
+  GridComponent,
+  LegendComponent,
+  MarkAreaComponent,
+  MarkLineComponent,
+  MarkPointComponent,
+  PolarComponent,
+  RadarComponent,
+  TitleComponent,
+  ToolboxComponent,
+  TooltipComponent,
+  TransformComponent,
+  VisualMapComponent,
+} from 'echarts/components';
+import { LabelLayout, UniversalTransition } from 'echarts/features';
+import { CanvasRenderer, SVGRenderer } from 'echarts/renderers';
 import { useOmadaTheme } from '../theme/OmadaProvider';
 import { omadaChartPalette, omadaFontFamily } from '../theme/tokens';
 import { SEmpty } from './SEmpty';
+
+let echartsRegistered = false;
+
+function ensureEchartsRegistered(): void {
+  if (echartsRegistered) return;
+  echartsRegistered = true;
+  echarts.use([
+    LineChart,
+    BarChart,
+    PieChart,
+    RadarChart,
+    GaugeChart,
+    ScatterChart,
+    HeatmapChart,
+    GridComponent,
+    TooltipComponent,
+    LegendComponent,
+    TitleComponent,
+    DatasetComponent,
+    TransformComponent,
+    DataZoomComponent,
+    MarkLineComponent,
+    MarkPointComponent,
+    MarkAreaComponent,
+    VisualMapComponent,
+    ToolboxComponent,
+    PolarComponent,
+    RadarComponent,
+    LabelLayout,
+    UniversalTransition,
+    CanvasRenderer,
+    SVGRenderer,
+  ]);
+}
 
 export interface SChartProps {
   option: EChartsOption;
@@ -136,6 +198,8 @@ export const SChart: React.FC<SChartProps> = ({
     if (loading || empty) return;
     const el = containerRef.current;
     if (!el) return;
+
+    ensureEchartsRegistered();
 
     const isJsdom =
       typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().includes('jsdom');

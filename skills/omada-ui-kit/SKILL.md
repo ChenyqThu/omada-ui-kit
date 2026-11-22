@@ -102,18 +102,23 @@ Use classic `<script>` tags (NOT `<script type="module">`) so local `file://` do
 
 ## 3. Mode B — React / Vite Project Starter
 
+Prefer subpath imports (`/core`, `/blocks`, `/charts`, `/emulator`, `/assets`) in React / Vite apps to minimize bundle size via ESM tree-shaking (or import everything from `@chenyqthu/omada-ui-kit` for convenience):
+
 ```tsx
 import '@chenyqthu/omada-ui-kit/style.css';
-import {
-  OmadaProvider,
-  SEmulatorShell,
-  SPageHeader,
-  STable,
-  SButton,
-  SIcon,
-  SProductImage,
-} from '@chenyqthu/omada-ui-kit';
+import { OmadaProvider, SPageHeader, STable, SButton } from '@chenyqthu/omada-ui-kit/core';
+import { SEmulatorShell, SFilterTableBlock } from '@chenyqthu/omada-ui-kit/blocks';
+import { SLineChart } from '@chenyqthu/omada-ui-kit/charts';
+import { SIcon, SProductImage } from '@chenyqthu/omada-ui-kit/assets';
 ```
+
+Subpath entrypoints:
+- `@chenyqthu/omada-ui-kit/core` — Theme, `SAppShell`, `SPageHeader`, base `S*` inputs/tables/modals/feedback & AntD primitives (no ECharts or full illustration/product/client catalogs)
+- `@chenyqthu/omada-ui-kit/blocks` — `SEmulatorShell` + all 6 high-level Omada Blocks (no ECharts or heavy asset catalogs)
+- `@chenyqthu/omada-ui-kit/charts` — `SChart` (modular `echarts/core`), `SLineChart`, `SBarChart`, `SDonutChart`, `SSparkChart`, `SDonutSummaryCard`, `SHealthGauge`, `SHealthRadar`, `SHealthTrendBar`, `SChannelUtilization`
+- `@chenyqthu/omada-ui-kit/emulator` — Controller v6.3 domain widgets (`STopologyCanvas`, `SAclRuleBuilder`, `SSettingsPageShell`, `STerminalConsole`, etc.)
+- `@chenyqthu/omada-ui-kit/assets` — `SIcon`, `SProductImage`, `SIllustration`, `SClientIcon`, `SBrandAsset`, `OmadaLogo`, manifests
+- `@chenyqthu/omada-ui-kit` — Full root convenience barrel
 
 Wrap the application root with `<OmadaProvider defaultThemeMode="light">` (never nest multiple providers).
 
@@ -156,7 +161,7 @@ node scripts/query-catalog.mjs recipes
 node scripts/verify-demo.mjs demo.html
 ```
 
-Online Showcase & Blocks/Templates Gallery: `https://chenyqthu.github.io/omada-ui-kit/#/showcase`
+Online Showcase & Blocks/Templates Gallery: `https://pages.chenge.ink/omada-ui-kit/#/showcase` (`#/showcase/blocks`, `#/showcase/templates`, and `#/dashboard`)
 
 ---
 

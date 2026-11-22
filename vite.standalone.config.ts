@@ -18,5 +18,10 @@ export default defineConfig({
       name: 'OmadaUI',
       fileName: () => 'standalone.js',
     },
+    rolldownOptions: {
+      output: {
+        codeSplitting: false,
+      },
+    },
   },
 });

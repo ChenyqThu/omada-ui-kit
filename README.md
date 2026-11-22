@@ -33,6 +33,26 @@ export function App() {
 }
 ```
 
+### ESM Subpath Imports (Recommended for Tree-Shaking)
+
+In Vite / Rollup / webpack builds, import from dedicated subpath entrypoints instead of the full root barrel so bundlers never pull ECharts or the full Figma hardware/illustration catalogs when you only need core UI or Blocks:
+
+| Subpath | Contents | Skips |
+| :--- | :--- | :--- |
+| `@chenyqthu/omada-ui-kit/core` | `OmadaProvider`, `SAppShell`, `SPageHeader`, `SButton`, `STable`, `SForm`, `SModal`, `SDrawer`, inputs, selects, feedback, AntD primitives | ECharts, full Illustration/Product/Client catalogs |
+| `@chenyqthu/omada-ui-kit/blocks` | `SEmulatorShell`, `EMULATOR_NAV_GROUPS`, `EMULATOR_GLOBAL_NAV_GROUPS`, `SFilterTableBlock`, `SInlineRuleEditorLayout`, `SInlineFormRow`, `SDetailInspectorDrawer`, `SMasterDetailSplitBlock`, `SWizardModal`, `SSwitchPortPicker` | ECharts, full Illustration/Product/Client catalogs |
+| `@chenyqthu/omada-ui-kit/charts` | `SChart` (modular `echarts/core`), `SLineChart`, `SBarChart`, `SDonutChart`, `SSparkChart`, `SDonutSummaryCard`, `SHealthGauge`, `SHealthRadar`, `SHealthTrendBar`, `SChannelUtilization` | Full Illustration/Product/Client catalogs |
+| `@chenyqthu/omada-ui-kit/emulator` | All Controller v6.3 domain components (`STopologyCanvas`, `SAclRuleBuilder`, `SSettingsPageShell`, `STerminalConsole`, `SDevicePortGraphic`, etc.) | — |
+| `@chenyqthu/omada-ui-kit/assets` | `SIcon`, `SProductImage`, `SIllustration`, `SClientIcon`, `SBrandAsset`, `OmadaLogo`, `SDeviceIcon`, asset & icon manifests | ECharts |
+| `@chenyqthu/omada-ui-kit` | Convenience root re-export of all modules (full backward compatibility) | — |
+
+```tsx
+import '@chenyqthu/omada-ui-kit/style.css';
+import { OmadaProvider, SPageHeader, SButton } from '@chenyqthu/omada-ui-kit/core';
+import { SEmulatorShell, SFilterTableBlock } from '@chenyqthu/omada-ui-kit/blocks';
+import { SLineChart } from '@chenyqthu/omada-ui-kit/charts';
+```
+
 ## 2. Usage in a Single HTML File (Zero Build)
 
 For quick PRD prototypes, load `dist/style.css` and `dist/standalone.js` (bundles React 19, AntD 6, ECharts, and all Omada `S*` components under `window.OmadaUI`):
@@ -66,9 +86,12 @@ For quick PRD prototypes, load `dist/style.css` and `dist/standalone.js` (bundle
 
 See [examples/single-file-demo.html](./examples/single-file-demo.html) for a full interactive AP Monitor example with drawer & Dark Mode toggle.
 
-## 3. Agent Skill, Blocks, & Page Templates
+## 3. Live Showcase, Agent Skill, Blocks, & Page Templates
 
-Live Showcase & Templates Gallery: **https://chenyqthu.github.io/omada-ui-kit/#/showcase**
+- **Showcase Gallery**: **https://pages.chenge.ink/omada-ui-kit/#/showcase**
+- **Blocks Gallery**: **https://pages.chenge.ink/omada-ui-kit/#/showcase/blocks**
+- **Page Templates**: **https://pages.chenge.ink/omada-ui-kit/#/showcase/templates**
+- **Omada Controller v6.3 Emulator**: **https://pages.chenge.ink/omada-ui-kit/#/dashboard**
 
 Install the Skill directly from GitHub into Antigravity / Claude Code / Codex / Cursor:
 

@@ -36,7 +36,7 @@ describe('EmulatorApp & App hash routing integration', () => {
   it('renders EmulatorApp on #/dashboard by default and switches to #/showcase and back', async () => {
     render(<App />);
 
-    expect(screen.getByTestId('site-dashboard-page')).toBeInTheDocument();
+    expect(await screen.findByTestId('site-dashboard-page')).toBeInTheDocument();
     expect(screen.getByText('Headquarters Building')).toBeInTheDocument();
 
     window.location.hash = '#/showcase';
@@ -269,7 +269,7 @@ describe('EmulatorApp & App hash routing integration', () => {
   it('routes #/hotspot* to HotspotPortalApp, syncs sub-routes, and returns to #/dashboard cleanly', async () => {
     window.location.hash = '#/dashboard';
     render(<App />);
-    expect(screen.getByTestId('site-dashboard-page')).toBeInTheDocument();
+    expect(await screen.findByTestId('site-dashboard-page')).toBeInTheDocument();
 
     // Selecting Hotspot in SEmulatorShell sets #/hotspot/dashboard and renders HotspotPortalApp
     fireEvent.click(screen.getByRole('button', { name: 'Hotspot' }));
