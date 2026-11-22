@@ -108,7 +108,11 @@ export const SKpiCard: React.FC<SKpiCardProps> = ({
         <span className="text-xs font-medium text-[var(--omada-text-secondary)]">
           {title}
         </span>
-        {icon && <span className="shrink-0">{icon}</span>}
+        {icon && (
+          <span className="inline-flex shrink-0 items-center justify-center leading-none">
+            {icon}
+          </span>
+        )}
       </div>
       <div
         className="tabular-nums mt-1.5 text-2xl font-semibold leading-8 text-[var(--omada-text-primary)]"

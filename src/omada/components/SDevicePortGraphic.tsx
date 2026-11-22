@@ -440,7 +440,7 @@ export const SDevicePortGraphic: React.FC<SDevicePortGraphicProps> = ({
                   {port.port}
                 </span>
                 <Tooltip title={renderPortTooltip(port)} mouseEnterDelay={0.12}>
-                  <div>
+                  <div className="flex items-center justify-center leading-none">
                     <PortBadgeTile
                       port={port}
                       size={tileSize}
@@ -471,7 +471,7 @@ export const SDevicePortGraphic: React.FC<SDevicePortGraphicProps> = ({
               return (
                 <div key={port.port} className="flex w-[40px] shrink-0 flex-col items-center">
                   {hasAnyConnectedNode && (
-                    <div className="mb-1 flex h-[54px] flex-col items-center justify-end">
+                    <div className="mb-1 flex h-[54px] shrink-0 flex-col items-center justify-end">
                       {connectedSlug && (
                         <>
                           <Tooltip
@@ -508,7 +508,7 @@ export const SDevicePortGraphic: React.FC<SDevicePortGraphicProps> = ({
                   </span>
 
                   <Tooltip title={renderPortTooltip(port)} mouseEnterDelay={0.12}>
-                    <div>
+                    <div className="flex items-center justify-center leading-none">
                       <PortBadgeTile
                         port={port}
                         size={tileSize}

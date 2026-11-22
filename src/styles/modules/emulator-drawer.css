@@ -157,8 +157,11 @@
   /* SDevicePortGraphic */
   .omada-port-tile {
     display: inline-flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
+    vertical-align: middle;
+    line-height: 1;
     border-radius: 4px;
     color: var(--omada-text-inverse);
     transition: transform 0.15s ease, box-shadow 0.15s ease;

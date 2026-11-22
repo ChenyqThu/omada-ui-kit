@@ -210,6 +210,8 @@ describe('SDevicePortGraphic', () => {
 
     const port9Tile = screen.getByLabelText('Port 9 Disconnected');
     expect(port9Tile).toHaveAttribute('data-port-status', 'disconnected');
+    expect(port1Tile.parentElement).toHaveClass('flex', 'items-center', 'justify-center', 'leading-none');
+    expect(port9Tile.parentElement).toHaveClass('flex', 'items-center', 'justify-center', 'leading-none');
   });
 
   it('renders full mode with floating connected devices, 40px tiles, and 10-item legend', () => {
@@ -425,5 +427,58 @@ describe('DevicePropertiesDrawer', () => {
     );
 
     expect(screen.getByText('Connected')).toBeInTheDocument();
+  });
+
+  it('renders 6 illustrated tool cards in the expanded Tools tab with light/dark theme parity', () => {
+    const expectedIllustrations = [
+      'terminal',
+      'cable-test',
+      'network-check',
+      'packet-capture',
+      'speed-test',
+      'intellirecover',
+    ];
+
+    const { unmount } = renderWithOmada(
+      <DevicePropertiesDrawer
+        open
+        defaultMode="expanded"
+        device={SALES_SWITCH_DEVICE}
+        availableDevices={[SALES_SWITCH_DEVICE]}
+        onClose={vi.fn()}
+      />,
+      'light',
+    );
+
+    const sectionNav = screen.getByRole('navigation', { name: 'Device management sections' });
+    fireEvent.click(within(sectionNav).getByRole('tab', { name: 'Tools' }));
+
+    for (const slug of expectedIllustrations) {
+      const img = document.querySelector(`img[data-omada-asset="${slug}"]`);
+      expect(img, `Missing light illustration "${slug}"`).not.toBeNull();
+      expect(img).toHaveAttribute('data-asset-theme', 'light');
+    }
+
+    unmount();
+
+    renderWithOmada(
+      <DevicePropertiesDrawer
+        open
+        defaultMode="expanded"
+        device={SALES_SWITCH_DEVICE}
+        availableDevices={[SALES_SWITCH_DEVICE]}
+        onClose={vi.fn()}
+      />,
+      'dark',
+    );
+
+    const darkNav = screen.getByRole('navigation', { name: 'Device management sections' });
+    fireEvent.click(within(darkNav).getByRole('tab', { name: 'Tools' }));
+
+    for (const slug of expectedIllustrations) {
+      const img = document.querySelector(`img[data-omada-asset="${slug}"]`);
+      expect(img, `Missing dark illustration "${slug}"`).not.toBeNull();
+      expect(img).toHaveAttribute('data-asset-theme', 'dark');
+    }
   });
 });

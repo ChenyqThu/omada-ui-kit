@@ -82,7 +82,11 @@ export const SDetailInspectorDrawer: React.FC<SDetailInspectorDrawerProps> = ({
       width={expanded ? expandedWidth : defaultWidth}
       title={
         <div className="flex items-center gap-2.5">
-          {icon && <span className="shrink-0">{icon}</span>}
+          {icon && (
+            <span className="inline-flex shrink-0 items-center justify-center leading-none">
+              {icon}
+            </span>
+          )}
           <span className="truncate">{title}</span>
         </div>
       }

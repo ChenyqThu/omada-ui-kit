@@ -189,7 +189,11 @@ export function SCheckboxGroup<T extends string | number = string | number>({
                   onChange={(e) => handleToggleOption(opt, e.target.checked)}
                   className="sr-only"
                 />
-                {opt.icon && <span className="shrink-0">{opt.icon}</span>}
+                {opt.icon && (
+                  <span className="inline-flex shrink-0 items-center justify-center leading-none">
+                    {opt.icon}
+                  </span>
+                )}
                 <span>{opt.label}</span>
               </label>
             );

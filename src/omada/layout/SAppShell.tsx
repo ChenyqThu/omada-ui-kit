@@ -247,13 +247,17 @@ const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
       onClick={handleClick}
       className={`flex min-h-[36px] w-full cursor-pointer items-center gap-2 rounded py-2 text-left text-[13px] transition-colors disabled:cursor-not-allowed disabled:opacity-45 ${paddingClass} ${stateClass}`}
     >
-      {item.icon && <span className="shrink-0">{item.icon}</span>}
+      {item.icon && (
+        <span className="inline-flex shrink-0 items-center justify-center leading-none">
+          {item.icon}
+        </span>
+      )}
       {!collapsed && (
         <>
-          <span className="flex-1 truncate">{item.label}</span>
+          <span className="flex-1 truncate leading-[20px]">{item.label}</span>
           {item.badge !== undefined && renderNavBadge(item.badge)}
           {hasChildren && (
-            <span className="shrink-0 text-[var(--omada-text-tertiary)]">
+            <span className="inline-flex shrink-0 items-center justify-center leading-none text-[var(--omada-text-tertiary)]">
               {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             </span>
           )}

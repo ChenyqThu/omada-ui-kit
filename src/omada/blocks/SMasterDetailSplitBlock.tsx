@@ -103,7 +103,11 @@ export const SMasterDetailSplitBlock: React.FC<SMasterDetailSplitBlockProps> = (
                   onClick={() => onSelect(item.key)}
                   className={`omada-master-item ${selected ? 'is-active' : ''}`}
                 >
-                  {item.icon && <span className="shrink-0">{item.icon}</span>}
+                  {item.icon && (
+                    <span className="inline-flex shrink-0 items-center justify-center leading-none">
+                      {item.icon}
+                    </span>
+                  )}
                   <span className="min-w-0 flex-1 text-left">
                     <span className="block truncate text-[13px] font-medium text-[var(--omada-text-primary)]">
                       {item.title}

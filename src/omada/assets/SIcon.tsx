@@ -67,7 +67,7 @@ export const SIcon: React.FC<SIconProps> = ({
       title={title}
       data-omada-icon={name}
       data-monochrome={String(entry.meta.monochrome)}
-      className={`inline-flex shrink-0 items-center justify-center leading-none [&>svg]:block [&>svg]:h-full [&>svg]:w-full ${className}`.trim()}
+      className={`inline-flex shrink-0 items-center justify-center align-middle leading-none [&>svg]:block [&>svg]:h-full [&>svg]:w-full ${className}`.trim()}
       style={{ width: size, height: size, color, ...style }}
       dangerouslySetInnerHTML={{ __html: entry.rawSvg }}
     />

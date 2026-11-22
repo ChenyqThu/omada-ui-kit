@@ -15,6 +15,7 @@ import type { ColumnsType } from 'antd/es/table';
 import {
   ChevronDown,
   ChevronRight,
+  Gauge,
   Plus,
   Search,
   Terminal,
@@ -24,10 +25,12 @@ import {
   SButton,
   SClientIcon,
   SIcon,
+  SIllustration,
   SProductImage,
   SSelect,
   hasOmadaProductImage,
   type OmadaClientIconName,
+  type OmadaIllustrationName,
   type OmadaProductName,
 } from '@/omada';
 import {
@@ -641,7 +644,7 @@ export const DevicePropertiesDrawer: React.FC<DevicePropertiesDrawerProps> = ({
       width: 56,
       align: 'center',
       render: (_value, record) => (
-        <div className="flex justify-center">
+        <div className="flex items-center justify-center">
           <PortBadgeTile port={record} size={32} />
         </div>
       ),
@@ -2066,58 +2069,122 @@ export const DevicePropertiesDrawer: React.FC<DevicePropertiesDrawerProps> = ({
               )}
 
               {currentTab === 'tools' && (
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                  {[
-                    {
-                      key: 'terminal',
-                      title: 'Device Terminal',
-                      desc: 'Launch an interactive SSH/CLI session to this switch.',
-                      btn: 'Open Terminal',
-                      icon: <Terminal size={18} className="text-[var(--omada-brand-text)]" />,
-                    },
-                    {
-                      key: 'cable',
-                      title: 'Cable Test',
-                      desc: 'Run TDR pair diagnostics on Ports 1–8.',
-                      btn: 'Run Cable Test',
-                      icon: (
-                        <SIcon
-                          name="cable-test-cable-test"
-                          size={18}
-                          className="text-[var(--omada-brand-text)]"
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {(
+                    [
+                      {
+                        key: 'terminal',
+                        title: 'Device Terminal',
+                        illustration: 'terminal',
+                        desc: 'Launch an interactive SSH/CLI session directly on this device.',
+                        btn: 'Open Terminal',
+                        icon: <Terminal size={17} className="text-[var(--omada-brand-text)]" />,
+                      },
+                      {
+                        key: 'cable',
+                        title: 'Cable Test',
+                        illustration: 'cable-test',
+                        desc: 'Run TDR pair diagnostics on Ethernet ports to detect opens, shorts, or cable length.',
+                        btn: 'Run Cable Test',
+                        icon: (
+                          <SIcon
+                            name="cable-test-cable-test"
+                            size={17}
+                            className="text-[var(--omada-brand-text)]"
+                          />
+                        ),
+                      },
+                      {
+                        key: 'network-check',
+                        title: 'Network Check',
+                        illustration: 'network-check',
+                        desc: 'Execute Ping, Traceroute, or DNS lookup diagnostics from this device.',
+                        btn: 'Run Network Check',
+                        icon: (
+                          <SIcon
+                            name="network-check"
+                            size={17}
+                            className="text-[var(--omada-brand-text)]"
+                          />
+                        ),
+                      },
+                      {
+                        key: 'packet-capture',
+                        title: 'Packet Capture',
+                        illustration: 'packet-capture',
+                        desc: 'Capture live interface packets and download PCAP traces for analysis.',
+                        btn: 'Start Capture',
+                        icon: (
+                          <SIcon
+                            name="packet-capture"
+                            size={17}
+                            className="text-[var(--omada-brand-text)]"
+                          />
+                        ),
+                      },
+                      {
+                        key: 'speed-test',
+                        title: 'Speed Test',
+                        illustration: 'speed-test',
+                        desc: 'Measure real-time WAN and uplink throughput, jitter, and latency.',
+                        btn: 'Run Speed Test',
+                        icon: <Gauge size={17} className="text-[var(--omada-brand-text)]" />,
+                      },
+                      {
+                        key: 'intellirecover',
+                        title: 'IntelliRecover',
+                        illustration: 'intellirecover',
+                        desc: 'Configure automated device health monitoring and PoE self-healing rules.',
+                        btn: 'Configure IntelliRecover',
+                        icon: (
+                          <SIcon
+                            name="inteli-recover"
+                            size={17}
+                            className="text-[var(--omada-brand-text)]"
+                          />
+                        ),
+                      },
+                    ] satisfies Array<{
+                      key: string;
+                      title: string;
+                      illustration: OmadaIllustrationName;
+                      desc: string;
+                      btn: string;
+                      icon: React.ReactNode;
+                    }>
+                  ).map((tool) => (
+                    <div
+                      key={tool.key}
+                      data-testid={`drawer-tool-card-${tool.key}`}
+                      className="omada-device-drawer-card flex flex-col overflow-hidden"
+                    >
+                      <div className="flex h-[156px] items-center justify-center border-b border-[var(--omada-border-divider)] bg-[var(--omada-bg-field)]/55 px-4 py-3">
+                        <SIllustration
+                          name={tool.illustration}
+                          width={196}
+                          alt={tool.title}
+                          className="max-h-[132px] w-auto object-contain"
                         />
-                      ),
-                    },
-                    {
-                      key: 'locate',
-                      title: 'Locate Device',
-                      desc: 'Blink chassis LEDs for 60 seconds to identify hardware.',
-                      btn: 'Start Locating',
-                      icon: (
-                        <SIcon
-                          name="locate"
-                          size={18}
-                          className="text-[var(--omada-brand-text)]"
-                        />
-                      ),
-                    },
-                  ].map((tool) => (
-                    <div key={tool.key} className="omada-device-drawer-card flex flex-col p-4">
-                      <div className="mb-2 flex items-center gap-2">
-                        {tool.icon}
-                        <h4 className="m-0 text-sm font-semibold text-[var(--omada-text-primary)]">
-                          {tool.title}
-                        </h4>
                       </div>
-                      <p className="m-0 mb-4 flex-1 text-xs text-[var(--omada-text-secondary)]">
-                        {tool.desc}
-                      </p>
-                      <SButton
-                        variant="outline"
-                        onClick={() => message.info(`${tool.title} started on ${activeDeviceDisplayName}`)}
-                      >
-                        {tool.btn}
-                      </SButton>
+                      <div className="flex flex-1 flex-col p-4">
+                        <div className="mb-1.5 flex items-center gap-2">
+                          <span className="inline-flex shrink-0 items-center justify-center leading-none">
+                            {tool.icon}
+                          </span>
+                          <h4 className="m-0 text-sm font-semibold leading-5 text-[var(--omada-text-primary)]">
+                            {tool.title}
+                          </h4>
+                        </div>
+                        <p className="m-0 mb-4 flex-1 text-xs leading-5 text-[var(--omada-text-secondary)]">
+                          {tool.desc}
+                        </p>
+                        <SButton
+                          variant="outline"
+                          onClick={() => message.info(`${tool.title} started on ${activeDeviceDisplayName}`)}
+                        >
+                          {tool.btn}
+                        </SButton>
+                      </div>
                     </div>
                   ))}
                 </div>

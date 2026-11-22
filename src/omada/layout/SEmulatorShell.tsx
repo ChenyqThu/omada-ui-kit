@@ -735,7 +735,7 @@ export const SEmulatorShell: React.FC<SEmulatorShellProps> = ({
                 />
                 {!collapsed && (
                   <>
-                    <span className="min-w-0 flex-1 truncate text-left text-[14px]">
+                    <span className="min-w-0 flex-1 truncate text-left text-[14px] leading-[20px]">
                       {currentSite?.label ?? 'Main Office Floor'}
                     </span>
                     <SIcon
@@ -810,10 +810,14 @@ export const SEmulatorShell: React.FC<SEmulatorShellProps> = ({
                           collapsed ? 'justify-center px-0' : 'gap-2.5 px-4 text-left'
                         } ${isActive ? 'is-active' : ''}`.trim()}
                       >
-                        {iconNode && <span className="shrink-0">{iconNode}</span>}
+                        {iconNode && (
+                          <span className="inline-flex shrink-0 items-center justify-center leading-none">
+                            {iconNode}
+                          </span>
+                        )}
                         {!collapsed && (
                           <>
-                            <span className="truncate">{item.label}</span>
+                            <span className="truncate leading-[20px]">{item.label}</span>
                             {item.badge !== undefined && (
                               <span className="omada-emu-beta-tag shrink-0">
                                 {item.badge}
@@ -886,7 +890,7 @@ export const SEmulatorShell: React.FC<SEmulatorShellProps> = ({
                                         }`.trim()}
                                       >
                                         {subIcon && (
-                                          <span className="inline-flex shrink-0 items-center">
+                                          <span className="inline-flex shrink-0 items-center justify-center leading-none">
                                             {subIcon}
                                           </span>
                                         )}
