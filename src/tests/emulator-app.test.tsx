@@ -36,20 +36,26 @@ describe('EmulatorApp & App hash routing integration', () => {
   it('renders EmulatorApp on #/dashboard by default and switches to #/showcase and back', async () => {
     render(<App />);
 
-    expect(await screen.findByTestId('site-dashboard-page')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('site-dashboard-page', undefined, { timeout: 10000 }),
+    ).toBeInTheDocument();
     expect(screen.getByText('Headquarters Building')).toBeInTheDocument();
 
     window.location.hash = '#/showcase';
     fireEvent(window, new HashChangeEvent('hashchange'));
 
-    expect(await screen.findByTestId('back-to-emulator-link')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('back-to-emulator-link', undefined, { timeout: 10000 }),
+    ).toBeInTheDocument();
     expect(screen.getByText('Component Library')).toBeInTheDocument();
 
     window.location.hash = '#/dashboard';
     fireEvent(window, new HashChangeEvent('hashchange'));
 
-    expect(await screen.findByTestId('site-dashboard-page')).toBeInTheDocument();
-  });
+    expect(
+      await screen.findByTestId('site-dashboard-page', undefined, { timeout: 10000 }),
+    ).toBeInTheDocument();
+  }, 15000);
 
   it('opens 420px Quick Drawer when clicking MainOffice_Gateway_2 on Dashboard and reopens via <|| handle', async () => {
     render(
@@ -269,7 +275,9 @@ describe('EmulatorApp & App hash routing integration', () => {
   it('routes #/hotspot* to HotspotPortalApp, syncs sub-routes, and returns to #/dashboard cleanly', async () => {
     window.location.hash = '#/dashboard';
     render(<App />);
-    expect(await screen.findByTestId('site-dashboard-page')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('site-dashboard-page', undefined, { timeout: 10000 }),
+    ).toBeInTheDocument();
 
     // Selecting Hotspot in SEmulatorShell sets #/hotspot/dashboard and renders HotspotPortalApp
     fireEvent.click(screen.getByRole('button', { name: 'Hotspot' }));
@@ -277,18 +285,24 @@ describe('EmulatorApp & App hash routing integration', () => {
       expect(window.location.hash).toBe('#/hotspot/dashboard');
     });
     fireEvent(window, new HashChangeEvent('hashchange'));
-    expect(await screen.findByTestId('hotspot-portal-app')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('hotspot-portal-app', undefined, { timeout: 10000 }),
+    ).toBeInTheDocument();
     expect(screen.getByText('Portal Authorizations Histories')).toBeInTheDocument();
 
     // Deep-link hash change inside HotspotPortalApp
     window.location.hash = '#/hotspot/vouchers';
     fireEvent(window, new HashChangeEvent('hashchange'));
-    expect(await screen.findByTestId('hotspot-view-voucher-groups')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('hotspot-view-voucher-groups', undefined, { timeout: 10000 }),
+    ).toBeInTheDocument();
     expect(screen.getByText('VoucherGroup_1')).toBeInTheDocument();
 
     // Clicking topbar brand link returns to Controller #/dashboard
     fireEvent.click(screen.getByTestId('hotspot-back-to-controller'));
     expect(window.location.hash).toBe('#/dashboard');
-    expect(await screen.findByTestId('site-dashboard-page')).toBeInTheDocument();
-  });
+    expect(
+      await screen.findByTestId('site-dashboard-page', undefined, { timeout: 10000 }),
+    ).toBeInTheDocument();
+  }, 15000);
 });

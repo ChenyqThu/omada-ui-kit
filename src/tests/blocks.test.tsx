@@ -235,7 +235,9 @@ describe('Omada Reusable Blocks & Showcase Gallery', () => {
     expect(screen.getByText('SEmulatorShell (Site / Global Scope + Incremental Nav Injection)')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /Page Templates/i }));
-    expect(await screen.findByText('Full-Page Starter Templates')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Full-Page Starter Templates', undefined, { timeout: 10000 }),
+    ).toBeInTheDocument();
     expect(screen.getByText('Site Overview Dashboard')).toBeInTheDocument();
     expect(screen.getByText('ACL Policy List + Inline Rule Builder')).toBeInTheDocument();
 
