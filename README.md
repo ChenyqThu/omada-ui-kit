@@ -86,29 +86,83 @@ For quick PRD prototypes, load `dist/style.css` and `dist/standalone.js` (bundle
 
 See [examples/single-file-demo.html](./examples/single-file-demo.html) for a full interactive AP Monitor example with drawer & Dark Mode toggle.
 
-## 3. Live Showcase, Agent Skill, Blocks, & Page Templates
+## 3. Live Showcase & Online Demos
 
 - **Showcase Gallery**: **https://pages.chenge.ink/omada-ui-kit/#/showcase**
+- **Agent Skill & Issue Guide**: **https://pages.chenge.ink/omada-ui-kit/#/showcase/agent-skill**
 - **Blocks Gallery**: **https://pages.chenge.ink/omada-ui-kit/#/showcase/blocks**
 - **Page Templates**: **https://pages.chenge.ink/omada-ui-kit/#/showcase/templates**
 - **Omada Controller v6.3 Emulator**: **https://pages.chenge.ink/omada-ui-kit/#/dashboard**
 
-Install the Skill directly from GitHub into Antigravity / Claude Code / Codex / Cursor:
+## 4. Agent Skill Installation & Usage (All Coding Agents)
+
+### Quick Install (CLI)
+
+Install `skills/omada-ui-kit/` directly from GitHub — the CLI auto-detects your installed coding agents:
 
 ```bash
+# Project-level install
 npx skills add ChenyqThu/omada-ui-kit
+
+# Global user-level install (available across all repositories)
+npx skills add ChenyqThu/omada-ui-kit -g
 ```
 
-The npm package bundles `skills/omada-ui-kit/` containing `SKILL.md`, `references/catalog.json`, `templates/` (`dashboard`, `inventory`, `acl-rules`, `settings`, `analytics-logs` in both HTML & TSX), `scripts/query-catalog.mjs`, and `scripts/verify-demo.mjs`:
+### Supported Agents & Skill Directory Paths
+
+| Coding Agent | Project / Workspace Path | Global User Path |
+| :--- | :--- | :--- |
+| **Claude Code** | `.claude/skills/omada-ui-kit/` | `~/.claude/skills/omada-ui-kit/` |
+| **Cursor** | `.cursor/skills/omada-ui-kit/` (or `.agents/skills/omada-ui-kit/`) | `~/.cursor/skills/omada-ui-kit/` |
+| **OpenAI Codex** | `.agents/skills/omada-ui-kit/` | `~/.agents/skills/omada-ui-kit/` (or `~/.codex/skills/`) |
+| **Google Antigravity** | `.agents/skills/omada-ui-kit/` | `~/.gemini/config/skills/omada-ui-kit/` |
+| **GitHub Copilot / VS Code** | `.github/skills/omada-ui-kit/` | `~/.copilot/skills/omada-ui-kit/` |
+| **Windsurf** | `.windsurf/skills/omada-ui-kit/` | `~/.codeium/windsurf/skills/omada-ui-kit/` |
+| **OpenCode** | `.opencode/skills/omada-ui-kit/` | `~/.config/opencode/skills/omada-ui-kit/` |
+
+### Manual Install (from npm or GitHub Clone)
+
+The npm package bundles the full `skills/omada-ui-kit/` folder (`SKILL.md`, `references/catalog.json`, `templates/`, `scripts/query-catalog.mjs`, `scripts/verify-demo.mjs`). Copy it into your agent's skill directory if you prefer manual or offline setup:
 
 ```bash
+# Option A: Copy from installed npm package (swap .agents/skills for .claude/skills or .cursor/skills)
+pnpm add @chenyqthu/omada-ui-kit
+mkdir -p .agents/skills
+cp -r node_modules/@chenyqthu/omada-ui-kit/skills/omada-ui-kit .agents/skills/
+
+# Option B: Copy directly from GitHub without installing npm dependencies
+git clone --depth 1 https://github.com/ChenyqThu/omada-ui-kit.git /tmp/omada-ui-kit
+mkdir -p .agents/skills
+cp -r /tmp/omada-ui-kit/skills/omada-ui-kit .agents/skills/
+```
+
+### How to Use the Skill
+
+- **In chat / Agent mode**: Mention `omada-ui-kit` or describe an Omada Controller UI / PRD mockup, e.g.:
+  > *"Using the omada-ui-kit skill, build a single-file HTML PRD prototype for an Omada Controller v6.3 AP Health Monitor using SEmulatorShell, SFilterTableBlock, and SDetailInspectorDrawer. Support Light/Dark mode and run verify-demo.mjs before finishing."*
+- **Bundled Catalog & Demo Verifier CLI** (agents run these so they never guess props or `SIcon` slugs):
+
+```bash
+node skills/omada-ui-kit/scripts/query-catalog.mjs info
 node skills/omada-ui-kit/scripts/query-catalog.mjs list-components blocks
 node skills/omada-ui-kit/scripts/query-catalog.mjs templates
 node skills/omada-ui-kit/scripts/query-catalog.mjs template inventory --html > demo.html
 node skills/omada-ui-kit/scripts/verify-demo.mjs demo.html
 ```
 
-## 4. Development & Build Scripts
+*(If installed under `.claude/skills/omada-ui-kit/`, `.cursor/skills/omada-ui-kit/`, or `.agents/skills/omada-ui-kit/`, adjust the `skills/omada-ui-kit/` path prefix accordingly.)*
+
+## 5. Missing Components & Bug Reports
+
+Found a missing Omada Controller v6.3 component, icon/product asset, or visual/behavior issue? Please open a structured GitHub Issue:
+
+- **Request Missing Component / Asset**: https://github.com/ChenyqThu/omada-ui-kit/issues/new?template=missing-component.yml
+- **Report Component Bug / Visual Issue**: https://github.com/ChenyqThu/omada-ui-kit/issues/new?template=component-bug.yml
+- **Browse All Issues**: https://github.com/ChenyqThu/omada-ui-kit/issues
+
+Including the Omada Controller v6.3 page/section name, usage mode (Single-File HTML CDN vs. React ESM), Light/Dark mode, and screenshots or minimal reproduction steps helps implement additions and fixes quickly.
+
+## 6. Development & Build Scripts
 
 - `pnpm dev` — Start local Showcase & Omada Controller v6.3 Emulator
 - `pnpm build:lib` — Build ESM (`dist/index.js`), CSS (`dist/style.css`), Standalone IIFE (`dist/standalone.js`), `.d.ts` (`dist/types/`), and `dist/catalog.json` (also syncs Skill bundles)

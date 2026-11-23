@@ -1,0 +1,42 @@
+name: Missing UI Component / Asset
+description: Request a missing Omada Controller v6.3 component, reusable block, template, or Figma icon/product asset.
+title: "[Component]: "
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What kind of UI piece is missing?
+      options:
+        - Core Component (S*)
+        - Reusable Block
+        - Emulator v6.3 Widget
+        - Figma Icon / Product / Illustration Asset
+        - Page Template (HTML / TSX)
+    validations:
+      required: true
+  - type: input
+    id: controller_location
+    attributes:
+      label: Omada Controller v6.3 Page / Section
+      description: Where does this component appear in Omada Controller v6.3?
+      placeholder: e.g. Site Settings > Services > SNMP, or Devices > Switch Ports Drawer
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Expected Props, Interactions & Visual States
+      description: Describe required variants, interactive states, and Light/Dark mode behavior.
+      placeholder: Describe layout, props, hover/disabled states, and data structure...
+    validations:
+      required: true
+  - type: textarea
+    id: reference
+    attributes:
+      label: Reference (Screenshots, Figma Link, or URL)
+      description: Optional screenshots, Figma node link, or reference page URL.
+      placeholder: Paste screenshots or links here...
+    validations:
+      required: false

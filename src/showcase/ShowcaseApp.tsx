@@ -3,6 +3,7 @@ import {
   BarChart3,
   BellRing,
   Blocks,
+  Bot,
   CalendarClock,
   Compass,
   FileCode2,
@@ -10,12 +11,17 @@ import {
   Images,
   Layers,
   LayoutGrid,
+  MessageSquarePlus,
   Palette,
   Server,
   SlidersHorizontal,
 } from 'lucide-react';
 import { SAppShell, useOmadaFeedback, type SNavGroup } from '@/omada';
 import { BlocksSection } from './sections/BlocksSection';
+
+const AgentSkillSection = React.lazy(() =>
+  import('./sections/AgentSkillSection').then((m) => ({ default: m.AgentSkillSection })),
+);
 
 const DeviceListDemo = React.lazy(() =>
   import('./demos/DeviceListDemo').then((m) => ({ default: m.DeviceListDemo })),
@@ -57,6 +63,7 @@ const TokensSection = React.lazy(() =>
 );
 
 type ShowcaseRoute =
+  | 'agent-skill'
   | 'blocks'
   | 'templates'
   | 'devices-demo'
@@ -72,6 +79,7 @@ type ShowcaseRoute =
   | 'feedback-overlays';
 
 const VALID_ROUTES = new Set<string>([
+  'agent-skill',
   'blocks',
   'templates',
   'devices-demo',
@@ -92,6 +100,9 @@ function parseShowcaseSubroute(): ShowcaseRoute {
   const cleaned = window.location.hash.replace(/^#\/?/, '').split('?')[0].trim().toLowerCase();
   if (cleaned.startsWith('showcase/')) {
     const sub = cleaned.slice('showcase/'.length);
+    if (sub === 'skill' || sub === 'getting-started') {
+      return 'agent-skill';
+    }
     if (VALID_ROUTES.has(sub)) {
       return sub as ShowcaseRoute;
     }
@@ -100,6 +111,18 @@ function parseShowcaseSubroute(): ShowcaseRoute {
 }
 
 const NAV_GROUPS: SNavGroup[] = [
+  {
+    key: 'getting-started',
+    label: 'Getting Started',
+    items: [
+      {
+        key: 'agent-skill',
+        label: 'Agent Skill & Issues',
+        icon: <Bot size={16} />,
+        badge: 'AI',
+      },
+    ],
+  },
   {
     key: 'blocks-templates',
     label: 'Blocks & Templates',
@@ -214,13 +237,25 @@ export const ShowcaseApp: React.FC = () => {
         toast.info(`Switched active site context to "${site.toUpperCase()}"`);
       }}
       topBarExtra={
-        <a
-          href="#/dashboard"
-          data-testid="back-to-emulator-link"
-          className="inline-flex h-8 items-center gap-1 rounded bg-white/15 px-2.5 text-xs font-medium text-white no-underline transition-colors hover:bg-white/25"
-        >
-          ← Omada Emulator
-        </a>
+        <div className="flex items-center gap-2">
+          <a
+            href="https://github.com/ChenyqThu/omada-ui-kit/issues/new/choose"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="showcase-report-issue-link"
+            className="inline-flex h-8 items-center gap-1.5 rounded bg-white/15 px-2.5 text-xs font-medium text-white no-underline transition-colors hover:bg-white/25"
+          >
+            <MessageSquarePlus size={13} />
+            <span>Report Issue</span>
+          </a>
+          <a
+            href="#/dashboard"
+            data-testid="back-to-emulator-link"
+            className="inline-flex h-8 items-center gap-1 rounded bg-white/15 px-2.5 text-xs font-medium text-white no-underline transition-colors hover:bg-white/25"
+          >
+            ← Omada Emulator
+          </a>
+        </div>
       }
       onNotificationClick={() =>
         toast.info('3 unread site events: 1 firmware alert, 2 adoption updates')
@@ -233,6 +268,7 @@ export const ShowcaseApp: React.FC = () => {
           </div>
         }
       >
+        {activeKey === 'agent-skill' && <AgentSkillSection onNavigate={handleSelect} />}
         {activeKey === 'blocks' && <BlocksSection />}
         {activeKey === 'templates' && <TemplatesSection />}
         {activeKey === 'devices-demo' && <DeviceListDemo />}
@@ -247,6 +283,43 @@ export const ShowcaseApp: React.FC = () => {
         {activeKey === 'feedback' && <FeedbackSection />}
         {activeKey === 'feedback-overlays' && <FeedbackOverlaysSection />}
       </React.Suspense>
+
+      <footer
+        data-testid="showcase-feedback-footer"
+        className="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--omada-border-divider)] bg-[var(--omada-bg-surface)] px-4 py-3 text-xs text-[var(--omada-text-secondary)]"
+      >
+        <span>
+          Missing a UI component or spotted a layout/theme bug? Submit a structured GitHub Issue so
+          it can be added or fixed.
+        </span>
+        <div className="flex flex-wrap items-center gap-3">
+          {activeKey !== 'agent-skill' && (
+            <button
+              type="button"
+              onClick={() => handleSelect('agent-skill')}
+              className="cursor-pointer border-0 bg-transparent p-0 text-xs font-medium text-[var(--omada-brand-text)] hover:underline"
+            >
+              Agent Skill Setup
+            </button>
+          )}
+          <a
+            href="https://github.com/ChenyqThu/omada-ui-kit/issues/new?template=missing-component.yml"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-[var(--omada-brand-text)] no-underline hover:underline"
+          >
+            Request Missing Component
+          </a>
+          <a
+            href="https://github.com/ChenyqThu/omada-ui-kit/issues/new?template=component-bug.yml"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-[var(--omada-text-primary)] no-underline hover:underline"
+          >
+            Report UI Issue
+          </a>
+        </div>
+      </footer>
     </SAppShell>
   );
 };

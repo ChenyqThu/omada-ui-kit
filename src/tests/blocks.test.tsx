@@ -248,4 +248,76 @@ describe('Omada Reusable Blocks & Showcase Gallery', () => {
       expect(within(dialog).getByText(/Template Source: Site Overview Dashboard/i)).toBeInTheDocument();
     });
   });
+
+  it('renders ShowcaseApp Agent Skill & Issue Feedback section with agent tabs, copy action, and GitHub issue links', async () => {
+    renderThemed(<ShowcaseApp />);
+
+    const topbarIssueLink = screen.getByTestId('showcase-report-issue-link');
+    expect(topbarIssueLink).toHaveAttribute(
+      'href',
+      'https://github.com/ChenyqThu/omada-ui-kit/issues/new/choose',
+    );
+    const footer = screen.getByTestId('showcase-feedback-footer');
+    expect(
+      within(footer).getByRole('link', { name: 'Request Missing Component' }),
+    ).toHaveAttribute(
+      'href',
+      'https://github.com/ChenyqThu/omada-ui-kit/issues/new?template=missing-component.yml',
+    );
+    expect(within(footer).getByRole('link', { name: 'Report UI Issue' })).toHaveAttribute(
+      'href',
+      'https://github.com/ChenyqThu/omada-ui-kit/issues/new?template=component-bug.yml',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /Agent Skill & Issues/i }));
+    expect(
+      await screen.findByText('Agent Skill & Issue Feedback', undefined, { timeout: 10000 }),
+    ).toBeInTheDocument();
+
+    expect(screen.getAllByText('npx skills add ChenyqThu/omada-ui-kit').length).toBeGreaterThanOrEqual(1);
+    expect(within(screen.getByRole('tabpanel')).getByText('.claude/skills/omada-ui-kit/')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Cursor' }));
+    await waitFor(() => {
+      expect(within(screen.getByRole('tabpanel')).getByText('.cursor/skills/omada-ui-kit/')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('tab', { name: 'OpenAI Codex' }));
+    await waitFor(() => {
+      expect(within(screen.getByRole('tabpanel')).getByText('.agents/skills/omada-ui-kit/')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Antigravity' }));
+    await waitFor(() => {
+      expect(within(screen.getByRole('tabpanel')).getByText('~/.gemini/config/skills/omada-ui-kit/')).toBeInTheDocument();
+    });
+
+    expect(screen.getByTestId('request-component-issue-link')).toHaveAttribute(
+      'href',
+      'https://github.com/ChenyqThu/omada-ui-kit/issues/new?template=missing-component.yml',
+    );
+    expect(screen.getByTestId('report-bug-issue-link')).toHaveAttribute(
+      'href',
+      'https://github.com/ChenyqThu/omada-ui-kit/issues/new?template=component-bug.yml',
+    );
+
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    const prevDescriptor = Object.getOwnPropertyDescriptor(navigator, 'clipboard');
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+    try {
+      fireEvent.click(screen.getByRole('button', { name: 'Copy Project-Level Install' }));
+      await waitFor(() => {
+        expect(writeText).toHaveBeenCalledWith('npx skills add ChenyqThu/omada-ui-kit');
+      });
+    } finally {
+      if (prevDescriptor) {
+        Object.defineProperty(navigator, 'clipboard', prevDescriptor);
+      } else {
+        delete (navigator as unknown as Record<string, unknown>).clipboard;
+      }
+    }
+  });
 });

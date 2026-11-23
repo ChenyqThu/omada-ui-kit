@@ -1,0 +1,56 @@
+name: UI Component Bug / Visual Fidelity Issue
+description: Report a layout, Dark/Light theme, interaction, or prop issue on an existing omada-ui-kit component.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: input
+    id: component
+    attributes:
+      label: Affected Component / Block / Showcase Section
+      description: Name the component, block, or Showcase route with the issue.
+      placeholder: e.g. STable, SEmulatorShell, SDetailInspectorDrawer
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Usage Environment
+      options:
+        - Single-File HTML (CDN standalone.js)
+        - React / Vite ESM (@chenyqthu/omada-ui-kit)
+        - Online Showcase (GitHub Pages)
+        - Omada Controller v6.3 Emulator
+    validations:
+      required: true
+  - type: dropdown
+    id: theme_mode
+    attributes:
+      label: Theme Mode
+      options:
+        - Light
+        - Dark
+        - Both
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package Version
+      description: Installed @chenyqthu/omada-ui-kit version (if applicable).
+      placeholder: e.g. 0.4.1
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: Actual vs. Expected Behavior
+      description: Explain what went wrong (layout overlap, missing prop, broken Light/Dark token, etc.).
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal Reproduction / Screenshots
+      description: Optional snippet, steps to reproduce, or screenshots.
+    validations:
+      required: false
