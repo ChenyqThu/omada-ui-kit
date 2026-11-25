@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Omada Site Dashboard Template</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/standalone.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/standalone.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"></script>
   </head>
   <body style="margin: 0;">
@@ -13,6 +13,7 @@
     <script type="text/babel">
       const { useState } = OmadaUI.React;
       const {
+        OmadaAgentProvider,
         OmadaProvider,
         SEmulatorShell,
         SPageHeader,
@@ -26,6 +27,7 @@
         SIcon,
         Row,
         Col,
+        useOmadaAgentAction,
         useOmadaTheme,
       } = window.OmadaUI;
 
@@ -33,7 +35,41 @@
 
       function DashboardDemo() {
         const [activeKey, setActiveKey] = useState('dashboard');
+        const [refreshCount, setRefreshCount] = useState(0);
         const { resolvedTheme, setThemeMode } = useOmadaTheme();
+
+        useOmadaAgentAction({
+          id: 'dashboard.switchSection',
+          label: 'Switch Sidebar Section',
+          description: 'Navigates the active sidebar section key (e.g. "dashboard", "devices", "clients").',
+          handler: (sectionKey) => {
+            const next = String(sectionKey || 'dashboard');
+            setActiveKey(next);
+            return next;
+          },
+        });
+
+        useOmadaAgentAction({
+          id: 'dashboard.setThemeMode',
+          label: 'Set Theme Mode',
+          description: 'Switches the Controller UI theme between "light" and "dark".',
+          handler: (mode) => {
+            const next = mode === 'dark' ? 'dark' : 'light';
+            setThemeMode(next);
+            return next;
+          },
+        });
+
+        useOmadaAgentAction({
+          id: 'dashboard.refreshTelemetry',
+          label: 'Refresh Site Telemetry',
+          description: 'Triggers an immediate site telemetry refresh and returns latest KPI summary.',
+          handler: () => {
+            const nextCount = refreshCount + 1;
+            setRefreshCount(nextCount);
+            return { refreshed: true, refreshCount: nextCount, healthScore: 94, activeClients: 142 };
+          },
+        });
 
         return (
           <SEmulatorShell
@@ -53,8 +89,12 @@
                     >
                       Theme: {resolvedTheme === 'dark' ? 'Dark' : 'Light'}
                     </SButton>
-                    <SButton variant="primary" icon={<SIcon name="refresh" size={14} />}>
-                      Refresh
+                    <SButton
+                      variant="primary"
+                      icon={<SIcon name="refresh" size={14} />}
+                      onClick={() => setRefreshCount((c) => c + 1)}
+                    >
+                      Refresh{refreshCount > 0 ? ` (${refreshCount})` : ''}
                     </SButton>
                   </div>
                 }
@@ -137,7 +177,9 @@
 
       OmadaUI.render(
         <OmadaProvider defaultThemeMode="light">
-          <DashboardDemo />
+          <OmadaAgentProvider exposeWindowBridge>
+            <DashboardDemo />
+          </OmadaAgentProvider>
         </OmadaProvider>,
         '#root',
       );

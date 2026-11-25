@@ -569,6 +569,7 @@ export const IncidentsPage: React.FC<IncidentsPageProps> = ({
       {/* Top Header Row: Left Sub-Tabs + Right Status & Time Controls */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <STabs
+          agentId="incidents.mainTabs"
           variant="page"
           size="lg"
           bordered={false}
@@ -586,6 +587,7 @@ export const IncidentsPage: React.FC<IncidentsPageProps> = ({
           <div className="flex flex-wrap items-center gap-2.5 pb-1">
             {/* Status Segmented Bar */}
             <STabs
+              agentId="incidents.statusFilter"
               variant="filter"
               aria-label="Incident status filter"
               activeKey={statusFilter}
@@ -667,6 +669,7 @@ export const IncidentsPage: React.FC<IncidentsPageProps> = ({
           {/* Search & Severity Filter Toolbar */}
           <div className="mt-3.5 flex flex-wrap items-center gap-3">
             <SInput
+              agentId="incidents.search"
               variant="filled"
               allowClear
               value={searchQuery}
@@ -685,6 +688,7 @@ export const IncidentsPage: React.FC<IncidentsPageProps> = ({
             />
 
             <STabs
+              agentId="incidents.severityFilter"
               variant="filter"
               aria-label="Incident severity filter"
               activeKey={severityFilter}

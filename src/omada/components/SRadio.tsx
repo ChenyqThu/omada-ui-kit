@@ -6,19 +6,93 @@ import {
   type RadioProps,
   type RadioRef,
 } from 'antd';
+import { useOmadaAgentControl } from '../agent';
 
 export type SRadioGroupVariant = 'default' | 'button' | 'capsule';
 
 export interface SRadioProps extends RadioProps {
   /** Optional explanatory copy rendered 4px beneath the radio label. */
   description?: React.ReactNode;
+  /** Optional deterministic Agent Bridge control ID. */
+  agentId?: string;
 }
 
 const BaseSRadio = React.forwardRef<RadioRef, SRadioProps>(
-  ({ description, children, className = '', ...rest }, ref) => {
+  (
+    {
+      description,
+      checked,
+      defaultChecked,
+      disabled,
+      onChange,
+      agentId,
+      children,
+      className = '',
+      ...rest
+    },
+    ref,
+  ) => {
+    const [innerChecked, setInnerChecked] = useState<boolean>(
+      Boolean(defaultChecked),
+    );
+    const isControlled = checked !== undefined;
+    const currentChecked = isControlled ? Boolean(checked) : innerChecked;
+
+    const commitSelect = (next: boolean, nativeEvent?: RadioChangeEvent) => {
+      if (!isControlled) {
+        setInnerChecked(next);
+      }
+      if (nativeEvent) {
+        onChange?.(nativeEvent);
+      } else {
+        onChange?.({
+          target: {
+            checked: next,
+            value: rest.value,
+            disabled: Boolean(disabled),
+          },
+          stopPropagation: () => {},
+          preventDefault: () => {},
+          nativeEvent: new MouseEvent('click'),
+        } as RadioChangeEvent);
+      }
+    };
+
+    useOmadaAgentControl(
+      agentId
+        ? {
+            id: agentId,
+            kind: 'radio',
+            label:
+              typeof children === 'string'
+                ? children
+                : ((rest as Record<string, unknown>)['aria-label'] as
+                    | string
+                    | undefined),
+            value: currentChecked,
+            disabled: Boolean(disabled),
+            actions: {
+              select: () => {
+                commitSelect(true);
+                return true;
+              },
+              setValue: (next: unknown) => {
+                const bool = Boolean(next);
+                commitSelect(bool);
+                return bool;
+              },
+            },
+          }
+        : null,
+    );
+
     return (
       <Radio
         ref={ref}
+        checked={isControlled ? checked : agentId ? innerChecked : undefined}
+        defaultChecked={agentId ? undefined : defaultChecked}
+        disabled={disabled}
+        onChange={(e) => commitSelect(e.target.checked, e)}
         className={`omada-radio-wrapper ${className}`.trim()}
         {...rest}
       >
@@ -60,6 +134,9 @@ export interface SRadioGroupProps<T = string | number>
   direction?: 'horizontal' | 'vertical';
   /** Rounded-full pill shape when `variant="capsule"`. */
   pill?: boolean;
+  /** Optional deterministic Agent Bridge control ID. */
+  agentId?: string;
+  'aria-label'?: string;
 }
 
 /**
@@ -78,6 +155,7 @@ export function SRadioGroup<T extends string | number = string | number>({
   disabled = false,
   name,
   buttonStyle = 'outline',
+  agentId,
   className = '',
   style,
   children,
@@ -103,6 +181,66 @@ export function SRadioGroup<T extends string | number = string | number>({
     onChange?.(e);
   };
 
+  useOmadaAgentControl(
+    agentId
+      ? {
+          id: agentId,
+          kind: 'radio-group',
+          label: rest['aria-label'],
+          value: currentValue ?? null,
+          disabled: Boolean(disabled),
+          options: normalizedOptions.map((opt) => ({
+            value: opt.value as string | number,
+            label: typeof opt.label === 'string' ? opt.label : String(opt.value),
+            disabled: Boolean(disabled || opt.disabled),
+          })),
+          actions: {
+            setValue: (next: unknown) => {
+              if (normalizedOptions.length > 0) {
+                const match = normalizedOptions.find(
+                  (o) => o.value === next || String(o.value) === String(next),
+                );
+                if (!match) {
+                  throw new Error(`Unknown radio option "${String(next)}".`);
+                }
+                if (match.disabled) {
+                  throw new Error(`Radio option "${String(next)}" is disabled.`);
+                }
+                if (!isControlled) {
+                  setInnerValue(match.value);
+                }
+                onChange?.({
+                  target: {
+                    value: match.value,
+                    checked: true,
+                    disabled: false,
+                  },
+                  stopPropagation: () => {},
+                  preventDefault: () => {},
+                  nativeEvent: new MouseEvent('click'),
+                } as RadioChangeEvent);
+                return match.value;
+              }
+              if (!isControlled) {
+                setInnerValue(next as T);
+              }
+              onChange?.({
+                target: {
+                  value: next,
+                  checked: true,
+                  disabled: false,
+                },
+                stopPropagation: () => {},
+                preventDefault: () => {},
+                nativeEvent: new MouseEvent('click'),
+              } as RadioChangeEvent);
+              return next;
+            },
+          },
+        }
+      : null,
+  );
+
   if (variant === 'capsule') {
     const handleCapsuleChange = (
       opt: SRadioOption<T>,
@@ -127,6 +265,7 @@ export function SRadioGroup<T extends string | number = string | number>({
     return (
       <div
         role="radiogroup"
+        aria-label={rest['aria-label']}
         aria-disabled={disabled}
         style={style}
         className={`inline-flex flex-wrap items-center gap-1 bg-[var(--omada-bg-field)] p-0.5 ${

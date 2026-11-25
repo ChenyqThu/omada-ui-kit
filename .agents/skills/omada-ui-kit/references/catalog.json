@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "package": {
     "name": "@chenyqthu/omada-ui-kit",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "description": "Omada Controller v6.3 React UI component library (Ant Design 6 + Design Tokens + Figma Assets + Single-file HTML standalone bundle)",
     "entries": {
       "import": "@chenyqthu/omada-ui-kit",
@@ -19,10 +19,10 @@
       "llmsTxt": "@chenyqthu/omada-ui-kit/llms.txt"
     },
     "cdn": {
-      "jsdelivrCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/style.css",
-      "jsdelivrStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/standalone.js",
-      "pinnedCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/style.css",
-      "pinnedStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/standalone.js",
+      "jsdelivrCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/style.css",
+      "jsdelivrStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/standalone.js",
+      "pinnedCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/style.css",
+      "pinnedStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/standalone.js",
       "babelStandalone": "https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"
     }
   },
@@ -30,7 +30,7 @@
     "components": 114,
     "blocks": 8,
     "antdPrimitives": 27,
-    "hooksAndHelpers": 28,
+    "hooksAndHelpers": 29,
     "templates": 5,
     "icons": 590,
     "products": 83,
@@ -39,6 +39,14 @@
     "brand": 47
   },
   "components": [
+    {
+      "name": "OMADA_AGENT_TOOLS",
+      "category": "agent",
+      "kind": "data",
+      "subpath": "@chenyqthu/omada-ui-kit/agent",
+      "sourcePath": "src/omada/agent/index.tsx",
+      "description": "Canonical JSON Schema definitions for Omada Agent Bridge tools (`snapshot`, `query`, `act`), compatible with WebMCP (`document.modelContext.registerTool`) and LLM tool-calling SDKs."
+    },
     {
       "name": "OMADA_SECRET_MASK",
       "category": "agent",
@@ -53,7 +61,7 @@
       "kind": "component",
       "subpath": "@chenyqthu/omada-ui-kit/agent",
       "sourcePath": "src/omada/agent/index.tsx",
-      "description": "Deterministic Agent Bridge provider for Omada UI Kit. Exposes structured `snapshot()`, `query()`, `act()`, and `allow` governance with automatic `[REDACTED]` masking on `secret` / password controls.",
+      "description": "Deterministic Agent Bridge provider for Omada UI Kit. Exposes structured `snapshot()`, `query()`, `act()`, `actAsync()`, `allow` governance, optional `window.__OMADA_AGENT__` exposure, and WebMCP browser tool registration with automatic `[REDACTED]` masking on `secret` / password controls.",
       "propsType": "OmadaAgentProviderProps",
       "props": [
         {
@@ -71,10 +79,24 @@
           "name": "exposeWindowBridge",
           "type": "boolean",
           "optional": true,
-          "description": "Optional imperative callback invoked with the live `OmadaAgentRuntime` handle, or `exposeWindowBridge` to attach `window.__OMADA_AGENT__` for browser automation."
+          "description": "Exposes `window.__OMADA_AGENT__` for external browser automation / Playwright / DevTools agents (and automatically registers WebMCP tools unless `registerWebMcp={false}`)."
+        },
+        {
+          "name": "registerWebMcp",
+          "type": "boolean | OmadaWebMcpOptions",
+          "optional": true,
+          "description": "Registers `snapshot`, `query`, and `act` with the browser's WebMCP API (`document.modelContext` / `navigator.modelContext`). Defaults to `exposeWindowBridge`."
         }
       ],
       "acceptsDomProps": false
+    },
+    {
+      "name": "registerWebMcpTools",
+      "category": "agent",
+      "kind": "helper",
+      "subpath": "@chenyqthu/omada-ui-kit/agent",
+      "sourcePath": "src/omada/agent/index.tsx",
+      "description": "Registers `snapshot`, `query`, and `act` with the browser's WebMCP API (`document.modelContext` or `navigator.modelContext`) when supported. Safely returns a no-op cleanup function in browsers without WebMCP support."
     },
     {
       "name": "useOmadaAgent",
@@ -82,7 +104,7 @@
       "kind": "hook",
       "subpath": "@chenyqthu/omada-ui-kit/agent",
       "sourcePath": "src/omada/agent/index.tsx",
-      "description": "Accesses the deterministic `<OmadaAgentProvider>` runtime (`snapshot`, `query`, `act`, `allow`)."
+      "description": "Accesses the deterministic `<OmadaAgentProvider>` runtime (`snapshot`, `query`, `act`, `actAsync`, `allow`)."
     },
     {
       "name": "useOmadaAgentAction",
@@ -726,6 +748,12 @@
           "name": "activeTab",
           "type": "string",
           "optional": true
+        },
+        {
+          "name": "agentId",
+          "type": "string",
+          "optional": true,
+          "description": "Optional deterministic Agent Bridge control ID."
         },
         {
           "name": "children",
@@ -2709,6 +2737,18 @@
       "extends": "extends Omit<TableProps<T>, 'pagination'>",
       "props": [
         {
+          "name": "agentId",
+          "type": "string",
+          "optional": true,
+          "description": "Optional deterministic Agent Bridge control ID."
+        },
+        {
+          "name": "agentLabel",
+          "type": "string",
+          "optional": true,
+          "description": "Optional accessible label exposed in Agent Bridge `snapshot()` / `query()`."
+        },
+        {
           "name": "columnSettings",
           "type": "boolean",
           "optional": true,
@@ -3567,6 +3607,12 @@
       "propsType": "SExpandableSectionProps",
       "props": [
         {
+          "name": "agentId",
+          "type": "string",
+          "optional": true,
+          "description": "Optional deterministic ID for Agent Bridge state inspection and actions."
+        },
+        {
           "name": "children",
           "type": "React.ReactNode",
           "optional": false
@@ -4216,6 +4262,12 @@
       "extends": "extends Omit<DrawerProps, 'size' | 'width'>",
       "props": [
         {
+          "name": "agentId",
+          "type": "string",
+          "optional": true,
+          "description": "Optional deterministic Agent Bridge control ID."
+        },
+        {
           "name": "headerTabs",
           "type": "React.ReactNode",
           "optional": true
@@ -4427,6 +4479,12 @@
           "type": "React.ReactNode",
           "optional": true,
           "description": "Custom action nodes replacing the default footer buttons"
+        },
+        {
+          "name": "agentId",
+          "type": "string",
+          "optional": true,
+          "description": "Optional deterministic Agent Bridge control ID."
         },
         {
           "name": "cancelButtonProps",
@@ -4699,6 +4757,12 @@
       "propsType": "SModalProps",
       "extends": "extends Omit<ModalProps, 'width' | 'okButtonProps' | 'cancelButtonProps'>",
       "props": [
+        {
+          "name": "agentId",
+          "type": "string",
+          "optional": true,
+          "description": "Optional deterministic Agent Bridge control ID."
+        },
         {
           "name": "cancelButtonProps",
           "type": "SButtonProps",
@@ -5061,6 +5125,12 @@
       "propsType": "SStepModalProps",
       "extends": "extends Omit<SModalProps, 'children' | 'onOk' | 'footer'>",
       "props": [
+        {
+          "name": "agentId",
+          "type": "string",
+          "optional": true,
+          "description": "Optional deterministic Agent Bridge control ID."
+        },
         {
           "name": "allowStepClick",
           "type": "boolean",
@@ -5630,6 +5700,12 @@
       "extends": "extends CheckboxProps",
       "props": [
         {
+          "name": "agentId",
+          "type": "string",
+          "optional": true,
+          "description": "Optional deterministic Agent Bridge control ID."
+        },
+        {
           "name": "description",
           "type": "React.ReactNode",
           "optional": true,
@@ -5677,6 +5753,12 @@
       "propsType": "SCheckboxGroupProps",
       "extends": "extends Omit<CheckboxGroupProps<T>, 'options'>",
       "props": [
+        {
+          "name": "agentId",
+          "type": "string",
+          "optional": true,
+          "description": "Optional deterministic Agent Bridge control ID."
+        },
         {
           "name": "direction",
           "type": "'horizontal' | 'vertical'",
@@ -5806,6 +5888,12 @@
       "propsType": "SDatePickerProps",
       "extends": "extends DatePickerProps",
       "props": [
+        {
+          "name": "agentId",
+          "type": "string",
+          "optional": true,
+          "description": "Optional deterministic Agent Bridge control ID."
+        },
         {
           "name": "capsule",
           "type": "boolean",
@@ -6351,7 +6439,14 @@
       "description": "Omada numeric input defaulting to filled grey background.",
       "propsType": "SNumberInputProps",
       "extends": "extends InputNumberProps",
-      "props": [],
+      "props": [
+        {
+          "name": "agentId",
+          "type": "string",
+          "optional": true,
+          "description": "Optional deterministic Agent Bridge control ID."
+        }
+      ],
       "antdProps": [
         "allowClear",
         "changeOnBlur",
@@ -6529,6 +6624,12 @@
       "extends": "extends RadioProps",
       "props": [
         {
+          "name": "agentId",
+          "type": "string",
+          "optional": true,
+          "description": "Optional deterministic Agent Bridge control ID."
+        },
+        {
           "name": "description",
           "type": "React.ReactNode",
           "optional": true,
@@ -6575,6 +6676,12 @@
       "propsType": "SRadioGroupProps",
       "extends": "extends Omit<RadioGroupProps, 'options' | 'optionType'>",
       "props": [
+        {
+          "name": "agentId",
+          "type": "string",
+          "optional": true,
+          "description": "Optional deterministic Agent Bridge control ID."
+        },
         {
           "name": "direction",
           "type": "'horizontal' | 'vertical'",
@@ -6643,6 +6750,12 @@
           "type": "string",
           "optional": true,
           "description": "Controlled active preset key in `capsule` mode (`'1d' | '1w' | '1m' | 'custom'`)."
+        },
+        {
+          "name": "agentId",
+          "type": "string",
+          "optional": true,
+          "description": "Optional deterministic Agent Bridge control ID."
         },
         {
           "name": "capsule",
@@ -18655,13 +18768,13 @@
         "SIcon"
       ],
       "cdnUrls": {
-        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/style.css",
-        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/standalone.js",
+        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/style.css",
+        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/standalone.js",
         "babel": "https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"
       },
       "pinnedUrls": {
-        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/style.css",
-        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/standalone.js",
+        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/style.css",
+        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/standalone.js",
         "babel": "https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"
       }
     },
@@ -18761,19 +18874,33 @@
     },
     {
       "id": "agent-bridge",
-      "title": "Deterministic Agent Bridge (snapshot / query / act / allow)",
-      "summary": "Register interactive controls via agentId inside <OmadaAgentProvider> for deterministic UI state inspection, imperative automation, allowlist permissions, and automatic [REDACTED] secret masking.",
+      "title": "Deterministic Agent Bridge & WebMCP (snapshot / query / act / allow)",
+      "summary": "Register interactive controls via agentId and domain actions via useOmadaAgentAction inside <OmadaAgentProvider exposeWindowBridge> for deterministic UI state inspection, multi-step batch actAsync({ steps }), WebMCP tool registration, allowlist permissions, and automatic [REDACTED] secret masking.",
       "components": [
         "OmadaAgentProvider",
         "useOmadaAgent",
         "useOmadaAgentControl",
         "useOmadaAgentAction",
+        "registerWebMcpTools",
         "SSwitch",
         "SSelect",
         "SInput",
         "SPasswordInput",
+        "SNumberInput",
+        "SCheckbox",
+        "SCheckboxGroup",
+        "SRadio",
+        "SRadioGroup",
+        "SDatePicker",
+        "SRangePicker",
         "STabs",
+        "STable",
         "SFilterTableBlock",
+        "SDrawer",
+        "SDetailInspectorDrawer",
+        "SModal",
+        "SStepModal",
+        "SExpandableSection",
         "SSettingsPageShell"
       ]
     }

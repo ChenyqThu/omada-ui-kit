@@ -419,17 +419,98 @@ export const SPasswordInput = React.forwardRef<InputRef, SPasswordInputProps>(
 );
 SPasswordInput.displayName = 'SPasswordInput';
 
-export interface SNumberInputProps extends InputNumberProps {}
+export interface SNumberInputProps extends InputNumberProps {
+  /** Optional deterministic Agent Bridge control ID. */
+  agentId?: string;
+}
 
 /**
  * Omada numeric input defaulting to filled grey background.
  */
 export const SNumberInput = React.forwardRef<HTMLInputElement, SNumberInputProps>(
-  ({ variant = 'filled', className = '', ...rest }, ref) => {
+  (
+    {
+      variant = 'filled',
+      value,
+      defaultValue,
+      onChange,
+      disabled,
+      min,
+      max,
+      step,
+      agentId,
+      className = '',
+      ...rest
+    },
+    ref,
+  ) => {
+    const [innerNum, setInnerNum] = useState<number | string | null>(
+      defaultValue ?? null,
+    );
+    const isControlled = value !== undefined;
+    const currentNum = isControlled ? (value ?? null) : innerNum;
+
+    useOmadaAgentControl(
+      agentId
+        ? {
+            id: agentId,
+            kind: 'number',
+            label:
+              (rest['aria-label'] as string | undefined) ?? rest.placeholder,
+            value: currentNum,
+            disabled: Boolean(disabled),
+            meta: {
+              ...(min !== undefined ? { min } : {}),
+              ...(max !== undefined ? { max } : {}),
+              ...(step !== undefined ? { step } : {}),
+            },
+            actions: {
+              setValue: (next: unknown) => {
+                if (next === null || next === '') {
+                  if (!isControlled) setInnerNum(null);
+                  onChange?.(null);
+                  return null;
+                }
+                const parsed = typeof next === 'number' ? next : Number(next);
+                if (!Number.isFinite(parsed)) {
+                  throw new Error(`Invalid number "${String(next)}".`);
+                }
+                if (typeof min === 'number' && parsed < min) {
+                  throw new Error(`Value ${parsed} is below min ${min}.`);
+                }
+                if (typeof max === 'number' && parsed > max) {
+                  throw new Error(`Value ${parsed} exceeds max ${max}.`);
+                }
+                if (!isControlled) setInnerNum(parsed);
+                onChange?.(parsed as never);
+                return parsed;
+              },
+              clear: () => {
+                if (!isControlled) setInnerNum(null);
+                onChange?.(null);
+                return null;
+              },
+            },
+          }
+        : null,
+    );
+
     return (
       <InputNumber
         ref={ref as React.Ref<React.ComponentRef<typeof InputNumber>>}
         variant={variant}
+        value={isControlled ? value : agentId ? innerNum : undefined}
+        defaultValue={agentId ? undefined : defaultValue}
+        disabled={disabled}
+        min={min}
+        max={max}
+        step={step}
+        onChange={(val) => {
+          if (!isControlled) {
+            setInnerNum(val ?? null);
+          }
+          onChange?.(val);
+        }}
         className={`omada-input ${className}`.trim()}
         {...rest}
       />

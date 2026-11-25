@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
-import { Checkbox, Radio } from 'antd';
 import '@chenyqthu/omada-ui-kit/style.css';
 import {
+  OmadaAgentProvider,
   OmadaProvider,
   SAclRuleBuilder,
   SButton,
+  SCheckbox,
   SEmulatorShell,
   SExpandableSection,
   SFilterTableBlock,
   SInlineFormRow,
   SInlineRuleEditorLayout,
   SInput,
+  SRadio,
   SSelect,
   SSwitch,
+  useOmadaAgentAction,
   type ColumnsType,
   type SAclEndpointValue,
   type SAclObjectOption,
@@ -63,11 +66,64 @@ const AclRulesContent: React.FC = () => {
     items: ['ip-1'],
   });
 
+  useOmadaAgentAction({
+    id: 'acl.openRuleEditor',
+    label: 'Open ACL Rule Creator',
+    description: 'Opens the inline ACL rule builder pane.',
+    handler: () => {
+      setEditing(true);
+      return true;
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'acl.createRule',
+    label: 'Create ACL Rule',
+    description: 'Appends a new ACL rule ({ description, policy, enabled, source, destination }) to the rule table.',
+    handler: (payload) => {
+      const input = (payload && typeof payload === 'object' ? payload : {}) as Partial<AclRow>;
+      const nextRule: AclRow = {
+        key: String(rules.length + 1),
+        enabled: input.enabled ?? true,
+        description: String(input.description || 'Gateway_ACL_Rule'),
+        policy: input.policy === 'Deny' ? 'Deny' : 'Permit',
+        protocols: input.protocols ? String(input.protocols) : 'All',
+        source: input.source ? String(input.source) : 'Network:Guest_VLAN_200',
+        destination: input.destination ? String(input.destination) : 'IP Group:IPGroup_Any',
+      };
+      setRules((prev) => [...prev, nextRule]);
+      setEditing(false);
+      return nextRule;
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'acl.toggleRule',
+    label: 'Toggle ACL Rule Enabled State',
+    description: 'Enables or disables an ACL rule by key or description.',
+    handler: (payload) => {
+      const p = (payload && typeof payload === 'object' ? payload : { key: String(payload ?? '') }) as {
+        key?: string;
+        enabled?: boolean;
+      };
+      const targetKey = String(p.key ?? '');
+      const target = rules.find((r) => r.key === targetKey || r.description === targetKey);
+      if (!target) {
+        throw new Error(`ACL rule "${targetKey}" not found.`);
+      }
+      const nextEnabled = p.enabled !== undefined ? Boolean(p.enabled) : !target.enabled;
+      setRules((prev) =>
+        prev.map((r) => (r.key === target.key ? { ...r, enabled: nextEnabled } : r)),
+      );
+      return { key: target.key, enabled: nextEnabled };
+    },
+  });
+
   const handleSave = () => {
     setRules((prev) => [
       ...prev,
       {
-        key: String(Date.now()),
+        key: String(prev.length + 1),
         enabled,
         description: desc || 'ACL_Rule',
         policy,
@@ -85,7 +141,17 @@ const AclRulesContent: React.FC = () => {
       title: 'Enabled',
       dataIndex: 'enabled',
       key: 'enabled',
-      render: (checked: boolean) => <SSwitch aria-label="Enable ACL rule" checked={checked} />,
+      render: (checked: boolean, row) => (
+        <SSwitch
+          aria-label={`Enable ACL rule ${row.description}`}
+          checked={checked}
+          onChange={(next) =>
+            setRules((prev) =>
+              prev.map((r) => (r.key === row.key ? { ...r, enabled: next } : r)),
+            )
+          }
+        />
+      ),
     },
     { title: 'Description', dataIndex: 'description', key: 'description' },
     { title: 'Policy', dataIndex: 'policy', key: 'policy' },
@@ -106,21 +172,32 @@ const AclRulesContent: React.FC = () => {
             <SInlineFormRow label="Description" htmlFor="acl-desc">
               <SInput
                 id="acl-desc"
+                agentId="acl.form.description"
                 value={desc}
                 onChange={(e) => setDesc(e.target.value)}
                 style={{ width: 350 }}
               />
             </SInlineFormRow>
             <SInlineFormRow label="Status">
-              <Checkbox checked={enabled} onChange={(e) => setEnabled(e.target.checked)}>
+              <SCheckbox
+                agentId="acl.form.enabled"
+                checked={enabled}
+                onChange={(e) => setEnabled(e.target.checked)}
+              >
                 Enable
-              </Checkbox>
+              </SCheckbox>
             </SInlineFormRow>
             <SInlineFormRow label="Policy">
-              <Radio.Group value={policy} onChange={(e) => setPolicy(e.target.value as SAclPolicy)}>
-                <Radio value="Deny">Deny</Radio>
-                <Radio value="Permit">Permit</Radio>
-              </Radio.Group>
+              <SRadio.Group
+                agentId="acl.form.policy"
+                aria-label="ACL policy"
+                value={policy}
+                onChange={(e) => setPolicy(e.target.value as SAclPolicy)}
+                options={[
+                  { label: 'Deny', value: 'Deny' },
+                  { label: 'Permit', value: 'Permit' },
+                ]}
+              />
             </SInlineFormRow>
             <SInlineFormRow label="Rule">
               <SAclRuleBuilder
@@ -142,6 +219,7 @@ const AclRulesContent: React.FC = () => {
             <SExpandableSection title="Advanced Settings">
               <SInlineFormRow label="States Type">
                 <SSelect
+                  aria-label="States Type"
                   defaultValue="auto"
                   style={{ width: 350 }}
                   options={[{ value: 'auto', label: 'Auto (New / Established / Related)' }]}
@@ -151,6 +229,7 @@ const AclRulesContent: React.FC = () => {
           </SInlineRuleEditorLayout>
         ) : (
           <SFilterTableBlock<AclRow>
+            agentId="acl.table"
             tabs={[
               { key: 'gateway', label: 'Gateway ACL' },
               { key: 'switch', label: 'Switch ACL' },
@@ -179,6 +258,8 @@ const AclRulesContent: React.FC = () => {
 
 export const AclRulesTemplate: React.FC = () => (
   <OmadaProvider defaultThemeMode="light">
-    <AclRulesContent />
+    <OmadaAgentProvider exposeWindowBridge>
+      <AclRulesContent />
+    </OmadaAgentProvider>
   </OmadaProvider>
 );

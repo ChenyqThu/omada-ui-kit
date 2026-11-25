@@ -1132,6 +1132,7 @@ export const ClientListPage: React.FC<ClientListPageProps> = ({
     <div className="omada-clients-page px-6 pt-4 pb-6">
       {/* Top Underline Sub-Tabs + Right Export Action */}
       <STabs
+        agentId="clients.viewTabs"
         variant="page"
         size="lg"
         bordered
@@ -1169,6 +1170,7 @@ export const ClientListPage: React.FC<ClientListPageProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-3">
             <SInput
+              agentId="clients.search"
               variant="filled"
               allowClear
               value={search}
@@ -1190,6 +1192,7 @@ export const ClientListPage: React.FC<ClientListPageProps> = ({
             />
 
             <STabs
+              agentId="clients.connectionFilter"
               variant="filter"
               aria-label="Client connection filter"
               activeKey={connectionFilter}
@@ -1241,6 +1244,7 @@ export const ClientListPage: React.FC<ClientListPageProps> = ({
         {/* Row 2: Experience Segmented Filter */}
         <div className="flex flex-wrap items-center gap-3">
           <STabs
+            agentId="clients.experienceFilter"
             variant="filter"
             aria-label="Client experience filter"
             activeKey={experienceFilter}

@@ -61,7 +61,7 @@ function main() {
     100
   ).toFixed(1);
 
-  console.log('[1/4] Context & Progressive Disclosure Token Budget:');
+  console.log('[1/5] Context & Progressive Disclosure Token Budget:');
   console.log(`  - Legacy monolithic (catalog.json + COMPONENTS.md): ~${legacyMonolithTokens} tokens`);
   console.log(`  - SKILL.md entrypoint:                              ~${skillEntryTokens} tokens`);
   console.log(`  - SKILL.md + llms.txt index:                        ~${routerPlusIndexTokens} tokens`);
@@ -100,7 +100,7 @@ function main() {
     const styleKb = (styleBytes / 1024).toFixed(1);
     const scopedKb = (fs.statSync(scopedStylePath).size / 1024).toFixed(1);
 
-    console.log('[2/4] Dist Bundle & Isolation Budgets:');
+    console.log('[2/5] Dist Bundle & Isolation Budgets:');
     console.log(`  - dist/standalone.js:     ${standaloneMb} MB (budget <= 4.50 MB)`);
     console.log(`  - dist/style.css:         ${styleKb} KB (budget <= 230.0 KB)`);
     console.log(`  - dist/style.scoped.css:  ${scopedKb} KB (no preflight reset)\n`);
@@ -111,7 +111,7 @@ function main() {
     );
     assert(styleBytes <= 230 * 1024, `dist/style.css exceeded 230 KB budget (${styleKb} KB)`);
   } else {
-    console.log('[2/4] Dist Bundle & Isolation Budgets: skipped (dist/ not built yet)\n');
+    console.log('[2/5] Dist Bundle & Isolation Budgets: skipped (dist/ not built yet)\n');
   }
 
   // 3. Dual-Engine Verifier Precision & Adversarial Recall Suite
@@ -366,11 +366,11 @@ function main() {
     fs.rmSync(TMP_MUTATION_DIR, { recursive: true, force: true });
   }
 
-  console.log('[3/4] Dual-Engine verify-demo.mjs Precision & Recall:');
+  console.log('[3/5] Dual-Engine verify-demo.mjs Precision & Recall:');
   console.log(`  - Positive baseline runs passed:  ${positiveChecks}/${positiveChecks} (0 false positives)`);
   console.log(`  - Adversarial mutations caught:   ${caughtMutations}/${caughtMutations} (100% recall across ts-ast & lexical)\n`);
 
-  // 4. Agent Bridge Schema & Secret Masking Metadata Audit
+  // 4. Agent Bridge & WebMCP Schema + Secret Masking Metadata Audit
   const catalog = JSON.parse(catalogRaw);
   const compMap = new Map(catalog.components.map((c) => [c.name, c]));
   const requiredAgentComponents = [
@@ -378,8 +378,22 @@ function main() {
     'SSelect',
     'SInput',
     'SPasswordInput',
+    'SNumberInput',
+    'SCheckbox',
+    'SCheckboxGroup',
+    'SRadio',
+    'SRadioGroup',
+    'SDatePicker',
+    'SRangePicker',
     'STabs',
+    'STable',
     'SFilterTableBlock',
+    'SDrawer',
+    'SDetailInspectorDrawer',
+    'SModal',
+    'SInfoDialog',
+    'SStepModal',
+    'SExpandableSection',
     'SSettingsPageShell',
   ];
   for (const compName of requiredAgentComponents) {
@@ -398,10 +412,98 @@ function main() {
     compMap.get('OmadaAgentProvider')?.props?.some((p) => p.name === 'allow'),
     'OmadaAgentProvider is missing allow prop in catalog.json',
   );
+  assert(
+    compMap.get('OmadaAgentProvider')?.props?.some((p) => p.name === 'registerWebMcp'),
+    'OmadaAgentProvider is missing registerWebMcp prop in catalog.json',
+  );
+  assert(
+    compMap.has('registerWebMcpTools') && compMap.has('OMADA_AGENT_TOOLS'),
+    'Missing registerWebMcpTools or OMADA_AGENT_TOOLS in catalog.json',
+  );
 
-  console.log('[4/4] Agent Bridge Schema & Secret Masking Audit:');
-  console.log(`  - Verified agentId registration schema on ${requiredAgentComponents.length}/7 core controls & shells`);
-  console.log('  - Verified OmadaAgentProvider allow policy & SPasswordInput secret masking metadata\n');
+  console.log('[4/5] Agent Bridge & WebMCP Schema Audit:');
+  console.log(
+    `  - Verified agentId registration schema across ${requiredAgentComponents.length}/${requiredAgentComponents.length} interactive components, overlays & shells`,
+  );
+  console.log(
+    '  - Verified OmadaAgentProvider allow/exposeWindowBridge/registerWebMcp, OMADA_AGENT_TOOLS & [REDACTED] masking\n',
+  );
+
+  // 5. Headless Chrome --render + WCAG axe-core Runtime Gate (when dist/standalone.js is built)
+  if (fs.existsSync(standaloneDist)) {
+    fs.rmSync(TMP_MUTATION_DIR, { recursive: true, force: true });
+    fs.mkdirSync(TMP_MUTATION_DIR, { recursive: true });
+    try {
+      const renderPositiveTargets = [
+        path.join(ROOT_DIR, 'examples/single-file-demo.html'),
+        path.join(SKILL_DIR, 'templates/settings.html'),
+        path.join(SKILL_DIR, 'templates/inventory.tsx'),
+      ];
+      const renderPass = runVerifier(renderPositiveTargets, ['--render']);
+      assert(
+        renderPass.status === 0,
+        `--render failed on valid targets: ${renderPass.stderr}`,
+      );
+
+      // Adversarial runtime crash (passes static AST, caught by --render)
+      const crashHtml = path.join(TMP_MUTATION_DIR, 'runtime-crash.html');
+      const crashedSource = baseValidHtml.replace(
+        'function DashboardDemo() {',
+        'function DashboardDemo() { throw new Error("Simulated render crash");',
+      );
+      assert(
+        crashedSource !== baseValidHtml,
+        'Failed to inject simulated render crash into dashboard.html',
+      );
+      fs.writeFileSync(crashHtml, crashedSource, 'utf8');
+      const crashRes = runVerifier(crashHtml, ['--render']);
+      assert(
+        crashRes.status !== 0 && crashRes.stderr.includes('Simulated render crash'),
+        `--render missed uncaught runtime error: "${crashRes.stderr}"`,
+      );
+
+      // Adversarial WCAG axe violation (unlabeled raw <input>, passes static AST, caught by axe)
+      const axeFailHtml = path.join(TMP_MUTATION_DIR, 'axe-unlabeled-input.html');
+      fs.writeFileSync(
+        axeFailHtml,
+        baseValidHtml.replace(
+          '<SPageHeader',
+          '<input type="text" id="unlabeled-bad-field" /><SPageHeader',
+        ),
+        'utf8',
+      );
+      const axeRes = runVerifier(axeFailHtml, ['--render']);
+      assert(
+        axeRes.status !== 0 && axeRes.stderr.includes('axe [label]'),
+        `--render missed axe WCAG label violation: "${axeRes.stderr}"`,
+      );
+
+      // Adversarial <SEmulatorShell> <|| handle overlap (caught by live geometry check)
+      const overlapHtml = path.join(TMP_MUTATION_DIR, 'handle-overlap.html');
+      fs.writeFileSync(
+        overlapHtml,
+        baseValidHtml.replace(
+          '<SPageHeader',
+          '<SButton variant="primary" style={{ position: "fixed", top: 136, right: 2, zIndex: 40 }}>Overlap</SButton><SPageHeader',
+        ),
+        'utf8',
+      );
+      const overlapRes = runVerifier(overlapHtml, ['--render']);
+      assert(
+        overlapRes.status !== 0 &&
+          overlapRes.stderr.includes('physically overlaps <SEmulatorShell> <|| quick-drawer handle'),
+        `--render missed physical <|| handle overlap: "${overlapRes.stderr}"`,
+      );
+
+      console.log('[5/5] Headless Chrome --render + axe WCAG 2.1 A/AA Runtime Gate:');
+      console.log('  - Positive HTML + TSX live renders passed: 3/3 (0 runtime errors, 0 axe violations)');
+      console.log('  - Runtime adversarial catches passed:      3/3 (render crash, axe label, <|| geometry overlap)\n');
+    } finally {
+      fs.rmSync(TMP_MUTATION_DIR, { recursive: true, force: true });
+    }
+  } else {
+    console.log('[5/5] Headless Chrome --render Gate: skipped (dist/ not built yet)\n');
+  }
 
   console.log('PASS: All Agent readiness benchmarks and verifier gates succeeded.');
 }

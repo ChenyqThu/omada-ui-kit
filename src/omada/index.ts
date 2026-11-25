@@ -2,16 +2,23 @@
 export { OmadaProvider, useOmadaTheme, type OmadaProviderProps } from './theme/OmadaProvider';
 export { buildOmadaAntdTheme } from './theme/antdTheme';
 export {
+  OMADA_AGENT_TOOLS,
   OMADA_SECRET_MASK,
   OmadaAgentProvider,
+  registerWebMcpTools,
   useOmadaAgent,
   useOmadaAgentAction,
   useOmadaAgentControl,
+  type OmadaAgentActAsyncFn,
+  type OmadaAgentActFn,
   type OmadaAgentActPayload,
   type OmadaAgentActResult,
   type OmadaAgentActionRegistration,
   type OmadaAgentActionSnapshot,
   type OmadaAgentAllow,
+  type OmadaAgentBatchPayload,
+  type OmadaAgentBatchResult,
+  type OmadaAgentBatchStep,
   type OmadaAgentControlKind,
   type OmadaAgentControlRegistration,
   type OmadaAgentControlSnapshot,
@@ -22,6 +29,12 @@ export {
   type OmadaAgentQueryFilter,
   type OmadaAgentRuntime,
   type OmadaAgentSnapshot,
+  type OmadaModelContextLike,
+  type OmadaWebMcpOptions,
+  type OmadaWebMcpToolAnnotations,
+  type OmadaWebMcpToolDefinition,
+  type OmadaWebMcpToolResult,
+  type OmadaWebMcpToolSchema,
 } from './agent';
 export {
   useRovingFocus,

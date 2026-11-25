@@ -13,6 +13,7 @@ import {
   SProductImage,
   SSelect,
   STag,
+  useOmadaAgentAction,
   type ColumnsType,
   type DeviceStatusType,
   type OmadaProductName,
@@ -30,21 +31,82 @@ interface DeviceRow {
   firmware: string;
 }
 
-const DEVICES: DeviceRow[] = [
+const INITIAL_DEVICES: DeviceRow[] = [
   { key: '1', name: 'EAP650-Lobby', model: 'EAP650', slug: 'eap650', status: 'connected', ip: '192.168.10.21', mac: 'A8-42-A1-10-22-01', clients: 38, firmware: '1.4.2 Build 202611' },
   { key: '2', name: 'EAP650-Meeting', model: 'EAP650', slug: 'eap650', status: 'connected', ip: '192.168.10.22', mac: 'A8-42-A1-10-22-02', clients: 24, firmware: '1.4.2 Build 202611' },
   { key: '3', name: 'EAP610-Courtyard', model: 'EAP610-Outdoor', slug: 'eap610-outdoor-un-1-30', status: 'heartbeat-missed', ip: '192.168.10.35', mac: 'B0-95-75-42-11-09', clients: 4, firmware: '1.3.0 Build 202609' },
 ];
 
+const UPGRADED_FIRMWARE = '1.5.0 Build 202611';
+
 const InventoryContent: React.FC = () => {
   const [activeKey, setActiveKey] = useState('devices');
+  const [devices, setDevices] = useState<DeviceRow[]>(INITIAL_DEVICES);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [selected, setSelected] = useState<DeviceRow | null>(null);
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+
+  const selected = useMemo(
+    () => devices.find((d) => d.key === selectedKey) ?? null,
+    [devices, selectedKey],
+  );
+
+  const handleBatchUpgrade = () => {
+    let upgradedCount = 0;
+    setDevices((prev) =>
+      prev.map((d) => {
+        if (d.status === 'connected') {
+          upgradedCount += 1;
+          return { ...d, firmware: UPGRADED_FIRMWARE };
+        }
+        return d;
+      }),
+    );
+    return { upgradedCount, firmware: UPGRADED_FIRMWARE };
+  };
+
+  useOmadaAgentAction({
+    id: 'devices.inspectByName',
+    label: 'Inspect Device in Drawer',
+    description: 'Opens the 2-stage SDetailInspectorDrawer for a device matched by name, IP, or key.',
+    handler: (query) => {
+      const q = String(query ?? '').trim().toLowerCase();
+      const target = devices.find(
+        (d) =>
+          d.key === q ||
+          d.name.toLowerCase() === q ||
+          d.ip === q ||
+          d.name.toLowerCase().includes(q),
+      );
+      if (!target) {
+        throw new Error(`Device "${String(query)}" not found.`);
+      }
+      setSelectedKey(target.key);
+      return { key: target.key, name: target.name, status: target.status };
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'devices.resetFilters',
+    label: 'Reset Device Filters',
+    description: 'Clears search input and resets status filter to "all".',
+    handler: () => {
+      setSearch('');
+      setStatusFilter('all');
+      return { totalDevices: devices.length };
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'devices.batchUpgradeConnected',
+    label: 'Batch Upgrade Connected APs',
+    description: 'Upgrades all connected devices to firmware 1.5.0 Build 202611.',
+    handler: () => handleBatchUpgrade(),
+  });
 
   const filtered = useMemo(
     () =>
-      DEVICES.filter((d) => {
+      devices.filter((d) => {
         const matchSearch =
           !search.trim() ||
           d.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -52,7 +114,7 @@ const InventoryContent: React.FC = () => {
         const matchStatus = statusFilter === 'all' || d.status === statusFilter;
         return matchSearch && matchStatus;
       }),
-    [search, statusFilter],
+    [devices, search, statusFilter],
   );
 
   const columns: ColumnsType<DeviceRow> = [
@@ -115,7 +177,11 @@ const InventoryContent: React.FC = () => {
             />
           }
           primaryAction={
-            <SButton variant="primary" icon={<SIcon name="refresh" size={14} />}>
+            <SButton
+              variant="primary"
+              icon={<SIcon name="refresh" size={14} />}
+              onClick={handleBatchUpgrade}
+            >
               Batch Upgrade
             </SButton>
           }
@@ -125,7 +191,7 @@ const InventoryContent: React.FC = () => {
             pagination: false,
             columns,
             onRow: (row) => ({
-              onClick: () => setSelected(row),
+              onClick: () => setSelectedKey(row.key),
               style: { cursor: 'pointer' },
             }),
           }}
@@ -133,8 +199,9 @@ const InventoryContent: React.FC = () => {
       </div>
 
       <SDetailInspectorDrawer
+        agentId="devices.inspector"
         open={Boolean(selected)}
-        onClose={() => setSelected(null)}
+        onClose={() => setSelectedKey(null)}
         title={selected?.name ?? ''}
         subtitle={selected?.model}
         icon={selected ? <SProductImage name={selected.slug} size={28} /> : undefined}
@@ -176,7 +243,7 @@ const InventoryContent: React.FC = () => {
 
 export const InventoryTemplate: React.FC = () => (
   <OmadaProvider defaultThemeMode="light">
-    <OmadaAgentProvider>
+    <OmadaAgentProvider exposeWindowBridge>
       <InventoryContent />
     </OmadaAgentProvider>
   </OmadaProvider>

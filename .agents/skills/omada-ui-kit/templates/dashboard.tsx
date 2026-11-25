@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import '@chenyqthu/omada-ui-kit/style.css';
 import {
   Col,
+  OmadaAgentProvider,
   OmadaProvider,
   Row,
   SButton,
@@ -14,6 +15,7 @@ import {
   SKpiCard,
   SLineChart,
   SPageHeader,
+  useOmadaAgentAction,
   useOmadaTheme,
   type SHealthTickStatus,
 } from '@chenyqthu/omada-ui-kit';
@@ -24,7 +26,41 @@ const TREND_TICKS: SHealthTickStatus[] = Array.from({ length: 48 }, (_, i) =>
 
 const SiteDashboardContent: React.FC = () => {
   const [activeKey, setActiveKey] = useState('dashboard');
+  const [refreshCount, setRefreshCount] = useState(0);
   const { resolvedTheme, setThemeMode } = useOmadaTheme();
+
+  useOmadaAgentAction({
+    id: 'dashboard.switchSection',
+    label: 'Switch Sidebar Section',
+    description: 'Navigates the active sidebar section key (e.g. "dashboard", "devices", "clients").',
+    handler: (sectionKey) => {
+      const next = String(sectionKey || 'dashboard');
+      setActiveKey(next);
+      return next;
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'dashboard.setThemeMode',
+    label: 'Set Theme Mode',
+    description: 'Switches the Controller UI theme between "light" and "dark".',
+    handler: (mode) => {
+      const next = mode === 'dark' ? 'dark' : 'light';
+      setThemeMode(next);
+      return next;
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'dashboard.refreshTelemetry',
+    label: 'Refresh Site Telemetry',
+    description: 'Triggers an immediate site telemetry refresh and returns latest KPI summary.',
+    handler: () => {
+      const nextCount = refreshCount + 1;
+      setRefreshCount(nextCount);
+      return { refreshed: true, refreshCount: nextCount, healthScore: 94, activeClients: 142 };
+    },
+  });
 
   return (
     <SEmulatorShell
@@ -44,8 +80,12 @@ const SiteDashboardContent: React.FC = () => {
               >
                 Theme: {resolvedTheme === 'dark' ? 'Dark' : 'Light'}
               </SButton>
-              <SButton variant="primary" icon={<SIcon name="refresh" size={14} />}>
-                Refresh
+              <SButton
+                variant="primary"
+                icon={<SIcon name="refresh" size={14} />}
+                onClick={() => setRefreshCount((c) => c + 1)}
+              >
+                Refresh{refreshCount > 0 ? ` (${refreshCount})` : ''}
               </SButton>
             </div>
           }
@@ -128,6 +168,8 @@ const SiteDashboardContent: React.FC = () => {
 
 export const DashboardTemplate: React.FC = () => (
   <OmadaProvider defaultThemeMode="light">
-    <SiteDashboardContent />
+    <OmadaAgentProvider exposeWindowBridge>
+      <SiteDashboardContent />
+    </OmadaAgentProvider>
   </OmadaProvider>
 );

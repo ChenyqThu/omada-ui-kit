@@ -34,7 +34,7 @@ declare const __OMADA_PKG_VERSION__: string | undefined;
 const PKG_VERSION =
   typeof __OMADA_PKG_VERSION__ === 'string' && __OMADA_PKG_VERSION__.length > 0
     ? __OMADA_PKG_VERSION__
-    : '0.5.0';
+    : '0.6.0';
 
 const GITHUB_REPO_URL = 'https://github.com/ChenyqThu/omada-ui-kit';
 const GITHUB_ISSUES_URL = `${GITHUB_REPO_URL}/issues`;
@@ -226,6 +226,7 @@ const CLI_WORKFLOW_SNIPPET = [
   'node skills/omada-ui-kit/scripts/query-catalog.mjs list-components blocks',
   'node skills/omada-ui-kit/scripts/query-catalog.mjs template inventory --html > demo.html',
   'node skills/omada-ui-kit/scripts/verify-demo.mjs demo.html',
+  'node skills/omada-ui-kit/scripts/verify-demo.mjs --render demo.html # Headless Chrome + axe WCAG audit',
 ].join('\n');
 
 const SCOPED_MICROFRONTEND_SNIPPET = [
@@ -235,7 +236,8 @@ const SCOPED_MICROFRONTEND_SNIPPET = [
   '// Compact LLM index: import or fetch @chenyqthu/omada-ui-kit/llms.txt',
   '',
   '<OmadaProvider syncDocumentTheme={false} defaultThemeMode="light">',
-  '  <OmadaAgentProvider allow={[\'demo.wlan.*\']}>',
+  '  {/* Exposes window.__OMADA_AGENT__ + registers WebMCP snapshot/query/act tools */}',
+  "  <OmadaAgentProvider exposeWindowBridge allow={['demo.wlan.*']}>",
   '    <SButton variant="primary">Apply</SButton>',
   '  </OmadaAgentProvider>',
   '</OmadaProvider>',
@@ -334,6 +336,50 @@ export const AgentSkillSection: React.FC<AgentSkillSectionProps> = ({ onNavigate
           </>
         }
       />
+
+      {/* 0. Dual Agent-UI Design Paradigm & Headless Chrome Benchmark */}
+      <SCard
+        title={`Dual Agent-UI Design Paradigm (v${PKG_VERSION})`}
+        subtitle="Built around two verifiable engineering pillars: helping coding agents generate zero-defect pages, and helping browser agents read & operate live pages deterministically."
+        extra={<Sparkles size={16} className="text-[var(--omada-brand-text)]" />}
+      >
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="rounded-lg border border-[var(--omada-border-divider)] bg-[var(--omada-bg-page)] p-4 space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-sm font-semibold text-[var(--omada-text-primary)]">
+                Pillar 1 · Let Agents Build Pages Better
+              </span>
+              <STag color="green">-96.3% Context Tokens</STag>
+            </div>
+            <p className="m-0 text-xs leading-5 text-[var(--omada-text-secondary)]">
+              TypeChecker-derived zero-drift catalog, progressive-disclosure domain docs (
+              <code className="font-mono">SKILL.md</code> + <code className="font-mono">llms.txt</code> +{' '}
+              <code className="font-mono">references/docs/*.md</code>), 3.40 MB{' '}
+              <code className="font-mono">standalone.js</code>, and{' '}
+              <code className="font-mono">verify-demo.mjs --render</code> (Headless Chrome +{' '}
+              <code className="font-mono">axe-core</code> WCAG 2.1 A/AA +{' '}
+              <code className="font-mono">&lt;||</code> handle geometry check).
+            </p>
+          </div>
+
+          <div className="rounded-lg border border-[var(--omada-border-divider)] bg-[var(--omada-bg-page)] p-4 space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-sm font-semibold text-[var(--omada-text-primary)]">
+                Pillar 2 · Let Agents Read & Operate Pages Better
+              </span>
+              <STag color="blue">-85.7% Calls · 17.8× Faster</STag>
+            </div>
+            <p className="m-0 text-xs leading-5 text-[var(--omada-text-secondary)]">
+              Default <code className="font-mono">&lt;OmadaAgentProvider exposeWindowBridge&gt;</code>{' '}
+              across all templates &amp; Controller Emulator, 21 <code className="font-mono">agentId</code>{' '}
+              components, standard WebMCP tools (<code className="font-mono">snapshot</code> /{' '}
+              <code className="font-mono">query</code> / batch <code className="font-mono">act</code>), and{' '}
+              <code className="font-mono">[REDACTED]</code> secret masking — cutting 3-task Chrome PRD flows
+              from 42 DOM calls (4,312 ms) to 6 WebMCP calls (243 ms, -53.7% tokens).
+            </p>
+          </div>
+        </div>
+      </SCard>
 
       {/* 1. Quick Install */}
       <SCard
@@ -526,23 +572,23 @@ export const AgentSkillSection: React.FC<AgentSkillSectionProps> = ({ onNavigate
         </div>
       </SCard>
 
-      {/* 4. Live Agent Bridge & Scoped Micro-Frontend CSS */}
+      {/* 4. Live Agent Bridge, WebMCP & Scoped Micro-Frontend CSS */}
       <SCard
-        title="4. Live Agent Bridge & Scoped Micro-Frontend CSS"
-        subtitle="Deterministic snapshot(), query(), act(), allow policy enforcement & [REDACTED] secret masking via @chenyqthu/omada-ui-kit/agent, paired with zero-reset style.scoped.css."
+        title="4. Live Agent Bridge, WebMCP & Scoped Micro-Frontend CSS"
+        subtitle="Deterministic snapshot(), query(), batch act({ steps }), WebMCP document.modelContext tool registration, allow policy enforcement & [REDACTED] secret masking via @chenyqthu/omada-ui-kit/agent."
         extra={<Layers size={16} className="text-[var(--omada-brand-text)]" />}
       >
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           <div className="space-y-4">
             <CopyCommandBox
-              label="Scoped Micro-Frontend CSS + Agent Bridge"
+              label="Scoped Micro-Frontend CSS + Agent Bridge / WebMCP"
               badge="No Global Reset"
               command={SCOPED_MICROFRONTEND_SNIPPET}
             />
             <SAlert
               type="info"
-              title="Security & Isolation Guarantees"
-              description="SPasswordInput masks values as [REDACTED] by default; <OmadaAgentProvider allow={['demo.wlan.*']}> blocks mutations to demo.system.reboot; style.scoped.css isolates tokens & AntD portals inside .omada-scope."
+              title="Security, WebMCP & Isolation Guarantees"
+              description="SPasswordInput masks values as [REDACTED]; exposeWindowBridge publishes window.__OMADA_AGENT__ and WebMCP tools (snapshot, query, act); allow={['demo.wlan.*']} blocks demo.system.reboot; style.scoped.css isolates tokens inside .omada-scope."
             />
           </div>
 

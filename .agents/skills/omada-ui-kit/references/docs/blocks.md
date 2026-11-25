@@ -8,6 +8,7 @@ Omada Controller 2-stage slide-out inspector drawer (`420px` <-> `1040px`) combi
 | Prop | Type | Req | Notes |
 | :--- | :--- | :---: | :--- |
 | `activeTab` | `string` | No |  |
+| `agentId` | `string` | No | Optional deterministic Agent Bridge control ID. |
 | `children` | `React.ReactNode` | No |  |
 | `defaultWidth` | `number` | No |  |
 | `expandable` | `boolean` | No | Enables Omada's 2-stage `420px <-> 1040px` expand/collapse button (default `true`). |

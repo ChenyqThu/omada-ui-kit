@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { App as AntdApp, Modal, Steps, type ModalProps, type StepsProps } from 'antd';
 import { AlertTriangle, HelpCircle, Info } from 'lucide-react';
+import { useOmadaAgentControl } from '../agent';
 import { SIcon } from '../assets/SIcon';
 import { SBuiltinIllustration } from '../assets/builtinIllustrations';
 import type { OmadaIllustrationName } from '../assets/assetsManifest';
@@ -35,6 +36,8 @@ export interface SModalProps
   footerAlign?: 'left' | 'right';
   okButtonProps?: SButtonProps;
   cancelButtonProps?: SButtonProps;
+  /** Optional deterministic Agent Bridge control ID. */
+  agentId?: string;
 }
 
 /**
@@ -59,10 +62,46 @@ export const SModal: React.FC<SModalProps> = ({
   confirmLoading,
   onOk,
   onCancel,
+  agentId,
   className = '',
   children,
   ...rest
 }) => {
+  useOmadaAgentControl(
+    agentId
+      ? {
+          id: agentId,
+          kind: 'modal',
+          label:
+            typeof title === 'string'
+              ? title
+              : typeof subtitle === 'string'
+                ? subtitle
+                : ((rest as Record<string, unknown>)['aria-label'] as string | undefined),
+          value: Boolean(rest.open),
+          disabled: Boolean(confirmLoading),
+          meta: {
+            open: Boolean(rest.open),
+            size,
+            danger,
+          },
+          actions: {
+            close: () => {
+              onCancel?.({} as React.MouseEvent<HTMLButtonElement>);
+              return false;
+            },
+            ...(onOk
+              ? {
+                  confirm: () => {
+                    onOk({} as React.MouseEvent<HTMLButtonElement>);
+                    return true;
+                  },
+                }
+              : {}),
+          },
+        }
+      : null,
+  );
   const resolvedTitle =
     title !== undefined && (subtitle || icon) ? (
       <div className="flex items-start gap-3 pr-6">
@@ -283,6 +322,7 @@ export const SInfoDialog: React.FC<SInfoDialogProps> = ({
       centered={centered ?? true}
       destroyOnHidden={destroyOnHidden}
       title={null}
+      aria-label={typeof title === 'string' ? title : undefined}
       footer={defaultFooter}
       onOk={onOk}
       onCancel={onCancel}
@@ -380,6 +420,7 @@ export const SStepModal: React.FC<SStepModalProps> = ({
   onCancel,
   okButtonProps,
   cancelButtonProps,
+  agentId,
   className = '',
   ...rest
 }) => {
@@ -466,6 +507,57 @@ export const SStepModal: React.FC<SStepModalProps> = ({
   const isFirst = activeStep === 0;
   const isLast = activeStep >= maxStep;
   const busy = confirmLoading || stepLoading;
+
+  useOmadaAgentControl(
+    agentId
+      ? {
+          id: agentId,
+          kind: 'modal',
+          label: typeof rest.title === 'string' ? rest.title : undefined,
+          value: {
+            open: Boolean(open),
+            activeStep,
+            stepCount: steps.length,
+          },
+          disabled: Boolean(busy),
+          options: steps.map((step, idx) => ({
+            value: idx,
+            label:
+              typeof step.title === 'string'
+                ? step.title
+                : String(step.key ?? idx),
+            disabled: step.disabled,
+          })),
+          actions: {
+            nextStep: () => {
+              void handleNext();
+              return Math.min(activeStep + 1, maxStep);
+            },
+            prevStep: () => {
+              handleBack();
+              return Math.max(activeStep - 1, 0);
+            },
+            setStep: (idx: unknown) => {
+              const parsed = Number(idx);
+              if (!Number.isFinite(parsed)) {
+                throw new Error(`Invalid step index "${String(idx)}".`);
+              }
+              const clamped = Math.min(Math.max(0, Math.floor(parsed)), maxStep);
+              setStep(clamped);
+              return clamped;
+            },
+            finish: () => {
+              void handleFinish();
+              return true;
+            },
+            close: () => {
+              onCancel?.({} as React.MouseEvent<HTMLButtonElement>);
+              return false;
+            },
+          },
+        }
+      : null,
+  );
 
   const wizardFooter = () => (
     <div className="flex flex-wrap items-center justify-between gap-3 pt-2">

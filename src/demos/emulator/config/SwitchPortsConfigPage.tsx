@@ -1228,6 +1228,7 @@ export const SwitchPortsConfigPage: React.FC<SwitchPortsConfigPageProps> = ({
     >
       {/* Top Underline Sub-Tabs + Top-Right (?) Help Icon */}
       <STabs
+        agentId="switchPorts.subTabs"
         variant="page"
         size="lg"
         bordered
@@ -1259,6 +1260,7 @@ export const SwitchPortsConfigPage: React.FC<SwitchPortsConfigPageProps> = ({
           <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-3 pr-9">
             <div className="flex flex-wrap items-center gap-3">
               <SInput
+                agentId="switchPorts.search"
                 variant="filled"
                 allowClear
                 value={search}
@@ -1281,6 +1283,7 @@ export const SwitchPortsConfigPage: React.FC<SwitchPortsConfigPageProps> = ({
 
               {/* View Mode Segmented Track */}
               <STabs
+                agentId="switchPorts.viewMode"
                 variant="filter"
                 aria-label="Port table view mode"
                 activeKey={viewMode}
@@ -1294,6 +1297,7 @@ export const SwitchPortsConfigPage: React.FC<SwitchPortsConfigPageProps> = ({
 
               {/* Link Status Segmented Track */}
               <STabs
+                agentId="switchPorts.linkFilter"
                 variant="filter"
                 aria-label="Port link status filter"
                 activeKey={linkFilter}

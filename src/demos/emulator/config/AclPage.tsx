@@ -13,6 +13,7 @@ import {
   SSelect,
   SSwitch,
   STabs,
+  useOmadaAgentAction,
   useOmadaNotification,
   type SAclEndpointTypeOption,
   type SAclEndpointValue,
@@ -694,6 +695,54 @@ export const AclPage: React.FC<AclPageProps> = ({ initialTab = 'gateway' }) => {
   const showBiDirectionalOnGateway =
     activeTab === 'gateway' && formDirections.includes('LAN→LAN');
 
+  useOmadaAgentAction({
+    id: 'acl.openRuleEditor',
+    label: 'Open ACL Rule Editor',
+    description: 'Opens the inline Create New Rule editor on the active ACL tab.',
+    handler: () => {
+      openCreateEditor();
+      return true;
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'acl.createGatewayRule',
+    label: 'Create Gateway ACL Rule',
+    description: 'Creates a Gateway ACL rule ({ description, policy, enabled, source, destination }).',
+    handler: (payload) => {
+      const p = (payload && typeof payload === 'object' ? payload : {}) as {
+        description?: string;
+        policy?: AclPolicyType;
+        enabled?: boolean;
+        source?: string;
+        destination?: string;
+      };
+      const cleanDesc = (p.description ?? 'Gateway_ACL_Agent').trim();
+      const next: AclRuleRecord = {
+        key: `gateway-acl-${Date.now()}`,
+        description: cleanDesc,
+        enabled: p.enabled !== undefined ? Boolean(p.enabled) : true,
+        direction: 'LAN→WAN',
+        directions: ['LAN→WAN'],
+        policy: p.policy === 'Permit' ? 'Permit' : 'Deny',
+        protocols: 'All',
+        protocolList: ['All'],
+        source: p.source ?? 'Network:Default',
+        sourceType: 'Network',
+        sourceItems: ['Default'],
+        destination: p.destination ?? 'IP Group:IPGroup_Any',
+        destinationType: 'IP Group',
+        destinationItems: ['IPGroup_Any'],
+      };
+      setRulesByTab((prev) => ({
+        ...prev,
+        gateway: [...prev.gateway, next],
+      }));
+      setEditorMode(null);
+      return { key: next.key, description: next.description, policy: next.policy };
+    },
+  });
+
   return (
     <div className="omada-acl-page px-6 pt-4 pb-8">
       {editorMode ? (
@@ -729,6 +778,7 @@ export const AclPage: React.FC<AclPageProps> = ({ initialTab = 'gateway' }) => {
               <div className="omada-acl-editor-control">
                 <SInput
                   id="acl-desc-input"
+                  agentId="acl.form.description"
                   variant="filled"
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
@@ -1045,6 +1095,7 @@ export const AclPage: React.FC<AclPageProps> = ({ initialTab = 'gateway' }) => {
         <>
           {/* Top Underline Tabs + Help Icon */}
           <STabs
+            agentId="acl.subTabs"
             variant="page"
             size="lg"
             bordered

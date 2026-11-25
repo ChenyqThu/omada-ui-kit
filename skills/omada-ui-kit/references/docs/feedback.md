@@ -21,6 +21,7 @@ Omada slide-over Drawer (`sm`: 480px, `md`: 640px, `lg`: 880px) supporting a ric
 
 | Prop | Type | Req | Notes |
 | :--- | :--- | :---: | :--- |
+| `agentId` | `string` | No | Optional deterministic Agent Bridge control ID. |
 | `headerTabs` | `React.ReactNode` | No |  |
 | `loading` | `boolean` | No | Displays a skeleton placeholder inside the drawer body while data loads |
 | `size` | `SDrawerSize` | No |  |
@@ -66,6 +67,7 @@ Status/result information dialog using official Figma status icons or illustrati
 | Prop | Type | Req | Notes |
 | :--- | :--- | :---: | :--- |
 | `actions` | `React.ReactNode` | No | Custom action nodes replacing the default footer buttons |
+| `agentId` | `string` | No | Optional deterministic Agent Bridge control ID. |
 | `cancelButtonProps` | `SButtonProps` | No |  |
 | `cancelText` | `React.ReactNode \| null` | No | Optional secondary/stop action label (e.g., `'Stop'` or `'Cancel'`) |
 | `children` | `React.ReactNode` | No | Optional extra body content (e.g., progress bar, status metadata) |
@@ -118,6 +120,7 @@ Omada-styled Modal supporting preset sizes (`sm`: 480px, `confirm`: 540px, `defa
 
 | Prop | Type | Req | Notes |
 | :--- | :--- | :---: | :--- |
+| `agentId` | `string` | No | Optional deterministic Agent Bridge control ID. |
 | `cancelButtonProps` | `SButtonProps` | No |  |
 | `danger` | `boolean` | No |  |
 | `footerAlign` | `'left' \| 'right'` | No | Alignment of the default modal footer actions |
@@ -182,6 +185,7 @@ Multi-step wizard modal embedding an Ant Design 6 `<Steps>` bar and Back / Next 
 
 | Prop | Type | Req | Notes |
 | :--- | :--- | :---: | :--- |
+| `agentId` | `string` | No | Optional deterministic Agent Bridge control ID. |
 | `allowStepClick` | `boolean` | No | Enable clicking step headers to navigate directly |
 | `backText` | `React.ReactNode` | No |  |
 | `cancelButtonProps` | `SButtonProps` | No |  |

@@ -737,6 +737,7 @@ export const LogsPage: React.FC<LogsPageProps> = ({
     <div className="omada-logs-page px-6 pt-4 pb-6" data-testid="logs-page">
       {/* Top Underline Sub-Tabs + Setting Button */}
       <STabs
+        agentId="logs.subTabs"
         variant="page"
         size="lg"
         bordered
@@ -766,6 +767,7 @@ export const LogsPage: React.FC<LogsPageProps> = ({
         <>
           <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-3 pr-9">
             <STabs
+              agentId="logs.moduleFilter"
               variant="filter"
               aria-label="Event module filter"
               activeKey={moduleFilter}
@@ -1031,6 +1033,7 @@ export const LogsPage: React.FC<LogsPageProps> = ({
 
       {/* Log Settings Modal */}
       <SModal
+        agentId="logs.settingsModal"
         open={settingsOpen}
         title="Log Settings"
         subtitle="Configure event retention and syslog forwarding for Headquarters Building."

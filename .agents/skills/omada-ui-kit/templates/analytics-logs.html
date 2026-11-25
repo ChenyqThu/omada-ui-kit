@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Omada Analytics & Logs Template</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/standalone.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/standalone.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"></script>
   </head>
   <body style="margin: 0;">
@@ -13,6 +13,7 @@
     <script type="text/babel">
       const { useMemo, useState } = OmadaUI.React;
       const {
+        OmadaAgentProvider,
         OmadaProvider,
         SEmulatorShell,
         SPageHeader,
@@ -22,6 +23,7 @@
         STag,
         Row,
         Col,
+        useOmadaAgentAction,
       } = window.OmadaUI;
 
       const LOG_ROWS = [
@@ -30,9 +32,47 @@
         { key: '3', time: '2026-11-21 14:55:41', category: 'wan', severity: 'red', event: 'WAN2 link jitter exceeded 80 ms threshold for 45s' },
       ];
 
+      const VALID_CATEGORIES = new Set(['all', 'wireless', 'auth', 'wan']);
+
       function AnalyticsLogsDemo() {
         const [category, setCategory] = useState('all');
         const [search, setSearch] = useState('');
+
+        useOmadaAgentAction({
+          id: 'logs.selectCategory',
+          label: 'Select Incident Category',
+          description: 'Filters event timeline by category ("all", "wireless", "auth", "wan").',
+          handler: (cat) => {
+            const next = String(cat || '').trim().toLowerCase();
+            if (!VALID_CATEGORIES.has(next)) {
+              throw new Error(`Unknown category "${next}". Expected all, wireless, auth, or wan.`);
+            }
+            setCategory(next);
+            return next;
+          },
+        });
+
+        useOmadaAgentAction({
+          id: 'logs.searchEvents',
+          label: 'Search Event Timeline',
+          description: 'Filters event messages by keyword substring.',
+          handler: (q) => {
+            const text = String(q || '');
+            setSearch(text);
+            return text;
+          },
+        });
+
+        useOmadaAgentAction({
+          id: 'logs.clearFilters',
+          label: 'Clear All Log Filters',
+          description: 'Resets category to "all" and clears search text.',
+          handler: () => {
+            setCategory('all');
+            setSearch('');
+            return { category: 'all', search: '' };
+          },
+        });
 
         const filtered = useMemo(
           () =>
@@ -80,6 +120,7 @@
                 </Col>
                 <Col xs={24} lg={15}>
                   <SFilterTableBlock
+                    agentId="logs.table"
                     title="Event Timeline"
                     searchPlaceholder="Filter event message"
                     searchValue={search}
@@ -110,7 +151,9 @@
 
       OmadaUI.render(
         <OmadaProvider defaultThemeMode="light">
-          <AnalyticsLogsDemo />
+          <OmadaAgentProvider exposeWindowBridge>
+            <AnalyticsLogsDemo />
+          </OmadaAgentProvider>
         </OmadaProvider>,
         '#root',
       );

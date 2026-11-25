@@ -841,7 +841,430 @@ function verifySingleTarget(targetArg, ctx) {
   return true;
 }
 
-const USAGE_TEXT = 'Usage: node verify-demo.mjs [--engine=ts-ast|lexical] <path-to-demo.html|tsx> [...]';
+const USAGE_TEXT =
+  'Usage: node verify-demo.mjs [--engine=ts-ast|lexical] [--render] [--strict-contrast] <path-to-demo.html|tsx> [...]';
+
+const MIME_BY_EXT = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'application/javascript; charset=utf-8',
+  '.mjs': 'application/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+};
+
+function resolveDistDir() {
+  const candidates = [
+    path.resolve(__dirname, '../../../dist'),
+    path.resolve(process.cwd(), 'dist'),
+    path.resolve(process.cwd(), 'node_modules/@chenyqthu/omada-ui-kit/dist'),
+    path.resolve(__dirname, '../../../../../@chenyqthu/omada-ui-kit/dist'),
+  ];
+  for (const dir of candidates) {
+    if (
+      fs.existsSync(path.join(dir, 'standalone.js')) &&
+      fs.existsSync(path.join(dir, 'style.css'))
+    ) {
+      return dir;
+    }
+  }
+  return null;
+}
+
+function resolveChromeExecutable() {
+  const envPath =
+    process.env.CHROME_PATH || process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
+  if (envPath && fs.existsSync(envPath)) {
+    return envPath;
+  }
+  const candidates = [
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/Applications/Chromium.app/Contents/MacOS/Chromium',
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/chromium-browser',
+    '/usr/bin/chromium',
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      return p;
+    }
+  }
+  return undefined;
+}
+
+function buildRenderableHtmlForTarget(targetPath, rawContent, ts) {
+  const isHtml = targetPath.toLowerCase().endsWith('.html');
+  if (isHtml) {
+    let rewritten = rawContent
+      // Route CDN or relative ../dist/* URLs to local ephemeral /__omada_dist__/*
+      .replace(
+        /(?:https?:)?\/\/cdn\.jsdelivr\.net\/npm\/@chenyqthu\/omada-ui-kit@[^/"']+\/dist\//g,
+        '/__omada_dist__/',
+      )
+      .replace(/(["'])\.\.\/dist\//g, '$1/__omada_dist__/');
+
+    if (ts) {
+      // Remove external @babel/standalone script and pre-transpile <script type="text/babel"> locally
+      rewritten = rewritten.replace(
+        /<script\b[^>]*src\s*=\s*["'][^"']*@babel\/standalone[^"']*["'][^>]*>\s*<\/script>/gi,
+        '',
+      );
+      rewritten = rewritten.replace(
+        /<script\b([^>]*\btype\s*=\s*["']text\/babel["'][^>]*)>([\s\S]*?)<\/script>/gi,
+        (_full, _attrs, code) => {
+          const transpiled = ts.transpileModule(code, {
+            fileName: path.basename(targetPath) + '.tsx',
+            compilerOptions: {
+              target: ts.ScriptTarget.ES2020,
+              module: ts.ModuleKind.None,
+              jsx: ts.JsxEmit.React,
+              jsxFactory: 'OmadaUI.React.createElement',
+              jsxFragmentFactory: 'OmadaUI.React.Fragment',
+            },
+          });
+          const safeJs = transpiled.outputText.replace(/<\/script>/gi, '<\\/script>');
+          return `<script>\n${safeJs}\n</script>`;
+        },
+      );
+    }
+    return rewritten;
+  }
+
+  if (!ts) {
+    throw new Error(
+      'Rendering .tsx files with --render requires the "typescript" package to be installed.',
+    );
+  }
+
+  const transpiled = ts.transpileModule(rawContent, {
+    fileName: path.basename(targetPath),
+    compilerOptions: {
+      target: ts.ScriptTarget.ES2020,
+      module: ts.ModuleKind.CommonJS,
+      jsx: ts.JsxEmit.React,
+      esModuleInterop: true,
+    },
+  });
+
+  const safeCjs = transpiled.outputText.replace(/<\/script>/gi, '<\\/script>');
+  const alreadyHasProvider = rawContent.includes('<OmadaProvider');
+
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Omada Render Check — ${path.basename(targetPath)}</title>
+    <link rel="stylesheet" href="/__omada_dist__/style.css" />
+    <script src="/__omada_dist__/standalone.js"></script>
+  </head>
+  <body style="margin: 0;">
+    <div id="root"></div>
+    <script>
+      (function () {
+        const React = window.OmadaUI.React;
+        const lucideFallback = new Proxy({}, {
+          get: (_target, prop) => {
+            if (prop === '__esModule') return true;
+            return function LucideStub(props) {
+              const sz = (props && props.size) || 16;
+              return React.createElement('svg', {
+                width: sz,
+                height: sz,
+                viewBox: '0 0 16 16',
+                'aria-hidden': 'true',
+                className: props && props.className,
+                style: props && props.style,
+              });
+            };
+          }
+        });
+        function requireShim(spec) {
+          if (spec === 'react') return window.OmadaUI.React;
+          if (spec === 'react-dom' || spec === 'react-dom/client') return window.OmadaUI.ReactDOM;
+          if (spec.endsWith('.css')) return {};
+          if (spec === 'antd' || spec.startsWith('antd/')) return window.OmadaUI.antd;
+          if (spec === '@ant-design/icons') return window.OmadaUI.AntdIcons;
+          if (spec === 'lucide-react') return lucideFallback;
+          if (
+            spec === '@chenyqthu/omada-ui-kit' ||
+            spec.startsWith('@chenyqthu/omada-ui-kit/') ||
+            spec === '@/omada' ||
+            spec.startsWith('@/omada/')
+          ) {
+            return window.OmadaUI;
+          }
+          throw new Error('Unsupported import in standalone --render harness: ' + spec);
+        }
+        const module = { exports: {} };
+        const exports = module.exports;
+        (function (require, module, exports, React) {
+${safeCjs}
+        })(requireShim, module, exports, React);
+
+        const modExports = module.exports || {};
+        let TargetComp = modExports.default;
+        if (typeof TargetComp !== 'function') {
+          for (const key of Object.keys(modExports)) {
+            if (/^[A-Z]/.test(key) && typeof modExports[key] === 'function') {
+              TargetComp = modExports[key];
+              break;
+            }
+          }
+        }
+        if (typeof TargetComp !== 'function') {
+          throw new Error('No exported React component found in ${path.basename(targetPath)}');
+        }
+        const node = React.createElement(TargetComp);
+        const tree = ${alreadyHasProvider ? 'node' : "React.createElement(window.OmadaUI.OmadaProvider, { defaultThemeMode: 'light' }, node)"};
+        window.OmadaUI.render(tree, '#root');
+      })();
+    </script>
+  </body>
+</html>`;
+}
+
+async function runRenderAndAxeVerification(targets, options) {
+  const { ts, strictContrast } = options;
+  const distDir = resolveDistDir();
+  if (!distDir) {
+    console.error(
+      'ERROR [--render] Missing built dist/standalone.js + dist/style.css. Run "pnpm build:lib" before running --render.',
+    );
+    return false;
+  }
+
+  let playwrightMod;
+  let axeMod;
+  try {
+    playwrightMod = await import('playwright-core');
+    axeMod = await import('axe-core');
+  } catch (err) {
+    console.error(
+      `ERROR [--render] Optional devDependencies "playwright-core" and "axe-core" are required for --render (${err instanceof Error ? err.message : String(err)}).`,
+    );
+    return false;
+  }
+
+  const http = await import('node:http');
+  const axeSource = axeMod.default?.source ?? axeMod.source;
+  const pageHtmlById = new Map();
+
+  const server = http.createServer((req, res) => {
+    const reqUrl = (req.url || '/').split('?')[0];
+    if (reqUrl.startsWith('/__render__/')) {
+      const id = reqUrl.slice('/__render__/'.length);
+      const html = pageHtmlById.get(id);
+      if (!html) {
+        res.writeHead(404);
+        res.end('Not found');
+        return;
+      }
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(html);
+      return;
+    }
+
+    if (reqUrl.startsWith('/__omada_dist__/')) {
+      const rel = decodeURIComponent(reqUrl.slice('/__omada_dist__/'.length));
+      const fullPath = path.resolve(distDir, rel);
+      if (!fullPath.startsWith(distDir) || !fs.existsSync(fullPath) || !fs.statSync(fullPath).isFile()) {
+        res.writeHead(404);
+        res.end('Asset not found');
+        return;
+      }
+      const ext = path.extname(fullPath).toLowerCase();
+      res.writeHead(200, {
+        'Content-Type': MIME_BY_EXT[ext] || 'application/octet-stream',
+        'Cache-Control': 'no-cache',
+      });
+      fs.createReadStream(fullPath).pipe(res);
+      return;
+    }
+
+    if (reqUrl === '/favicon.ico') {
+      res.writeHead(204);
+      res.end();
+      return;
+    }
+
+    res.writeHead(404);
+    res.end('Not found');
+  });
+
+  await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', resolve);
+  });
+  const addr = server.address();
+  const baseUrl = `http://127.0.0.1:${addr.port}`;
+
+  const executablePath = resolveChromeExecutable();
+  let browser;
+  let allPassed = true;
+
+  try {
+    browser = await playwrightMod.chromium.launch({
+      ...(executablePath ? { executablePath } : {}),
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    });
+
+    const context = await browser.newContext({
+      viewport: { width: 1440, height: 900 },
+    });
+
+    for (let idx = 0; idx < targets.length; idx += 1) {
+      const targetArg = targets[idx];
+      const targetPath = path.resolve(process.cwd(), targetArg);
+      const rawContent = fs.readFileSync(targetPath, 'utf8');
+      const pageErrors = [];
+
+      let htmlPayload;
+      try {
+        htmlPayload = buildRenderableHtmlForTarget(targetPath, rawContent, ts);
+      } catch (err) {
+        console.error(
+          `ERROR [${targetArg}] (--render) ${err instanceof Error ? err.message : String(err)}`,
+        );
+        allPassed = false;
+        continue;
+      }
+
+      const routeId = String(idx);
+      pageHtmlById.set(routeId, htmlPayload);
+
+      const page = await context.newPage();
+      page.on('pageerror', (err) => {
+        pageErrors.push(`Uncaught pageerror: ${err.message}`);
+      });
+      page.on('console', (msg) => {
+        if (msg.type() === 'error') {
+          pageErrors.push(`console.error: ${msg.text()}`);
+        }
+      });
+      page.on('requestfailed', (req) => {
+        pageErrors.push(
+          `Failed asset/script request ${req.url()}: ${req.failure()?.errorText || 'failed'}`,
+        );
+      });
+
+      try {
+        await page.goto(`${baseUrl}/__render__/${routeId}`, {
+          waitUntil: 'networkidle',
+          timeout: 15000,
+        });
+        await page.waitForTimeout(120);
+
+        const domChecks = await page.evaluate(() => {
+          const issues = [];
+          const root = document.getElementById('root');
+          if (!root || root.children.length === 0) {
+            issues.push('Mounted #root container is empty after rendering.');
+          } else {
+            const rootRect = root.getBoundingClientRect();
+            if (rootRect.height <= 0 || rootRect.width <= 0) {
+              issues.push(`Mounted #root has zero dimensions (${rootRect.width}x${rootRect.height}).`);
+            }
+          }
+
+          const imgs = Array.from(document.querySelectorAll('img'));
+          for (const img of imgs) {
+            const src = img.getAttribute('src') || '';
+            if (!src) continue;
+            if (!img.complete || img.naturalWidth === 0) {
+              issues.push(`Broken <img> asset failed to decode: "${src}"`);
+            }
+          }
+
+          const handle = document.querySelector('[data-testid="quick-drawer-handle"]');
+          if (handle) {
+            const hr = handle.getBoundingClientRect();
+            if (hr.width > 0 && hr.height > 0) {
+              const interactive = Array.from(
+                document.querySelectorAll(
+                  'main button, main a, main input, main [role="tab"], main [role="combobox"]',
+                ),
+              );
+              for (const el of interactive) {
+                if (el === handle || handle.contains(el)) continue;
+                const style = window.getComputedStyle(el);
+                if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+                  continue;
+                }
+                const r = el.getBoundingClientRect();
+                if (r.width <= 0 || r.height <= 0) continue;
+                const overlapX = Math.min(hr.right, r.right) - Math.max(hr.left, r.left);
+                const overlapY = Math.min(hr.bottom, r.bottom) - Math.max(hr.top, r.top);
+                if (overlapX > 2 && overlapY > 2) {
+                  const label =
+                    el.getAttribute('aria-label') ||
+                    (el.textContent || '').trim().slice(0, 40) ||
+                    el.tagName.toLowerCase();
+                  issues.push(
+                    `Interactive control "${label}" physically overlaps <SEmulatorShell> <|| quick-drawer handle (${Math.round(overlapX)}x${Math.round(overlapY)}px). Add >=36px/44px right clearance.`,
+                  );
+                }
+              }
+            }
+          }
+
+          const hasAgentBridge = Boolean(window.__OMADA_AGENT__);
+          return { issues, hasAgentBridge };
+        });
+
+        pageErrors.push(...domChecks.issues);
+
+        await page.addScriptTag({ content: axeSource });
+        const axeResults = await page.evaluate(async (enableContrast) => {
+          return await window.axe.run(document, {
+            runOnly: {
+              type: 'tag',
+              values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'],
+            },
+            rules: {
+              'color-contrast': { enabled: Boolean(enableContrast) },
+            },
+          });
+        }, strictContrast);
+
+        for (const v of axeResults.violations || []) {
+          const firstTarget = v.nodes?.[0]?.target?.join(' ') || 'document';
+          pageErrors.push(
+            `axe [${v.id}] (${v.impact || 'moderate'}): ${v.help} at "${firstTarget}"`,
+          );
+        }
+
+        if (pageErrors.length > 0) {
+          for (const err of pageErrors) {
+            console.error(`ERROR [${targetArg}] (--render) ${err}`);
+          }
+          allPassed = false;
+        } else {
+          console.log(
+            `PASS [${targetArg}] (--render + axe WCAG 2.1 A/AA${strictContrast ? ' + contrast' : ''}): 0 runtime errors, 0 broken images, 0 overlaps, 0 axe violations${domChecks.hasAgentBridge ? ', Agent Bridge active' : ''}.`,
+          );
+        }
+      } finally {
+        await page.close();
+      }
+    }
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
+    await new Promise((resolve) => server.close(resolve));
+  }
+
+  return allPassed;
+}
 
 function wildcardSegmentToRegExp(segment) {
   const escaped = segment
@@ -917,6 +1340,8 @@ function expandWildcardPattern(rawPattern, cwd) {
 
 function parseCliArgs(argv) {
   let forceLexical = false;
+  let renderMode = false;
+  let strictContrast = false;
   let showHelp = false;
   const positional = [];
   let afterDoubleDash = false;
@@ -933,6 +1358,14 @@ function parseCliArgs(argv) {
     }
     if (arg === '-h' || arg === '--help') {
       showHelp = true;
+      continue;
+    }
+    if (arg === '--render') {
+      renderMode = true;
+      continue;
+    }
+    if (arg === '--strict-contrast') {
+      strictContrast = true;
       continue;
     }
     if (arg === '--engine=lexical') {
@@ -960,11 +1393,13 @@ function parseCliArgs(argv) {
     positional.push(arg);
   }
 
-  return { forceLexical, showHelp, positional };
+  return { forceLexical, renderMode, strictContrast, showHelp, positional };
 }
 
 async function main() {
-  const { forceLexical, showHelp, positional } = parseCliArgs(process.argv.slice(2));
+  const { forceLexical, renderMode, strictContrast, showHelp, positional } = parseCliArgs(
+    process.argv.slice(2),
+  );
 
   if (showHelp && positional.length === 0) {
     console.log(USAGE_TEXT);
@@ -1008,6 +1443,8 @@ async function main() {
   const expectedVersion = catalog.package?.version || '0.5.0';
   const ctx = { ts, engineName, assetSets, compMap, knownExports, expectedVersion };
   let hasFailure = false;
+  const staticallyPassedTargets = [];
+
   for (const targetArg of positional) {
     const literalPath = path.resolve(process.cwd(), targetArg);
     if (!fs.existsSync(literalPath) && /[*?]/.test(targetArg)) {
@@ -1020,11 +1457,26 @@ async function main() {
       for (const matchedTarget of expanded) {
         if (!verifySingleTarget(matchedTarget, ctx)) {
           hasFailure = true;
+        } else {
+          staticallyPassedTargets.push(matchedTarget);
         }
       }
       continue;
     }
     if (!verifySingleTarget(targetArg, ctx)) {
+      hasFailure = true;
+    } else {
+      staticallyPassedTargets.push(targetArg);
+    }
+  }
+
+  if (renderMode && staticallyPassedTargets.length > 0) {
+    const tsForRender = ts ?? (await tryLoadTypeScript(false));
+    const renderOk = await runRenderAndAxeVerification(staticallyPassedTargets, {
+      ts: tsForRender,
+      strictContrast,
+    });
+    if (!renderOk) {
       hasFailure = true;
     }
   }

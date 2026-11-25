@@ -34,8 +34,8 @@ const TEMPLATES: TemplateItem[] = [
   {
     id: 'dashboard',
     title: 'Site Overview Dashboard',
-    summary: 'Complete Omada homepage combining top KPI tiles, 180-degree Health Gauge, 24h Trend Bar, WAN Line Chart, and Channel Utilization.',
-    blocks: ['SEmulatorShell', 'SHealthGauge', 'SHealthTrendBar', 'SLineChart', 'SChannelUtilization'],
+    summary: 'Complete Omada homepage combining top KPI tiles, 180-degree Health Gauge, 24h Trend Bar, WAN Line Chart, Channel Utilization, and Agent Bridge actions.',
+    blocks: ['SEmulatorShell', 'SHealthGauge', 'SHealthTrendBar', 'SLineChart', 'SChannelUtilization', 'OmadaAgentProvider'],
     cliCommand: 'node skills/omada-ui-kit/scripts/query-catalog.mjs template dashboard --html',
     html: dashboardHtml,
     tsx: dashboardTsx,
@@ -43,7 +43,7 @@ const TEMPLATES: TemplateItem[] = [
   {
     id: 'inventory',
     title: 'Devices Inventory + 2-Stage Drawer',
-    summary: 'Searchable & status-filtered device list powered by SFilterTableBlock and expandable 420px/1040px SDetailInspectorDrawer.',
+    summary: 'Searchable & status-filtered device list powered by SFilterTableBlock, expandable 420px/1040px SDetailInspectorDrawer, and WebMCP triage/upgrade actions.',
     blocks: ['SEmulatorShell', 'SFilterTableBlock', 'SDetailInspectorDrawer', 'SProductImage', 'OmadaAgentProvider'],
     cliCommand: 'node skills/omada-ui-kit/scripts/query-catalog.mjs template inventory --html',
     html: inventoryHtml,
@@ -52,8 +52,8 @@ const TEMPLATES: TemplateItem[] = [
   {
     id: 'acl-rules',
     title: 'ACL Policy List + Inline Rule Builder',
-    summary: 'Tabbed rule table transitioning inline into SInlineRuleEditorLayout and the Source -> Destination SAclRuleBuilder.',
-    blocks: ['SEmulatorShell', 'SFilterTableBlock', 'SInlineRuleEditorLayout', 'SAclRuleBuilder'],
+    summary: 'Tabbed rule table transitioning inline into SInlineRuleEditorLayout, Source -> Destination SAclRuleBuilder, and Agent quick-rule provisioning.',
+    blocks: ['SEmulatorShell', 'SFilterTableBlock', 'SInlineRuleEditorLayout', 'SAclRuleBuilder', 'OmadaAgentProvider'],
     cliCommand: 'node skills/omada-ui-kit/scripts/query-catalog.mjs template acl-rules --html',
     html: aclRulesHtml,
     tsx: aclRulesTsx,
@@ -61,7 +61,7 @@ const TEMPLATES: TemplateItem[] = [
   {
     id: 'settings',
     title: 'Multi-Tab Network Settings Form',
-    summary: 'Settings workspace using SSettingsPageShell sticky Apply/Cancel bar, SSettingsInfoBanner, SIpInput, and SExpandableSection.',
+    summary: 'Settings workspace using SSettingsPageShell sticky Apply/Cancel bar, SSettingsInfoBanner, SIpInput, SExpandableSection, and DoH/DoT Agent presets.',
     blocks: ['SEmulatorShell', 'SSettingsPageShell', 'SExpandableSection', 'SIpInput', 'OmadaAgentProvider'],
     cliCommand: 'node skills/omada-ui-kit/scripts/query-catalog.mjs template settings --html',
     html: settingsHtml,
@@ -70,8 +70,8 @@ const TEMPLATES: TemplateItem[] = [
   {
     id: 'analytics-logs',
     title: 'Incident & Event Analytics',
-    summary: 'SCategoryKpiCarousel category selector, Severity Donut breakdown card, and searchable live event timeline.',
-    blocks: ['SEmulatorShell', 'SCategoryKpiCarousel', 'SDonutSummaryCard', 'SFilterTableBlock'],
+    summary: 'SCategoryKpiCarousel category selector, Severity Donut breakdown card, searchable live event timeline, and Agent critical-alert triage actions.',
+    blocks: ['SEmulatorShell', 'SCategoryKpiCarousel', 'SDonutSummaryCard', 'SFilterTableBlock', 'OmadaAgentProvider'],
     cliCommand: 'node skills/omada-ui-kit/scripts/query-catalog.mjs template analytics-logs --html',
     html: analyticsHtml,
     tsx: analyticsTsx,

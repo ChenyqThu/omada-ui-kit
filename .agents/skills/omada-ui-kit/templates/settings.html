@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Omada Multi-Tab Settings Template</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/standalone.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/standalone.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"></script>
   </head>
   <body style="margin: 0;">
@@ -25,14 +25,66 @@
         SIpInput,
         SSelect,
         SSwitch,
+        useOmadaAgentAction,
+        validateIpv4,
       } = window.OmadaUI;
+
+      const PRESET_SERVERS = {
+        cloudflare: '1.1.1.1',
+        quad9: '9.9.9.9',
+        google: '8.8.8.8',
+      };
 
       function SettingsDemo() {
         const [tab, setTab] = useState('dns-proxy');
         const [enabled, setEnabled] = useState(true);
         const [primaryDns, setPrimaryDns] = useState('1.1.1.1');
         const [siteName, setSiteName] = useState('Main Office Floor');
+        const [resolverMode, setResolverMode] = useState('doh');
         const [dirty, setDirty] = useState(false);
+
+        useOmadaAgentAction({
+          id: 'dns.setUpstreamServer',
+          label: 'Set Upstream DNS IPv4',
+          description: 'Validates and sets the upstream DNS server IPv4 address (marking settings dirty).',
+          handler: (ip) => {
+            const candidate = String(ip || '').trim();
+            if (!validateIpv4(candidate)) {
+              throw new Error(`Invalid IPv4 address "${candidate}".`);
+            }
+            setPrimaryDns(candidate);
+            setDirty(true);
+            return candidate;
+          },
+        });
+
+        useOmadaAgentAction({
+          id: 'dns.applySecurityPreset',
+          label: 'Apply Encrypted DNS Preset',
+          description: 'Applies "cloudflare" (1.1.1.1), "quad9" (9.9.9.9), or "google" (8.8.8.8) DoH preset.',
+          handler: (presetName) => {
+            const key = String(presetName || '').trim().toLowerCase();
+            const ip = PRESET_SERVERS[key];
+            if (!ip) {
+              throw new Error(`Unknown preset "${key}". Expected cloudflare, quad9, or google.`);
+            }
+            setEnabled(true);
+            setResolverMode('doh');
+            setPrimaryDns(ip);
+            setDirty(true);
+            return { preset: key, primaryDns: ip, resolverMode: 'doh' };
+          },
+        });
+
+        useOmadaAgentAction({
+          id: 'dns.saveConfiguration',
+          label: 'Save DNS Configuration',
+          description: 'Commits pending DNS changes and clears the dirty footer bar.',
+          handler: () => {
+            setDirty(false);
+            return { saved: true, enabled, siteName, primaryDns, resolverMode };
+          },
+        });
 
         return (
           <SEmulatorShell activeKey="dns" onSelect={() => {}} controllerName="Headquarters Building">
@@ -89,13 +141,16 @@
                 </SSettingsRow>
               </SSettingsSection>
 
-              <SExpandableSection title="Advanced Options">
+              <SExpandableSection agentId="dns.advanced" title="Advanced Options">
                 <SSettingsRow label="Resolver Mode">
                   <SSelect
                     agentId="dns.resolverMode"
                     aria-label="Resolver Mode"
-                    defaultValue="doh"
-                    onChange={() => setDirty(true)}
+                    value={resolverMode}
+                    onChange={(v) => {
+                      setResolverMode(String(v));
+                      setDirty(true);
+                    }}
                     options={[
                       { value: 'doh', label: 'DNS over HTTPS (DoH)' },
                       { value: 'dot', label: 'DNS over TLS (DoT)' },
@@ -110,7 +165,7 @@
 
       OmadaUI.render(
         <OmadaProvider defaultThemeMode="light">
-          <OmadaAgentProvider>
+          <OmadaAgentProvider exposeWindowBridge>
             <SettingsDemo />
           </OmadaAgentProvider>
         </OmadaProvider>,

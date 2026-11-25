@@ -46,6 +46,44 @@ export interface SFilterTableBlockProps<T extends object> {
   className?: string;
 }
 
+function summarizeFilterRow<T extends object>(
+  row: T,
+  rowKeyProp: STableProps<T>['rowKey'],
+  index: number,
+): Record<string, string | number | boolean | null> {
+  let rowKeyVal: string | number = index;
+  if (typeof rowKeyProp === 'function') {
+    rowKeyVal = String(rowKeyProp(row, index));
+  } else if (typeof rowKeyProp === 'string' && rowKeyProp in row) {
+    const raw = (row as Record<string, unknown>)[rowKeyProp];
+    if (typeof raw === 'string' || typeof raw === 'number') rowKeyVal = raw;
+  } else if ('key' in row) {
+    const raw = (row as Record<string, unknown>).key;
+    if (typeof raw === 'string' || typeof raw === 'number') rowKeyVal = raw;
+  } else if ('id' in row) {
+    const raw = (row as Record<string, unknown>).id;
+    if (typeof raw === 'string' || typeof raw === 'number') rowKeyVal = raw;
+  }
+
+  const summary: Record<string, string | number | boolean | null> = {
+    _rowKey: String(rowKeyVal),
+  };
+  let count = 0;
+  for (const [k, v] of Object.entries(row as Record<string, unknown>)) {
+    if (count >= 12) break;
+    if (
+      typeof v === 'string' ||
+      typeof v === 'number' ||
+      typeof v === 'boolean' ||
+      v === null
+    ) {
+      summary[k] = v;
+      count += 1;
+    }
+  }
+  return summary;
+}
+
 /**
  * Reusable Omada Controller list + toolbar block combining optional underline tabs,
  * search/filter toolbar, `<||` quick-drawer clearance, batch selection strip, and `<STable>`.
@@ -72,6 +110,7 @@ export function SFilterTableBlock<T extends object>({
 }: SFilterTableBlockProps<T>) {
   const clearanceClass = clearQuickDrawer ? 'pr-9' : '';
   const resolvedActiveTab = activeTab ?? tabs?.[0]?.key;
+  const rowsData = tableProps.dataSource ?? [];
 
   useOmadaAgentControl(
     agentId
@@ -82,7 +121,7 @@ export function SFilterTableBlock<T extends object>({
           value: {
             activeTab: resolvedActiveTab ?? null,
             searchValue: searchValue ?? '',
-            rowCount: (tableProps.dataSource ?? []).length,
+            rowCount: rowsData.length,
             selectedCount: selectedCount ?? 0,
           },
           options: tabs?.map((tab) => ({
@@ -90,15 +129,22 @@ export function SFilterTableBlock<T extends object>({
             label: typeof tab.label === 'string' ? tab.label : tab.key,
           })),
           meta: {
-            rowCount: (tableProps.dataSource ?? []).length,
+            rowCount: rowsData.length,
             selectedCount: selectedCount ?? 0,
+            rows: rowsData
+              .slice(0, 25)
+              .map((row, idx) => summarizeFilterRow(row, tableProps.rowKey, idx)),
           },
           actions: {
             search: (query: unknown) => {
-              onSearchChange?.(String(query ?? ''));
+              const nextQ = String(query ?? '');
+              onSearchChange?.(nextQ);
+              return nextQ;
             },
             setValue: (query: unknown) => {
-              onSearchChange?.(String(query ?? ''));
+              const nextQ = String(query ?? '');
+              onSearchChange?.(nextQ);
+              return nextQ;
             },
             clear: () => {
               onSearchChange?.('');
@@ -120,6 +166,34 @@ export function SFilterTableBlock<T extends object>({
               ? {
                   clearSelection: () => {
                     onClearSelection();
+                  },
+                }
+              : {}),
+            ...(tableProps.onRow
+              ? {
+                  clickRow: (keyOrIdx: unknown) => {
+                    const targetStr = String(keyOrIdx ?? '');
+                    let foundIdx = rowsData.findIndex(
+                      (row, idx) =>
+                        summarizeFilterRow(row, tableProps.rowKey, idx)._rowKey ===
+                        targetStr,
+                    );
+                    if (foundIdx < 0 && /^\d+$/.test(targetStr)) {
+                      const numericIdx = Number(targetStr);
+                      if (numericIdx >= 0 && numericIdx < rowsData.length) {
+                        foundIdx = numericIdx;
+                      }
+                    }
+                    if (foundIdx < 0) {
+                      throw new Error(
+                        `Row "${targetStr}" not found in table "${agentId}".`,
+                      );
+                    }
+                    const record = rowsData[foundIdx];
+                    tableProps.onRow?.(record, foundIdx)?.onClick?.(
+                      {} as React.MouseEvent<HTMLElement>,
+                    );
+                    return summarizeFilterRow(record, tableProps.rowKey, foundIdx);
                   },
                 }
               : {}),

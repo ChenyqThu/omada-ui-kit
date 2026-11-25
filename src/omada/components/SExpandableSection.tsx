@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Minus, Plus } from 'lucide-react';
+import { useOmadaAgentControl } from '../agent';
 
 export interface SExpandableSectionProps {
+  /** Optional deterministic ID for Agent Bridge state inspection and actions. */
+  agentId?: string;
   /** Section heading displayed next to the `[+]` / `[-]` toggle square. */
   title: React.ReactNode;
   /** Controlled expanded state. */
@@ -21,6 +24,7 @@ export interface SExpandableSectionProps {
  * (used for `Advanced Settings`, `ACL Binding`, and progressive disclosure blocks).
  */
 export const SExpandableSection: React.FC<SExpandableSectionProps> = ({
+  agentId,
   title,
   expanded: controlledExpanded,
   defaultExpanded = false,
@@ -32,13 +36,34 @@ export const SExpandableSection: React.FC<SExpandableSectionProps> = ({
   const [innerExpanded, setInnerExpanded] = useState(defaultExpanded);
   const isExpanded = controlledExpanded ?? innerExpanded;
 
-  const handleToggle = () => {
-    const next = !isExpanded;
+  const setExpandedState = (next: boolean) => {
     if (controlledExpanded === undefined) {
       setInnerExpanded(next);
     }
     onExpandedChange?.(next);
+    return next;
   };
+
+  const handleToggle = () => {
+    setExpandedState(!isExpanded);
+  };
+
+  useOmadaAgentControl(
+    agentId
+      ? {
+          id: agentId,
+          kind: 'switch',
+          label: typeof title === 'string' ? title : undefined,
+          value: isExpanded,
+          actions: {
+            expand: () => setExpandedState(true),
+            collapse: () => setExpandedState(false),
+            toggle: () => setExpandedState(!isExpanded),
+            setValue: (next: unknown) => setExpandedState(Boolean(next)),
+          },
+        }
+      : null,
+  );
 
   return (
     <div className={`omada-expandable-section ${className}`.trim()}>

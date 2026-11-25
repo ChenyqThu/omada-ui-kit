@@ -1,4 +1,4 @@
-# @chenyqthu/omada-ui-kit@0.5.0
+# @chenyqthu/omada-ui-kit@0.6.0
 
 > TP-Link Omada Controller v6.3 React 19 + Ant Design 6 UI component kit with Light/Dark design tokens, scoped micro-frontend CSS, bundled Figma assets, deterministic Agent Bridge, and zero-build single-file HTML standalone bundle.
 
@@ -8,14 +8,19 @@
 - `@chenyqthu/omada-ui-kit/charts`: Modular ECharts (`SChart`, `SLineChart`, `SBarChart`, `SDonutChart`, `SSparkChart`, `SDonutSummaryCard`, `SHealthGauge`, `SHealthRadar`, `SHealthTrendBar`, `SChannelUtilization`)
 - `@chenyqthu/omada-ui-kit/emulator`: Controller v6.3 domain widgets (`STopologyCanvas`, `SAclRuleBuilder`, `SSettingsPageShell`, `STerminalConsole`, `SDevicePortGraphic`, `SPortPanel`)
 - `@chenyqthu/omada-ui-kit/assets`: `SIcon` (590), `SProductImage` (83), `SIllustration` (122), `SClientIcon` (217), `SBrandAsset` (47), `OmadaLogo`, `SDeviceIcon`
-- `@chenyqthu/omada-ui-kit/agent`: `OmadaAgentProvider`, `useOmadaAgent`, `useOmadaAgentControl`, `useOmadaAgentAction`, `OMADA_SECRET_MASK`
+- `@chenyqthu/omada-ui-kit/agent`: `OmadaAgentProvider` (`exposeWindowBridge` + WebMCP), `useOmadaAgent`, `useOmadaAgentControl`, `useOmadaAgentAction`, `registerWebMcpTools`, `OMADA_AGENT_TOOLS`, `OMADA_SECRET_MASK`
 - `@chenyqthu/omada-ui-kit/style.css`: Full stylesheet (includes Tailwind v4 preflight)
 - `@chenyqthu/omada-ui-kit/style.scoped.css`: Scoped stylesheet without global reset (pair with `<OmadaProvider syncDocumentTheme={false}>`)
 - `@chenyqthu/omada-ui-kit/standalone`: Browser IIFE bundle (`window.OmadaUI`)
 
+## External Browser Agent Protocol (`window.__OMADA_AGENT__` + WebMCP)
+1. **Discover**: Check `Boolean(window.__OMADA_AGENT__)` (or browser WebMCP site tools `snapshot`, `query`, `act` on `document.modelContext`) before taking screenshots or clicking DOM selectors.
+2. **Read**: Call `window.__OMADA_AGENT__.snapshot()` for deterministic `{ controls, actions }` (secrets masked as `[REDACTED]`), or `window.__OMADA_AGENT__.query({ kind, text, id })` on large pages.
+3. **Operate**: Call `await window.__OMADA_AGENT__.actAsync({ steps: [{ id, action, value }, ...] })` (or sync `act(...)`) to mutate controls, navigate routes, open drawers/modals, and run domain actions in 1 batch call.
+
 ## Pinned Single-File HTML CDN URLs
-- CSS: `https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/style.css`
-- JS: `https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/standalone.js`
+- CSS: `https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/style.css`
+- JS: `https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/standalone.js`
 - Babel: `https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js`
 
 ## Progressive-Disclosure Skill References (`skills/omada-ui-kit/`)
@@ -29,9 +34,9 @@
 - `references/docs/feedback.md`: SAlert, SDrawer, SDrawerFooter, SEmpty, SInfoDialog, SLoading, SMask, SModal, SNotification, SPopconfirm, SPopover, SSkeleton, SStepModal, STooltip, STruncatedText, useOmadaConfirm, useOmadaFeedback, useOmadaNotification
 - `references/docs/emulator-v6.md`: LagGlyph, PortBadgeTile, PortStatusLegend, resolveConnectedProductSlug, SAclRuleBuilder, SApDistributionRuler, SCategoryKpiCarousel, SClientOverviewStrip, SDeviceHealthSummary, SDevicePortGraphic, SDeviceStatus, SExpandableSection, SfpGlyph, SPortPanel, SSettingsInfoBanner, SSettingsPageShell, SSettingsRow, SSettingsSection, STerminalConsole, STopologyCanvas
 - `references/docs/assets.md`: hasOmadaIcon, hasOmadaIllustration, hasOmadaProductImage, OmadaLogo, SBrandAsset, SClientIcon, SDeviceIcon, SIcon, SIllustration, SProductImage
-- `references/docs/agent.md`: OmadaAgentProvider, useOmadaAgent, useOmadaAgentAction, useOmadaAgentControl
+- `references/docs/agent.md`: OmadaAgentProvider, registerWebMcpTools, useOmadaAgent, useOmadaAgentAction, useOmadaAgentControl
 
 ## Starter Templates & Verification CLI
 - Templates (`templates/*.{html,tsx}`): `dashboard`, `inventory`, `acl-rules`, `settings`, `analytics-logs`
 - Query CLI: `node skills/omada-ui-kit/scripts/query-catalog.mjs component <Name>`
-- Verifier CLI: `node skills/omada-ui-kit/scripts/verify-demo.mjs <demo.html|Demo.tsx>`
+- Verifier CLI: `node skills/omada-ui-kit/scripts/verify-demo.mjs [--render] <demo.html|Demo.tsx>`

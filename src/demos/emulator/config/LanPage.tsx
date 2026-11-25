@@ -1124,6 +1124,7 @@ export const LanPage: React.FC<LanPageProps> = ({
 
   return (
     <SSettingsPageShell
+      agentId="lan.shell"
       tabs={[
         { key: 'vlan', label: 'VLAN' },
         { key: 'multicast-snooping', label: 'Multicast Snooping' },
@@ -1193,6 +1194,7 @@ export const LanPage: React.FC<LanPageProps> = ({
             </div>
 
             <SInput
+              agentId="lan.vlanSearch"
               variant="filled"
               allowClear
               value={vlanSearch}
@@ -1371,6 +1373,7 @@ export const LanPage: React.FC<LanPageProps> = ({
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pr-9">
               <div className="flex flex-wrap items-center gap-3">
                 <STabs
+                  agentId="lan.subView"
                   variant="filter"
                   aria-label="VLAN sub-views"
                   activeKey={subView}
@@ -1594,6 +1597,7 @@ export const LanPage: React.FC<LanPageProps> = ({
 
       {/* Create / Edit VLAN Modal */}
       <SModal
+        agentId="lan.vlanModal"
         size="sm"
         title={vlanModalMode === 'create' ? 'Create New LAN' : `Edit ${vlanDraft.name}`}
         open={vlanModalOpen}

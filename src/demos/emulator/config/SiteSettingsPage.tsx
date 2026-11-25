@@ -176,6 +176,7 @@ export const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({
 
   return (
     <SSettingsPageShell
+      agentId="siteSettings.shell"
       title="Site Settings"
       helpTitle="Site Settings"
       helpDescription="Configure site identity, regional compliance, switch/AP global behaviors, device SSH/management credentials, and scheduled email exports."
@@ -189,6 +190,7 @@ export const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({
       <SSettingsSection title="Site Configuration">
         <SSettingsRow label="Site Name">
           <SInput
+            agentId="siteSettings.siteName"
             aria-label="Site Name"
             value={draft.siteName}
             onChange={(e) => updateField('siteName', e.target.value)}
@@ -207,6 +209,7 @@ export const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({
 
         <SSettingsRow label="Country/Region">
           <SSelect
+            agentId="siteSettings.country"
             aria-label="Country/Region"
             className="w-full"
             value={draft.countryRegion}
@@ -326,6 +329,7 @@ export const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({
       <SSettingsSection title="General Config" dividerTop>
         <SSettingsRow label="LED">
           <SCheckbox
+            agentId="siteSettings.ledEnabled"
             checked={draft.ledEnabled}
             onChange={(e) => updateField('ledEnabled', e.target.checked)}
           >
@@ -560,6 +564,7 @@ export const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({
       <SSettingsSection title="Device Account" dividerTop>
         <SSettingsRow label="Username">
           <SInput
+            agentId="siteSettings.deviceUsername"
             aria-label="Device Username"
             value={draft.deviceUsername}
             onChange={(e) => updateField('deviceUsername', e.target.value)}
@@ -568,6 +573,7 @@ export const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({
 
         <SSettingsRow label="Password">
           <SPasswordInput
+            agentId="siteSettings.devicePassword"
             aria-label="Device Password"
             value={draft.devicePassword}
             onChange={(e) => updateField('devicePassword', e.target.value)}

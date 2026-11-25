@@ -9,6 +9,7 @@ import {
   SSwitch,
   STabs,
   STooltip,
+  useOmadaAgentAction,
   useOmadaNotification,
   useOmadaTheme,
   type OmadaIconName,
@@ -354,6 +355,21 @@ export const SiteDashboardPage: React.FC<SiteDashboardPageProps> = ({
         ? '7d Network Health Trend'
         : '30d Network Health Trend';
 
+  useOmadaAgentAction({
+    id: 'dashboard.setTimeRange',
+    label: 'Set Dashboard Time Window',
+    description: 'Switches the Site Dashboard telemetry window ("1D", "1W", or "1M").',
+    handler: (rangeArg) => {
+      const r = String(rangeArg ?? '1D').toUpperCase() as DashboardTimeRangeKey;
+      if (!TIME_RANGES.includes(r)) {
+        throw new Error(`Invalid time range "${String(rangeArg)}". Expected 1D, 1W, or 1M.`);
+      }
+      setTimeRange(r);
+      setCustomWindowLabel(null);
+      return r;
+    },
+  });
+
   return (
     <div
       className={`omada-emulator-dashboard min-h-full p-6 ${className}`.trim()}
@@ -363,6 +379,7 @@ export const SiteDashboardPage: React.FC<SiteDashboardPageProps> = ({
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         {/* Capsule Main Tabs */}
         <STabs
+          agentId="dashboard.mainTabs"
           variant="capsule"
           aria-label="Dashboard sections"
           activeKey={mainTab}
@@ -479,6 +496,7 @@ export const SiteDashboardPage: React.FC<SiteDashboardPageProps> = ({
                   </span>
                 </div>
                 <SSwitch
+                  agentId="dashboard.emergencyWifi"
                   size="medium"
                   checked={emergencyWifi}
                   onChange={handleEmergencyToggle}
@@ -520,6 +538,7 @@ export const SiteDashboardPage: React.FC<SiteDashboardPageProps> = ({
 
               {/* WAN Port Selector */}
               <STabs
+                agentId="dashboard.wanTabs"
                 variant="filter"
                 block
                 aria-label="Gateway WAN ports"
@@ -751,6 +770,7 @@ export const SiteDashboardPage: React.FC<SiteDashboardPageProps> = ({
                 <div className="flex items-center gap-3">
                   <h2 className="omada-dash-title m-0">Activity</h2>
                   <STabs
+                    agentId="dashboard.activityTabs"
                     variant="filter"
                     aria-label="Activity view"
                     activeKey={activityMode}

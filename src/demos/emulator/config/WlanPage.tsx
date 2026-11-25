@@ -12,6 +12,8 @@ import {
   SSelect,
   SSwitch,
   STabs,
+  useOmadaAgentAction,
+  useOmadaAgentControl,
   useOmadaNotification,
 } from '@/omada';
 import {
@@ -298,6 +300,101 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
       description: 'Analyzed RF spectrum across 3 APs and recorded results in Optimization History.',
     });
   };
+
+  useOmadaAgentControl({
+    id: 'wlan.ssidTable',
+    kind: 'table',
+    label: 'WLAN SSIDs',
+    value: {
+      total: ssids.length,
+      visibleRowCount: filteredSsids.length,
+      searchValue: search,
+    },
+    meta: {
+      rows: filteredSsids.map((r) => ({
+        _rowKey: r.key,
+        ssidName: r.ssidName,
+        enabled: r.enabled,
+        security: r.security,
+        vlan: r.vlan,
+        clients: r.clients,
+      })),
+    },
+    actions: {
+      openCreateModal: () => {
+        openCreateModal();
+        return true;
+      },
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'wlan.openAddSsidModal',
+    label: 'Open Add SSID Modal',
+    description: 'Opens the Add SSID creation dialog.',
+    handler: () => {
+      openCreateModal();
+      return true;
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'wlan.createSsid',
+    label: 'Create Wireless SSID',
+    description: 'Creates a new wireless SSID ({ ssidName, security, passphrase, vlan, enabled }) with passphrase masked in snapshot.',
+    handler: (payload) => {
+      const p = (payload && typeof payload === 'object' ? payload : {}) as {
+        ssidName?: string;
+        security?: WlanSecurityType;
+        passphrase?: string;
+        vlan?: string | number;
+        enabled?: boolean;
+        bands?: WlanBandKey[];
+      };
+      const cleanName = (p.ssidName ?? formName).trim();
+      if (!cleanName) {
+        throw new Error('ssidName is required to create an SSID.');
+      }
+      const sec: WlanSecurityType = p.security ?? formSecurity ?? 'WPA-Personal';
+      const secretPass = p.passphrase ?? formPassphrase;
+      const cleanVlan = p.vlan !== undefined ? String(p.vlan) : formVlan.trim() || '-';
+      const chosenBands: WlanBandKey[] =
+        p.bands && p.bands.length > 0
+          ? p.bands
+          : formBands.length > 0
+            ? formBands
+            : ['2.4 GHz', '5 GHz'];
+      const next: WlanSsidRecord = {
+        key: `ssid-${Date.now()}`,
+        ssidName: cleanName,
+        enabled: p.enabled !== undefined ? Boolean(p.enabled) : formEnabled,
+        security: sec,
+        passphrase: sec === 'None' ? undefined : secretPass || '••••••••',
+        bands: chosenBands,
+        devicesLabel: formDevices || 'All Devices',
+        apGroups: ['Default AP Group (3 APs)'],
+        clients: 0,
+        traffic: '-',
+        vlan: cleanVlan,
+        guestNetwork: formGuest,
+        broadcastSsid: formBroadcast,
+      };
+      setSsids((prev) => [...prev, next]);
+      setSsidModalOpen(false);
+      notification.success({
+        title: 'SSID Created',
+        description: `Wireless network "${cleanName}" broadcast queued on All Devices.`,
+      });
+      return {
+        key: next.key,
+        ssidName: next.ssidName,
+        enabled: next.enabled,
+        security: next.security,
+        vlan: next.vlan,
+        passphrase: sec === 'None' ? null : '[REDACTED]',
+      };
+    },
+  });
 
   const columnSelectorContent = (
     <div className="w-[190px]" onClick={(e) => e.stopPropagation()}>
@@ -684,6 +781,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
     <div className="omada-wlan-page px-6 pt-4 pb-6">
       {/* Top Underline Tabs + Help Icon */}
       <STabs
+        agentId="wlan.subTabs"
         variant="page"
         size="lg"
         bordered
@@ -715,6 +813,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
         <>
           <div className="mt-4 mb-5 flex flex-wrap items-center justify-between gap-3 pr-9">
             <SInput
+              agentId="wlan.search"
               variant="filled"
               allowClear
               value={search}
@@ -782,6 +881,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
                 <span className="omada-cfg-form-label">Scheduled Optimization</span>
                 <div className="omada-cfg-form-control flex items-center gap-3">
                   <SSwitch
+                    agentId="wlan.autoOptimize"
                     checked={autoOptimize}
                     aria-label="Scheduled Optimization"
                     onChange={setAutoOptimize}
@@ -906,6 +1006,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
 
       {/* Add / Edit SSID Modal */}
       <SModal
+        agentId="wlan.ssidModal"
         size="default"
         title={editingKey ? 'Edit SSID' : 'Add SSID'}
         open={ssidModalOpen}
@@ -921,6 +1022,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
             </label>
             <SInput
               id="wlan-ssid-name-input"
+              agentId="wlan.form.ssidName"
               variant="filled"
               value={formName}
               onChange={(e) => setFormName(e.target.value)}
@@ -930,7 +1032,12 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
 
           <div className="omada-cfg-modal-field-row">
             <span className="omada-cfg-modal-label">Enabled</span>
-            <SSwitch checked={formEnabled} onChange={setFormEnabled} aria-label="SSID Enabled" />
+            <SSwitch
+              agentId="wlan.form.enabled"
+              checked={formEnabled}
+              onChange={setFormEnabled}
+              aria-label="SSID Enabled"
+            />
           </div>
 
           <div className="omada-cfg-modal-field-row">
@@ -949,6 +1056,8 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
           <div className="omada-cfg-modal-field-row">
             <span className="omada-cfg-modal-label">Security</span>
             <SSelect
+              agentId="wlan.form.security"
+              aria-label="Security"
               value={formSecurity}
               onChange={(val) => setFormSecurity(val as WlanSecurityType)}
               className="w-full"
@@ -965,6 +1074,8 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
             <div className="omada-cfg-modal-field-row">
               <span className="omada-cfg-modal-label">Security Key</span>
               <SPasswordInput
+                agentId="wlan.form.passphrase"
+                aria-label="Security Key"
                 value={formPassphrase}
                 onChange={(e) => setFormPassphrase(e.target.value)}
                 placeholder="8-63 characters"
@@ -975,6 +1086,7 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
           <div className="omada-cfg-modal-field-row">
             <span className="omada-cfg-modal-label">AP Assignment</span>
             <SSelect
+              aria-label="AP Assignment"
               value={formDevices}
               onChange={setFormDevices}
               className="w-full"
@@ -988,6 +1100,8 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
           <div className="omada-cfg-modal-field-row">
             <span className="omada-cfg-modal-label">VLAN ID</span>
             <SInput
+              agentId="wlan.form.vlan"
+              aria-label="VLAN ID"
               variant="filled"
               value={formVlan}
               onChange={(e) => setFormVlan(e.target.value)}

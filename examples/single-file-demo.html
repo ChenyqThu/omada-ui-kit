@@ -18,6 +18,7 @@
     <script type="text/babel">
       const { useState } = OmadaUI.React;
       const {
+        OmadaAgentProvider,
         OmadaProvider,
         SEmulatorShell,
         SPageHeader,
@@ -31,6 +32,7 @@
         SIcon,
         SProductImage,
         STag,
+        useOmadaAgentAction,
         useOmadaTheme,
       } = window.OmadaUI;
 
@@ -74,6 +76,34 @@
         const [activeNav, setActiveNav] = useState('devices');
         const [selected, setSelected] = useState(null);
         const { resolvedTheme, setThemeMode } = useOmadaTheme();
+
+        useOmadaAgentAction({
+          id: 'demo.inspectAp',
+          label: 'Inspect Access Point Drawer',
+          description: 'Opens the AP detail drawer by key or device name.',
+          handler: (query) => {
+            const q = String(query || '').trim().toLowerCase();
+            const ap = DEMO_DEVICES.find(
+              (d) => d.key === q || d.name.toLowerCase() === q || d.name.toLowerCase().includes(q),
+            );
+            if (!ap) {
+              throw new Error(`AP "${String(query)}" not found.`);
+            }
+            setSelected(ap);
+            return { key: ap.key, name: ap.name, status: ap.status };
+          },
+        });
+
+        useOmadaAgentAction({
+          id: 'demo.toggleTheme',
+          label: 'Toggle Light/Dark Theme',
+          description: 'Switches between light and dark theme mode.',
+          handler: () => {
+            const next = resolvedTheme === 'dark' ? 'light' : 'dark';
+            setThemeMode(next);
+            return next;
+          },
+        });
 
         const columns = [
           {
@@ -147,6 +177,8 @@
 
               <SCard title="Access Points" padding="none">
                 <STable
+                  agentId="demo.apTable"
+                  agentLabel="Access Points"
                   rowKey="key"
                   dataSource={DEMO_DEVICES}
                   columns={columns}
@@ -160,6 +192,7 @@
             </div>
 
             <SDrawer
+              agentId="demo.apDrawer"
               open={Boolean(selected)}
               onClose={() => setSelected(null)}
               size="sm"
@@ -185,7 +218,9 @@
 
       OmadaUI.render(
         <OmadaProvider defaultThemeMode="light">
-          <ApHealthDemo />
+          <OmadaAgentProvider exposeWindowBridge>
+            <ApHealthDemo />
+          </OmadaAgentProvider>
         </OmadaProvider>,
         '#root',
       );

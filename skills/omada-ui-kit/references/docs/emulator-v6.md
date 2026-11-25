@@ -126,6 +126,7 @@ Omada Controller v6.3 square `[+]` / `[-]` expandable settings section (used for
 
 | Prop | Type | Req | Notes |
 | :--- | :--- | :---: | :--- |
+| `agentId` | `string` | No | Optional deterministic ID for Agent Bridge state inspection and actions. |
 | `children` | `React.ReactNode` | Yes |  |
 | `className` | `string` | No |  |
 | `defaultExpanded` | `boolean` | No | Initial uncontrolled expanded state (default `false`). |

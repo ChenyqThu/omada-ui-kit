@@ -1,5 +1,6 @@
 import React from 'react';
 import { Drawer, type DrawerProps } from 'antd';
+import { useOmadaAgentControl } from '../agent';
 import { SButton } from './SButton';
 
 export type SDrawerSize = 'sm' | 'md' | 'lg';
@@ -18,6 +19,8 @@ export interface SDrawerProps extends Omit<DrawerProps, 'size' | 'width'> {
   headerTabs?: React.ReactNode;
   /** Displays a skeleton placeholder inside the drawer body while data loads */
   loading?: boolean;
+  /** Optional deterministic Agent Bridge control ID. */
+  agentId?: string;
 }
 
 /**
@@ -33,10 +36,37 @@ export const SDrawer: React.FC<SDrawerProps> = ({
   headerTabs,
   extra,
   loading = false,
+  agentId,
   children,
   styles,
   ...rest
 }) => {
+  useOmadaAgentControl(
+    agentId
+      ? {
+          id: agentId,
+          kind: 'drawer',
+          label:
+            typeof title === 'string'
+              ? title
+              : typeof subtitle === 'string'
+                ? subtitle
+                : undefined,
+          value: Boolean(rest.open),
+          meta: {
+            open: Boolean(rest.open),
+            size: width ?? size,
+            loading,
+          },
+          actions: {
+            close: () => {
+              rest.onClose?.({} as React.MouseEvent<Element, MouseEvent>);
+              return false;
+            },
+          },
+        }
+      : null,
+  );
   const headerNode = (
     <div className="w-full">
       <div className="flex flex-wrap items-center justify-between gap-2">

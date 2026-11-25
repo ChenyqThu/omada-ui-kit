@@ -1,12 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   EMULATOR_NAV_GROUPS,
+  OmadaAgentProvider,
   SEmulatorShell,
   SIcon,
   SInput,
   SModal,
   SProductImage,
   omadaLayout,
+  useOmadaAgentAction,
+  useOmadaAgentControl,
   useOmadaNotification,
 } from '@/omada';
 import { SiteDashboardPage } from './dashboard/SiteDashboardPage';
@@ -136,7 +139,7 @@ export interface EmulatorAppProps {
  * `#/lan`, `#/wlan`, `#/acl`, `#/switch-ports`, `#/dns`, 41 `ConfigSubmodulePage` routes,
  * `#/network-tools`, `#/maintenance`, `#/hotspot/*`, and `#/showcase`).
  */
-export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
+const EmulatorWorkspace: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
   const notification = useOmadaNotification();
 
   const [activeRoute, setActiveRoute] = useState<string>(() => {
@@ -331,6 +334,89 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
 
   const routeMeta = NAV_ITEM_META.get(activeRoute);
 
+  useOmadaAgentControl({
+    id: 'emulator.route',
+    kind: 'tabs',
+    label: 'Controller Route',
+    value: activeRoute,
+    options: Array.from(DEDICATED_ROUTES).map((r) => ({
+      value: r,
+      label: NAV_ITEM_META.get(r)?.label ?? r,
+    })),
+    actions: {
+      navigate: (nextRoute: unknown) => {
+        const key = String(nextRoute ?? 'dashboard');
+        navigateTo(key);
+        return parseEmulatorRoute(key);
+      },
+      selectTab: (nextRoute: unknown) => {
+        const key = String(nextRoute ?? 'dashboard');
+        navigateTo(key);
+        return parseEmulatorRoute(key);
+      },
+      setValue: (nextRoute: unknown) => {
+        const key = String(nextRoute ?? 'dashboard');
+        navigateTo(key);
+        return parseEmulatorRoute(key);
+      },
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'emulator.navigate',
+    label: 'Navigate Controller Route',
+    description: 'Navigates to an Omada Controller route key (e.g. "dashboard", "devices", "clients", "wlan", "dns", "acl", "site-settings").',
+    handler: (routeArg) => {
+      const target = String(routeArg ?? 'dashboard');
+      navigateTo(target);
+      return parseEmulatorRoute(target);
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'emulator.switchSite',
+    label: 'Switch Active Site',
+    description: 'Switches the active site context in the Controller shell.',
+    handler: (siteArg) => {
+      const nextSite = String(siteArg || 'main-office-floor');
+      setActiveSite(nextSite);
+      return nextSite;
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'emulator.inspectDevice',
+    label: 'Inspect Device Properties Drawer',
+    description: 'Opens the right-hand Device Properties Drawer by device name or key.',
+    handler: (nameArg) => {
+      const q = String(nameArg ?? '').trim();
+      openDeviceByName(q);
+      return q;
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'emulator.inspectClient',
+    label: 'Inspect Client Properties Drawer',
+    description: 'Opens the right-hand Client Properties Drawer by client name or MAC.',
+    handler: (nameArg) => {
+      const q = String(nameArg ?? '').trim();
+      openClientByName(q);
+      return q;
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'emulator.closeDrawers',
+    label: 'Close Open Inspector Drawers',
+    description: 'Closes any open Device or Client properties drawer.',
+    handler: () => {
+      setDrawerOpen(false);
+      setClientDrawerOpen(false);
+      return false;
+    },
+  });
+
   if (activeRoute === 'hotspot') {
     return (
       <HotspotPortalApp
@@ -487,6 +573,7 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
       />
 
       <SModal
+        agentId="emulator.searchModal"
         size="sm"
         title="Quick Search Devices"
         open={searchModalOpen}
@@ -496,6 +583,8 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
       >
         <div className="space-y-3">
           <SInput
+            agentId="emulator.quickSearch"
+            aria-label="Quick search devices"
             variant="filled"
             allowClear
             autoFocus
@@ -541,6 +630,7 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
       </SModal>
 
       <SModal
+        agentId="emulator.aboutModal"
         size="sm"
         title="About Omada Controller"
         open={aboutModalOpen}
@@ -568,3 +658,9 @@ export const EmulatorApp: React.FC<EmulatorAppProps> = ({ initialRoute }) => {
     </SEmulatorShell>
   );
 };
+
+export const EmulatorApp: React.FC<EmulatorAppProps> = (props) => (
+  <OmadaAgentProvider exposeWindowBridge>
+    <EmulatorWorkspace {...props} />
+  </OmadaAgentProvider>
+);

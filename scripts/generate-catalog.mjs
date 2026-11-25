@@ -637,10 +637,36 @@ function buildRecipes(pkgName, pkgVersion) {
     },
     {
       id: 'agent-bridge',
-      title: 'Deterministic Agent Bridge (snapshot / query / act / allow)',
+      title: 'Deterministic Agent Bridge & WebMCP (snapshot / query / act / allow)',
       summary:
-        'Register interactive controls via agentId inside <OmadaAgentProvider> for deterministic UI state inspection, imperative automation, allowlist permissions, and automatic [REDACTED] secret masking.',
-      components: ['OmadaAgentProvider', 'useOmadaAgent', 'useOmadaAgentControl', 'useOmadaAgentAction', 'SSwitch', 'SSelect', 'SInput', 'SPasswordInput', 'STabs', 'SFilterTableBlock', 'SSettingsPageShell'],
+        'Register interactive controls via agentId and domain actions via useOmadaAgentAction inside <OmadaAgentProvider exposeWindowBridge> for deterministic UI state inspection, multi-step batch actAsync({ steps }), WebMCP tool registration, allowlist permissions, and automatic [REDACTED] secret masking.',
+      components: [
+        'OmadaAgentProvider',
+        'useOmadaAgent',
+        'useOmadaAgentControl',
+        'useOmadaAgentAction',
+        'registerWebMcpTools',
+        'SSwitch',
+        'SSelect',
+        'SInput',
+        'SPasswordInput',
+        'SNumberInput',
+        'SCheckbox',
+        'SCheckboxGroup',
+        'SRadio',
+        'SRadioGroup',
+        'SDatePicker',
+        'SRangePicker',
+        'STabs',
+        'STable',
+        'SFilterTableBlock',
+        'SDrawer',
+        'SDetailInspectorDrawer',
+        'SModal',
+        'SStepModal',
+        'SExpandableSection',
+        'SSettingsPageShell',
+      ],
     },
   ];
 }
@@ -753,10 +779,15 @@ function generateLlmsTxt(catalog) {
 - \`${name}/charts\`: Modular ECharts (\`SChart\`, \`SLineChart\`, \`SBarChart\`, \`SDonutChart\`, \`SSparkChart\`, \`SDonutSummaryCard\`, \`SHealthGauge\`, \`SHealthRadar\`, \`SHealthTrendBar\`, \`SChannelUtilization\`)
 - \`${name}/emulator\`: Controller v6.3 domain widgets (\`STopologyCanvas\`, \`SAclRuleBuilder\`, \`SSettingsPageShell\`, \`STerminalConsole\`, \`SDevicePortGraphic\`, \`SPortPanel\`)
 - \`${name}/assets\`: \`SIcon\` (${catalog.counts.icons}), \`SProductImage\` (${catalog.counts.products}), \`SIllustration\` (${catalog.counts.illustrations}), \`SClientIcon\` (${catalog.counts.clients}), \`SBrandAsset\` (${catalog.counts.brand}), \`OmadaLogo\`, \`SDeviceIcon\`
-- \`${name}/agent\`: \`OmadaAgentProvider\`, \`useOmadaAgent\`, \`useOmadaAgentControl\`, \`useOmadaAgentAction\`, \`OMADA_SECRET_MASK\`
+- \`${name}/agent\`: \`OmadaAgentProvider\` (\`exposeWindowBridge\` + WebMCP), \`useOmadaAgent\`, \`useOmadaAgentControl\`, \`useOmadaAgentAction\`, \`registerWebMcpTools\`, \`OMADA_AGENT_TOOLS\`, \`OMADA_SECRET_MASK\`
 - \`${name}/style.css\`: Full stylesheet (includes Tailwind v4 preflight)
 - \`${name}/style.scoped.css\`: Scoped stylesheet without global reset (pair with \`<OmadaProvider syncDocumentTheme={false}>\`)
 - \`${name}/standalone\`: Browser IIFE bundle (\`window.OmadaUI\`)
+
+## External Browser Agent Protocol (\`window.__OMADA_AGENT__\` + WebMCP)
+1. **Discover**: Check \`Boolean(window.__OMADA_AGENT__)\` (or browser WebMCP site tools \`snapshot\`, \`query\`, \`act\` on \`document.modelContext\`) before taking screenshots or clicking DOM selectors.
+2. **Read**: Call \`window.__OMADA_AGENT__.snapshot()\` for deterministic \`{ controls, actions }\` (secrets masked as \`[REDACTED]\`), or \`window.__OMADA_AGENT__.query({ kind, text, id })\` on large pages.
+3. **Operate**: Call \`await window.__OMADA_AGENT__.actAsync({ steps: [{ id, action, value }, ...] })\` (or sync \`act(...)\`) to mutate controls, navigate routes, open drawers/modals, and run domain actions in 1 batch call.
 
 ## Pinned Single-File HTML CDN URLs
 - CSS: \`${cdn.pinnedCss}\`
@@ -779,7 +810,7 @@ function generateLlmsTxt(catalog) {
 ## Starter Templates & Verification CLI
 - Templates (\`templates/*.{html,tsx}\`): ${catalog.templates.map((t) => `\`${t.id}\``).join(', ')}
 - Query CLI: \`node skills/omada-ui-kit/scripts/query-catalog.mjs component <Name>\`
-- Verifier CLI: \`node skills/omada-ui-kit/scripts/verify-demo.mjs <demo.html|Demo.tsx>\`
+- Verifier CLI: \`node skills/omada-ui-kit/scripts/verify-demo.mjs [--render] <demo.html|Demo.tsx>\`
 `;
 }
 
@@ -806,7 +837,7 @@ For offline repository demos (such as \`examples/single-file-demo.html\`), refer
 - **All Omada \`S*\` Components, Blocks, Charts, Assets & Hooks**: Destructure directly from \`window.OmadaUI\` (e.g. \`const { OmadaProvider, OmadaAgentProvider, SEmulatorShell, SFilterTableBlock, SButton } = window.OmadaUI;\`).
 - **React 19**: \`OmadaUI.React\` (\`useState\`, \`useMemo\`, \`useEffect\`, \`useRef\`) and \`OmadaUI.ReactDOM\`.
 - **Mount Helper**: \`OmadaUI.render(<OmadaProvider><App /></OmadaProvider>, '#root')\` (reuses the React root across re-renders).
-- **Agent Bridge Namespace**: \`OmadaUI.agent\` (\`OmadaAgentProvider\`, \`useOmadaAgent\`, \`useOmadaAgentControl\`, \`useOmadaAgentAction\`, \`OMADA_SECRET_MASK\`).
+- **Agent Bridge Namespace**: \`OmadaUI.agent\` (\`OmadaAgentProvider\`, \`useOmadaAgent\`, \`useOmadaAgentControl\`, \`useOmadaAgentAction\`, \`registerWebMcpTools\`, \`OMADA_AGENT_TOOLS\`, \`OMADA_SECRET_MASK\`).
 - **Curated \`OmadaUI.antd\` Compatibility Subset**: \`Alert\`, \`Anchor\`, \`App\`, \`Avatar\`, \`Badge\`, \`Breadcrumb\`, \`Button\`, \`Card\`, \`Cascader\`, \`Checkbox\`, \`Col\`, \`Collapse\`, \`ColorPicker\`, \`ConfigProvider\`, \`DatePicker\`, \`Descriptions\`, \`Divider\`, \`Drawer\`, \`Dropdown\`, \`Empty\`, \`Flex\`, \`Form\`, \`Grid\`, \`Input\`, \`InputNumber\`, \`Layout\`, \`Modal\`, \`Pagination\`, \`Popconfirm\`, \`Popover\`, \`Progress\`, \`Radio\`, \`Rate\`, \`Row\`, \`Segmented\`, \`Select\`, \`Skeleton\`, \`Slider\`, \`Space\`, \`Spin\`, \`Statistic\`, \`Steps\`, \`Switch\`, \`Table\`, \`Tabs\`, \`Tag\`, \`TimePicker\`, \`Tooltip\`, \`Transfer\`, \`TreeSelect\`, \`Typography\`, \`Upload\`, \`message\`, \`notification\`, \`theme\`.
 - **Curated \`OmadaUI.AntdIcons\` Subset**: Common outlined/filled icons (\`PlusOutlined\`, \`SearchOutlined\`, \`ReloadOutlined\`, \`SettingOutlined\`, \`DeleteOutlined\`, \`EditOutlined\`, etc.). Prefer \`<SIcon name="..." />\` from the official Figma icon library whenever an Omada icon exists.
 
@@ -814,6 +845,26 @@ For offline repository demos (such as \`examples/single-file-demo.html\`), refer
 
 - **100% Inline**: All ${catalog.counts.icons} \`<SIcon>\` SVGs and builtin empty/upload illustrations (\`no-data\`, \`upgrade\`) are embedded directly inside \`standalone.js\`.
 - **Externalized Heavy Media (\`dist/assets/\`)**: \`products\`, remaining \`illustrations\`, \`clients\`, and \`brand\` assets resolve relative to \`globalThis.__OMADA_ASSET_BASE__\` (auto-detected from \`<script src=".../standalone.js">\`, falling back to \`https://cdn.jsdelivr.net/npm/${name}@${version}/dist/\` when inlined). Whether loaded from jsDelivr CDN, inlined in an HTML file, or loaded via local \`../dist/standalone.js\` (\`file://\`), \`<SProductImage>\`, \`<SIllustration>\`, \`<SClientIcon>\`, and \`<SBrandAsset>\` automatically load \`assets/<group>/<theme>/<slug>.<ext>\` beside \`standalone.js\`.
+
+## 4. External Browser Agent Discovery (\`window.__OMADA_AGENT__\` & WebMCP)
+
+Wrap standalone demos with \`<OmadaAgentProvider exposeWindowBridge>\` (enabled by default across all starter templates and \`examples/single-file-demo.html\`):
+
+- Exposes \`window.__OMADA_AGENT__\` (\`snapshot()\`, \`query(filter)\`, \`act(...)\`, \`actAsync({ steps })\`, \`canAct(id, action)\`).
+- Automatically registers WebMCP site tools (\`snapshot\`, \`query\`, \`act\`) on \`document.modelContext\` / \`navigator.modelContext\` when the host browser supports WebMCP.
+
+\`\`\`js
+// External Playwright / DevTools / browser agent fast-path:
+if (window.__OMADA_AGENT__) {
+  const state = window.__OMADA_AGENT__.snapshot();
+  await window.__OMADA_AGENT__.actAsync({
+    steps: [
+      { id: 'dns.mode', action: 'setValue', value: 'dot' },
+      { id: 'dns.saveConfiguration' },
+    ],
+  });
+}
+\`\`\`
 `;
 }
 
@@ -884,19 +935,43 @@ function generateDomainDocs(catalog) {
 - **Brand Assets (${catalog.counts.brand})** — Slugs: \`${sampleBrand.join('`, `')}\``,
     ),
     'agent.md': buildCategoryDoc(
-      'Agent Bridge Runtime (`@chenyqthu/omada-ui-kit/agent`)',
-      'Deterministic in-page UI state inspection and action execution (`snapshot()`, `query()`, `act()`, `allow`) inspired by UI-SDK, with automatic `[REDACTED]` secret masking.',
+      'Agent Bridge & WebMCP Runtime (`@chenyqthu/omada-ui-kit/agent`)',
+      'Deterministic in-page UI state inspection, multi-step batch action execution (`snapshot()`, `query()`, `act()`, `actAsync()`, `allow`), `window.__OMADA_AGENT__` exposure, and WebMCP (`document.modelContext`) tool registration with automatic `[REDACTED]` secret masking.',
       nonAntd(['agent']),
-      `## Built-in \`agentId\` Support
-Pass \`agentId="domain.control"\` to \`SSwitch\`, \`SSelect\`, \`SInput\` (optional \`secret\`), \`SPasswordInput\` (\`secret: true\` by default), \`STabs\`, \`SFilterTableBlock\`, or \`SSettingsPageShell\` inside \`<OmadaAgentProvider>\`:
+      `## Built-in \`agentId\` Component Coverage
+Pass \`agentId="domain.control"\` inside \`<OmadaAgentProvider>\` to register deterministic controls automatically:
+- **Inputs & Selections**: \`SSwitch\`, \`SSelect\`, \`SInput\` (optional \`secret\`), \`SPasswordInput\` (\`secret: true\` default), \`SNumberInput\`, \`SCheckbox\`, \`SCheckboxGroup\` (\`SCheckbox.Group\`), \`SRadio\`, \`SRadioGroup\` (\`SRadio.Group\`), \`SDatePicker\`, \`SRangePicker\`
+- **Navigation, Tables & Shells**: \`STabs\`, \`STable\`, \`SFilterTableBlock\`, \`SExpandableSection\`, \`SSettingsPageShell\`
+- **Overlays & Wizards**: \`SDrawer\`, \`SDetailInspectorDrawer\`, \`SModal\`, \`SInfoDialog\`, \`SStepModal\`
+
+## External Browser Agent & WebMCP Protocol
+Mounting \`<OmadaAgentProvider exposeWindowBridge>\` enables both \`window.__OMADA_AGENT__\` and WebMCP tool registration (\`OMADA_AGENT_TOOLS\`: \`snapshot\`, \`query\`, \`act\` with \`readOnlyHint\` / \`consequentialHint\` / \`untrustedContentHint\`) on \`document.modelContext\` / \`navigator.modelContext\`:
 
 \`\`\`tsx
-import { OmadaAgentProvider, useOmadaAgent } from '@chenyqthu/omada-ui-kit/agent';
+import {
+  OmadaAgentProvider,
+  useOmadaAgent,
+  useOmadaAgentAction,
+} from '@chenyqthu/omada-ui-kit/agent';
 
-// Inside a child component:
-const agent = useOmadaAgent();
-const snap = agent.snapshot(); // Deterministic ID-sorted { controls, actions }
-const res = agent.act('dns.enabled', 'toggle'); // Imperative mutation subject to allow policy
+// 1. Register page-level domain actions alongside agentId controls:
+useOmadaAgentAction({
+  id: 'dns.applySecurityPreset',
+  label: 'Apply Quad9 DoT Security Preset',
+  handler: () => ({ mode: 'dot', primaryDns: '9.9.9.9' }),
+});
+
+// 2. External browser agent / WebMCP execution in 1 batch call:
+if (window.__OMADA_AGENT__) {
+  const snap = window.__OMADA_AGENT__.snapshot(); // { controls, actions } ([REDACTED] secrets)
+  await window.__OMADA_AGENT__.actAsync({
+    steps: [
+      { id: 'dns.mode', action: 'setValue', value: 'dot' },
+      { id: 'dns.primaryServer', action: 'setValue', value: '9.9.9.9' },
+      { id: 'dns.shell', action: 'apply' },
+    ],
+  });
+}
 \`\`\``,
     ),
   };

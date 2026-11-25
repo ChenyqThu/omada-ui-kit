@@ -43,8 +43,8 @@ import {
 | `useOmadaTheme` | Hook | Reads/updates active theme mode and semantic tokens | Returns `{ themeMode, resolvedTheme, tokens, setThemeMode }` |
 | `buildOmadaAntdTheme` | Helper | Builds Ant Design 6 `ThemeConfig` for Light or Dark mode | `(resolvedTheme: 'light' \| 'dark') => ThemeConfig` |
 | `useRovingFocus` | Hook | Headless WAI-ARIA roving `tabIndex` keyboard primitive (`horizontal` / `vertical` / `both`, `Home` / `End`, loop, fallback `tabIndex={0}`) | `items`, `activeKey`, `onActivate`, `orientation`, `activationMode`, `loop` |
-| `OmadaAgentProvider` | Component | Deterministic UI-SDK-style Agent Bridge context (`snapshot()` / `query()` / `act()` / `allow` + `[REDACTED]` secret masking) | `allow`, `exposeWindowBridge`, `children` |
-| `useOmadaAgent` / `useOmadaAgentControl` / `useOmadaAgentAction` | Hooks | Accesses Agent Bridge runtime or registers custom controls/actions | `OMADA_SECRET_MASK` (`'[REDACTED]'`) |
+| `OmadaAgentProvider` | Component | Deterministic UI-SDK-style Agent Bridge & WebMCP context (`snapshot()` / `query()` / `act()` / `actAsync()` / `allow` + `[REDACTED]` secret masking) | `allow`, `exposeWindowBridge`, `registerWebMcp`, `children` |
+| `useOmadaAgent` / `useOmadaAgentControl` / `useOmadaAgentAction` / `registerWebMcpTools` | Hooks & Helpers | Accesses Agent Bridge runtime, registers controls/actions, or binds WebMCP `document.modelContext` tools | `OMADA_AGENT_TOOLS`, `OMADA_SECRET_MASK` (`'[REDACTED]'`) |
 
 ---
 
@@ -73,7 +73,7 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 | `SEmulatorShell` / `EMULATOR_NAV_GROUPS` / `EMULATOR_GLOBAL_NAV_GROUPS` | Omada Controller v6.3.0.34 shell (`56px` Top Bar, `216px`/`52px` Sidebar, grouped mega-popovers, `scope="site" \| "global"`, `<||` quick-drawer handle) | `activeKey`, `onSelect`, `scope`, `extraNavItems`, `activeSite`, `onSiteChange`, `onRefresh`, `onOpenShowcase`, `onToggleQuickDrawer`, `showQuickDrawerHandle`, `collapsed`, `onCollapsedChange` |
 | `SFilterTableBlock` | Controller list + underline tabs + search/filter toolbar + `<||` clearance + batch action strip + `<STable>` | `title`, `subtitle`, `tabs`, `activeTab`, `onTabChange`, `searchPlaceholder`, `searchValue`, `onSearchChange`, `filters`, `primaryAction`, `extraActions`, `selectedCount`, `batchActions`, `onClearSelection`, `tableProps`, `clearQuickDrawer`, `agentId` |
 | `SInlineRuleEditorLayout` / `SInlineFormRow` | Full-pane Back + Title inline rule/profile editor with `210px` aligned rows & sticky Submit/Cancel footer | `title`, `onBack`, `onSubmit`, `onCancel`, `primaryText`, `cancelText`, `submitting`, `onHelpClick`, `footerExtra` / `label`, `tooltip`, `htmlFor` |
-| `SDetailInspectorDrawer` | 2-stage expandable inspector drawer (`420px` quick view ↔ `1040px` full detail view) with status badge & tabs | `open`, `onClose`, `title`, `subtitle`, `icon`, `status`, `statusLabel`, `expandable`, `defaultWidth`, `expandedWidth`, `tabs`, `activeTab`, `onTabChange`, `headerExtra`, `footer` |
+| `SDetailInspectorDrawer` | 2-stage expandable inspector drawer (`420px` quick view ↔ `1040px` full detail view) with status badge & tabs | `open`, `onClose`, `title`, `subtitle`, `icon`, `status`, `statusLabel`, `expandable`, `defaultWidth`, `expandedWidth`, `tabs`, `activeTab`, `onTabChange`, `headerExtra`, `footer`, `agentId` |
 | `SMasterDetailSplitBlock` | Split `260px` vertical `listbox` master rail (with `useRovingFocus`) + detail pane | `masterTitle`, `masterExtra`, `items`, `activeKey`, `onSelect`, `searchable`, `searchPlaceholder`, `masterWidth`, `detailTitle`, `detailExtra`, `emptyDetail` |
 | `SWizardModal` | Stepped modal wizard with `SSteps` header, step guard & Back/Next/Finish footer | `open`, `onCancel`, `title`, `steps`, `onBeforeNext`, `onFinish`, `finishText`, `loading`, `size` |
 | `SSwitchPortPicker` | Interactive multi-switch physical port selector built on `<SPortPanel selectable />` | `switches`, `value`, `defaultValue`, `onChange`, `showLegend` |
@@ -94,7 +94,7 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 | Component | Purpose | Key Props / API |
 |---|---|---|
 | `SButton` | 8 button variants (`32px` default, `40px` large) with ref forwarding | `variant`, `size`, `icon`, `loading`, `disabled` |
-| `SInput` / `SNumberInput` / `STextArea` | Filled inputs (`#F4F4F4` Light / `#272727` Dark) with `forwardRef` | `variant`, `value`, `defaultValue`, `onChange`, `placeholder`, `disabled` (`SInput` adds `agentId`, `secret`) |
+| `SInput` / `SNumberInput` / `STextArea` | Filled inputs (`#F4F4F4` Light / `#272727` Dark) with `forwardRef` | `variant`, `value`, `defaultValue`, `onChange`, `placeholder`, `disabled`, `agentId`, `secret` |
 | `SSearchInput` | Search box (`260px` default, clearable) with `forwardRef` | `width`, `value`, `onChange`, `allowClear`, `placeholder` |
 | `SPasswordInput` | Filled password input with 4-bar strength meter, live checklist & default `secret: true` masking | `showStrength`, `showRules`, `rules`, `agentId`, `secret` |
 | `SIpInput` | Segmented IPv4 / CIDR / IP:Port input with paste & octet clamping | `mode`, `value`, `onChange`, `status`, `size` |
@@ -109,8 +109,8 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 | `SSelect` | Filled Select (8 visible items, single/multiple/`tags`, `SCustomTag`, sticky `Add New` footer, `forwardRef`) | `options`, `showSearch`, `addNewLabel`, `onAddNew`, `agentId` |
 | `SCascader` | Filled multi-level hierarchical Cascader (`forwardRef`) | `options`, `multiple`, `displaySeparator` |
 | `STreeSelect` | Filled 2–3 level tree selector (`treeCheckable` + popup filter bar, `forwardRef`) | `treeData`, `treeCheckable`, `popupSearch` |
-| `SCheckbox` / `SCheckboxGroup` | Checkboxes with `description`, `showSelectAll` (`indeterminate`), `itemWidth`, & `variant="button"` | `variant`, `description`, `showSelectAll`, `itemWidth`, `options` |
-| `SRadio` / `SRadioGroup` | Radio controls (`default`, linear `button`, segmented `capsule` + `pill`) | `variant`, `pill`, `direction`, `options` |
+| `SCheckbox` / `SCheckboxGroup` | Checkboxes with `description`, `showSelectAll` (`indeterminate`), `itemWidth`, & `variant="button"` | `variant`, `description`, `showSelectAll`, `itemWidth`, `options`, `agentId` |
+| `SRadio` / `SRadioGroup` | Radio controls (`default`, linear `button`, segmented `capsule` + `pill`) | `variant`, `pill`, `direction`, `options`, `agentId` |
 | `SSwitch` | Exact `36×22` medium / `28×16` small pill switch with `aria-describedby` & `forwardRef` | `label`, `description`, `layout`, `labelPlacement`, `gap`, `size`, `agentId` |
 | `SSlider` | `3px` track + `18px` thumb, blur-clamped numeric `showInput`, `range`, stepped marks & gradients (`forwardRef`) | `range`, `showInput`, `unit`, `stepPreset`, `segmented`, `handleVariant`, `preset` |
 | `SColorPicker` | `32px` filled color trigger (`171px` min width) + curated Omada brand/chart palette presets | `presets`, `showText`, `status`, `value`, `onChange` |
@@ -118,7 +118,7 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 ### Time, Transfer, Upload & Schedule (`@chenyqthu/omada-ui-kit/core`)
 | Component | Purpose | Key Props / API |
 |---|---|---|
-| `SDatePicker` / `SRangePicker` | Filled DatePicker & RangePicker, plus dashboard `capsule` mode (`1D · 1W · 1M` + Custom) | `capsule`, `capsulePresets`, `presets`, `activePreset`, `onPresetChange`, `value`, `onChange` |
+| `SDatePicker` / `SRangePicker` | Filled DatePicker & RangePicker, plus dashboard `capsule` mode (`1D · 1W · 1M` + Custom) | `capsule`, `capsulePresets`, `presets`, `activePreset`, `onPresetChange`, `value`, `onChange`, `agentId` |
 | `STimePicker` / `STimeRangePicker` | Filled 24h / 12h time selector (`350×32` / `165×32` range, `240×280` popup) | `use12Hours`, `format`, `status`, `value`, `onChange` |
 | `STransfer` | Dual `240×368px` Transfer with search, pagination, icons, `<SEmpty>` & accessible `grouped` 2-level tree mode | `dataSource`, `targetKeys`, `showSearch`, `pagination`, `grouped`, `showIcon` |
 | `SUpload` | Button (`Download Template`) & drag-drop `dragger` with `firmware`/`config`/`image` validation | `variant`, `preset`, `maxSizeMB`, `templateText`, `onDownloadTemplate` |
@@ -130,7 +130,7 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 | `SCard` / `SKpiCard` | Hairline `8px` card + tabular KPI card with optional click filter | `title`, `subtitle`, `extra`, `padding` / `value`, `meta`, `accentColor`, `active` |
 | `STabs` | 4-variant Omada Tabs (`line`, `capsule`, `page`, `filter`) with `useRovingFocus` & `tabpanel` ARIA | `variant`, `size`, `bordered`, `block`, `pill`, `items`, `activeKey`, `onChange`, `agentId` |
 | `STag` / `SCustomTag` | Semantic status pill (`20px`) & closable multi-select chip (`24px`) | `color`, `variant`, `closable` |
-| `STable` | Data table with toolbar, `filters`, `columnSettings`, `densityToggle`, expandable rows & selection | `toolbar`, `columnSettings`, `densityToggle`, `expandable`, `rowSelection`, `columns`, `dataSource` |
+| `STable` | Data table with toolbar, `filters`, `columnSettings`, `densityToggle`, expandable rows & selection | `toolbar`, `columnSettings`, `densityToggle`, `expandable`, `rowSelection`, `columns`, `dataSource`, `agentId`, `agentLabel` |
 | `SEditableCell` | Inline `28px` table cell editor (`text`, `number`, `select`) | `value`, `type`, `options`, `onSave`, `placeholder`, `disabled` |
 | `SChart` | Modular `echarts/core` theme-synced canvas wrapper with loading skeleton & `<SEmpty>` | `option`, `height`, `loading`, `empty` |
 | `SLineChart` / `SBarChart` | 5-tick default & 6-tick `%` area/line & vertical/stacked/horizontal bar presets (`containLabel: true`) | `xData` / `categories`, `series`, `percentage`, `yUnit` / `unit`, `stacked`, `layout` |
@@ -144,9 +144,9 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 ### Feedback, Overlays & Loading (`@chenyqthu/omada-ui-kit/core`)
 | Component / Hook | Purpose | Key Props / API |
 |---|---|---|
-| `SModal` / `useOmadaConfirm` | Dialog presets (`sm`: 480, `confirm`: 540, `default`: 640, `centered`: 764, `form`: 880, `xl`: 1040) | `size`, `danger`, `subtitle`, `icon`, `destroyOnHidden`, `open` |
-| `SInfoDialog` / `SStepModal` | Status/illustration result dialog & multi-step wizard modal (`Back`/`Next`/`Finish`) | `status`, `illustration` / `steps`, `current`, `defaultCurrent`, `onBeforeNext`, `onFinish` |
-| `SDrawer` / `SDrawerFooter` | Slide-over drawer (`sm`: 480, `md`: 640, `lg`: 880, AntD 6 `size`) with loading skeleton | `size`, `loading`, `subtitle`, `statusSlot`, `headerTabs` / `onOk`, `onCancel` |
+| `SModal` / `useOmadaConfirm` | Dialog presets (`sm`: 480, `confirm`: 540, `default`: 640, `centered`: 764, `form`: 880, `xl`: 1040) | `size`, `danger`, `subtitle`, `icon`, `destroyOnHidden`, `open`, `agentId` |
+| `SInfoDialog` / `SStepModal` | Status/illustration result dialog & multi-step wizard modal (`Back`/`Next`/`Finish`) | `status`, `illustration` / `steps`, `current`, `defaultCurrent`, `onBeforeNext`, `onFinish`, `agentId` |
+| `SDrawer` / `SDrawerFooter` | Slide-over drawer (`sm`: 480, `md`: 640, `lg`: 880, AntD 6 `size`) with loading skeleton | `size`, `loading`, `subtitle`, `statusSlot`, `headerTabs`, `agentId` / `onOk`, `onCancel` |
 | `SAlert` / `useOmadaFeedback` | Borderless 12%-tinted banner alert & theme-aware `toast` / `notify` API | `type`, `title`, `description`, `closable`, `action` |
 | `SNotification` / `useOmadaNotification` | Static preview notification banner & imperative AntD 6 `{ title, description }` notifications | `type`, `title`, `description`, `actions` |
 | `SPopover` / `SPopconfirm` | Hover/click Popover & 4-combo Confirm Popover (`16px` offset) | `title`, `subtitle`, `icon`, `footer` / `description`, `okText`, `cancelText` |
@@ -171,14 +171,14 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 | `SDonutSummaryCard` | ECharts ring donut summary card with centered KPI overlay & vertical or side-by-side legend | `title`, `centerValue`, `centerLabel`, `data`, `layout`, `legendColumns`, `closable`, `onClose`, `onItemClick` |
 | `SCategoryKpiCarousel` | Horizontal scrollable 10-card incident category KPI strip (`Overview`..`Security`) with `useRovingFocus` | `items`, `activeKey`, `defaultActiveKey`, `onSelect` |
 | `SAclRuleBuilder` | Source → Policy Arrow (`Permit` / `Deny`) → Destination dual-card ACL rule builder with searchable object pickers | `policy`, `source`, `onSourceChange`, `destination`, `onDestinationChange`, `sourceTypeOptions`, `destinationTypeOptions`, `getItemsForType`, `onCreateGroup`, `onInspectItem` |
-| `SExpandableSection` | Collapsible "Advanced Settings" disclosure section with animated chevron | `title`, `defaultExpanded`, `expanded`, `onExpandedChange`, `children` |
+| `SExpandableSection` | Collapsible "Advanced Settings" disclosure section with animated chevron | `agentId`, `title`, `defaultExpanded`, `expanded`, `onExpandedChange`, `children` |
 | `SSettingsPageShell` / `SSettingsSection` / `SSettingsRow` / `SSettingsInfoBanner` | Reusable Omada v6.3 configuration page container (`20px` title + `(?)` Help popover, `<STabs variant="page">`, `clearQuickDrawer`, sticky `Apply` / `Cancel` footer) | `title`, `tabs`, `activeTab`, `onTabChange`, `dirty`, `onApply`, `onCancel`, `helpTitle`, `helpDescription`, `clearQuickDrawer`, `agentId` |
 | `STerminalConsole` | Split diagnostic output & interactive CLI console (`200px` `Device List` rail, monospace terminal, search highlight, command history) | `title`, `sessions`, `activeKey`, `interactive`, `onSubmitCommand`, `onClear`, `onDownload`, `emptyText` |
 
 ### Pure Validators & Helpers
 - **IP / MAC**: `parseIpValue`, `validateIpv4`, `validateCidr`, `normalizeMac`, `validateMac`
 - **Date / Upload / Schedule**: `createPickerDate`, `toNativeDate`, `formatOmadaDateRange`, `validateUploadFile`, `formatFileSize`, `createEmptySchedule`, `createSchedulePreset`, `normalizeScheduleValue`, `formatSlotRange`, `formatScheduleSummary`
-- **Port & Asset Guards**: `resolveConnectedProductSlug`, `hasOmadaIcon`, `hasOmadaIllustration`, `hasOmadaProductImage`
+- **Port, Agent & Asset Guards**: `resolveConnectedProductSlug`, `registerWebMcpTools`, `hasOmadaIcon`, `hasOmadaIllustration`, `hasOmadaProductImage`
 
 ---
 
@@ -210,7 +210,8 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 
 ---
 
-## 5. Generating New PRD Demos (AntD 6 + Dark Mode + Verification Rules)
+## 5. Dual Agent-UI Design Paradigm & PRD Verification Rules
 
-1. Follow `COMPONENT_CONTRACT.md` and `skills/omada-ui-kit/SKILL.md` (use AntD v6 `classNames`/`styles`, `variant="filled"`, `<SButton variant="primary">`, `var(--omada-*)` tokens, and `padding: '20px 44px 24px 24px'` inside `<SEmulatorShell>`).
-2. Run `node skills/omada-ui-kit/scripts/verify-demo.mjs <demo>` plus `pnpm typecheck && pnpm test && pnpm build` to verify zero drift or regressions.
+1. **Pillar 1 — Build Better**: Follow `COMPONENT_CONTRACT.md` and `skills/omada-ui-kit/SKILL.md` (load progressive-disclosure `references/docs/*.md` slices, compose high-level `S*` Blocks & templates, use AntD v6 `classNames`/`styles`, `variant="filled"`, `<SButton variant="primary">`, `var(--omada-*)` tokens, and `padding: '20px 44px 24px 24px'` inside `<SEmulatorShell>`).
+2. **Pillar 2 — Read & Operate Better**: Wrap pages and templates in `<OmadaAgentProvider exposeWindowBridge>` (exposing `window.__OMADA_AGENT__` + standard WebMCP `snapshot`/`query`/`act` tools), bind interactive controls/tables/drawers/modals via `agentId`, keep credentials masked as `[REDACTED]`, and register 2–3 page domain actions via `useOmadaAgentAction`.
+3. **Closed-Loop Gates**: Run `node skills/omada-ui-kit/scripts/verify-demo.mjs --render <demo>` (Headless Chrome + `axe-core` WCAG 2.1 A/AA + `<||` geometry check) plus `pnpm typecheck && pnpm test && pnpm test:agent-eval && pnpm test:agent-bench` to guarantee zero drift or regressions.

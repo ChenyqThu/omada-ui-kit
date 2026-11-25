@@ -54,6 +54,7 @@ Omada Checkbox with optional secondary `description` line aligned cleanly under 
 
 | Prop | Type | Req | Notes |
 | :--- | :--- | :---: | :--- |
+| `agentId` | `string` | No | Optional deterministic Agent Bridge control ID. |
 | `description` | `React.ReactNode` | No | Optional explanatory copy rendered 4px beneath the checkbox label. |
 - **Inherited AntD props**: `autoFocus`, `checked`, `children`, `className`, `classNames`, `defaultChecked`, `disabled`, `id`, `indeterminate`, `name`, `onBlur`, `onChange`, `onClick`, `onFocus`, `onKeyDown`, `onKeyPress`, `onMouseEnter`, `onMouseLeave`, `required`, `rootClassName`, `skipGroup`, `style`, `styles`, `tabIndex`, `title`, `type`, `value`
 
@@ -62,6 +63,7 @@ Omada Checkbox Group supporting `default` and linear `button` variants, option d
 
 | Prop | Type | Req | Notes |
 | :--- | :--- | :---: | :--- |
+| `agentId` | `string` | No | Optional deterministic Agent Bridge control ID. |
 | `direction` | `'horizontal' \| 'vertical'` | No | Arrangement axis of group items (`horizontal` wraps cleanly; `vertical` stacks). |
 | `itemWidth` | `number \| string` | No | Optional fixed width per item (e.g. `160` for Figma's 160px grid alignment). |
 | `options` | `Array<SCheckboxOption<T> \| string \| number>` | No | Array of checkbox options or primitive values. |
@@ -86,6 +88,7 @@ Omada single DatePicker defaulting to filled styling (`#F4F4F4` light / `#272727
 
 | Prop | Type | Req | Notes |
 | :--- | :--- | :---: | :--- |
+| `agentId` | `string` | No | Optional deterministic Agent Bridge control ID. |
 | `capsule` | `boolean` | No | Renders the picker input with an Omada capsule pill silhouette (`rounded-full`). |
 - **Inherited AntD props**: `allowClear`, `builtinPlacements`, `cellRender`, `changeOnScroll`, `className`, `classNames`, `components`, `defaultOpen`, `defaultOpenValue`, `defaultPickerValue`, `defaultValue`, `direction`, `disabled`, `disabledDate`, `disabledTime`, `format`, `getPopupContainer`, `hideDisabledOptions`, `hourStep`, `id`, `inputReadOnly`, `locale`, `maxDate`, `maxTagCount`, `millisecondStep`, `minDate`, `minuteStep`, `mode`, `multiple`, `needConfirm`, `nextIcon`, `onBlur`, `onCalendarChange`, `onChange`, `onClear`, `onFocus`, `onKeyDown`, `onOk`, `onOpenChange`, `onPanelChange`, `onPickerValueChange`, `open`, `order`, `panelRender`, `picker`, `pickerValue`, `placeholder`, `placement`, `popupAlign`, `prefix`, `preserveInvalidOnBlur`, `presets`, `prevIcon`, `previewValue`, `removeIcon`, `renderExtraFooter`, `rootClassName`, `secondStep`, `showHour`, `showMillisecond`, `showMinute`, `showNow`, `showSecond`, `showTime`, `showWeek`, `size`, `status`, `style`, `styles`, `suffix`, `superNextIcon`, `superPrevIcon`, `tagRender`, `transitionName`, `use12Hours`, `value`, `variant`
 - **Common React/DOM props**: `autoFocus`, `checked`, `children`, `defaultChecked`, `maxLength`, `minLength`, `name`, `onClick`, `onDoubleClick`, `onInput`, `onKeyUp`, `onMouseEnter`, `onMouseLeave`, `onSubmit`, `readOnly`, `rel`, `required`, `role`, `step`, `tabIndex`, `title`, `type`
@@ -185,6 +188,10 @@ Segmented IPv4 / CIDR / IP:Port input matching Omada's filled control specificat
 
 ### `SNumberInput` (`component` · `@chenyqthu/omada-ui-kit/core`)
 Omada numeric input defaulting to filled grey background.
+
+| Prop | Type | Req | Notes |
+| :--- | :--- | :---: | :--- |
+| `agentId` | `string` | No | Optional deterministic Agent Bridge control ID. |
 - **Inherited AntD props**: `allowClear`, `changeOnBlur`, `changeOnWheel`, `className`, `classNames`, `controls`, `decimalSeparator`, `defaultValue`, `disabled`, `downHandler`, `formatter`, `keyboard`, `max`, `min`, `mode`, `onChange`, `onClear`, `onInput`, `onPressEnter`, `onStep`, `parser`, `precision`, `prefix`, `readOnly`, `rootClassName`, `size`, `status`, `step`, `stringMode`, `style`, `styles`, `suffix`, `tabIndex`, `upHandler`, `value`, `variant`
 - **Common React/DOM props**: `autoFocus`, `checked`, `children`, `defaultChecked`, `id`, `maxLength`, `minLength`, `name`, `onBlur`, `onClick`, `onDoubleClick`, `onFocus`, `onKeyDown`, `onKeyUp`, `onMouseEnter`, `onMouseLeave`, `onSubmit`, `placeholder`, `rel`, `required`, `role`, `title`, `type`
 - **DOM passthrough**: Accepts standard HTML/`aria-*`/`data-*` attributes.
@@ -208,6 +215,7 @@ Omada Radio control with optional secondary `description` line.
 
 | Prop | Type | Req | Notes |
 | :--- | :--- | :---: | :--- |
+| `agentId` | `string` | No | Optional deterministic Agent Bridge control ID. |
 | `description` | `React.ReactNode` | No | Optional explanatory copy rendered 4px beneath the radio label. |
 - **Inherited AntD props**: `autoFocus`, `checked`, `children`, `className`, `classNames`, `defaultChecked`, `disabled`, `id`, `name`, `onBlur`, `onChange`, `onClick`, `onFocus`, `onKeyDown`, `onKeyPress`, `onMouseEnter`, `onMouseLeave`, `required`, `rootClassName`, `skipGroup`, `style`, `styles`, `tabIndex`, `title`, `type`, `value`
 
@@ -216,6 +224,7 @@ Omada Radio Group supporting `default` circle radios (with optional descriptions
 
 | Prop | Type | Req | Notes |
 | :--- | :--- | :---: | :--- |
+| `agentId` | `string` | No | Optional deterministic Agent Bridge control ID. |
 | `direction` | `'horizontal' \| 'vertical'` | No | Layout axis for `default` radio items. |
 | `options` | `Array<SRadioOption<T> \| string \| number>` | No | Array of radio options or primitive values. |
 | `pill` | `boolean` | No | Rounded-full pill shape when `variant="capsule"`. |
@@ -229,6 +238,7 @@ Omada Date RangePicker supporting: - Standard filled RangePicker with quick rang
 | Prop | Type | Req | Notes |
 | :--- | :--- | :---: | :--- |
 | `activePreset` | `string` | No | Controlled active preset key in `capsule` mode (`'1d' \| '1w' \| '1m' \| 'custom'`). |
+| `agentId` | `string` | No | Optional deterministic Agent Bridge control ID. |
 | `capsule` | `boolean` | No | Renders Omada's Figma capsule preset switcher (`1D · 1W · 1M` + Custom calendar trigger). |
 | `capsulePresets` | `SCapsulePreset[]` | No | Custom preset pills for `capsule` mode (defaults to `1D`, `1W`, `1M`). |
 | `defaultPreset` | `string` | No | Initial active preset key in uncontrolled `capsule` mode. |

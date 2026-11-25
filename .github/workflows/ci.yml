@@ -46,3 +46,6 @@ jobs:
 
       - name: Build Showcase & Emulator app
         run: pnpm build:app
+
+      - name: Run 3-task Headless Chrome Agent Bridge vs DOM benchmark
+        run: pnpm test:agent-bench

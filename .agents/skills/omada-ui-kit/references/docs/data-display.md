@@ -140,6 +140,8 @@ Omada Data Table wrapping AntD `Table` with an integrated toolbar (tabs, search,
 
 | Prop | Type | Req | Notes |
 | :--- | :--- | :---: | :--- |
+| `agentId` | `string` | No | Optional deterministic Agent Bridge control ID. |
+| `agentLabel` | `string` | No | Optional accessible label exposed in Agent Bridge `snapshot()` / `query()`. |
 | `columnSettings` | `boolean` | No | Show a column visibility checklist popover button in the toolbar. |
 | `defaultDensity` | `STableDensity` | No | Initial uncontrolled density when `densityToggle` is enabled. |
 | `density` | `STableDensity` | No | Controlled table density (`'default' \| 'compact'`). |

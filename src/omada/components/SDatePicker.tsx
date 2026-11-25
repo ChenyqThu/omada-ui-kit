@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { DatePicker, type DatePickerProps } from 'antd';
 import type { RangePickerProps } from 'antd/es/date-picker';
+import { useOmadaAgentControl } from '../agent';
 import { SIcon } from '../assets/SIcon';
 
 export type OmadaPickerDate = NonNullable<
@@ -240,6 +241,49 @@ export type SRangeQuickPreset = NonNullable<RangePickerProps['presets']>[number]
 export interface SDatePickerProps extends DatePickerProps {
   /** Renders the picker input with an Omada capsule pill silhouette (`rounded-full`). */
   capsule?: boolean;
+  /** Optional deterministic Agent Bridge control ID. */
+  agentId?: string;
+}
+
+function parseAgentDateInput(raw: unknown): Date | null {
+  const fromObj = toNativeDate(raw);
+  if (fromObj) return fromObj;
+  if (typeof raw === 'number' && Number.isFinite(raw)) {
+    const d = new Date(raw);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim();
+    const isoDay = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+    if (isoDay) {
+      return new Date(
+        Number(isoDay[1]),
+        Number(isoDay[2]) - 1,
+        Number(isoDay[3]),
+        0,
+        0,
+        0,
+        0,
+      );
+    }
+    const isoDateTime = /^(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2})(?::(\d{2}))?$/.exec(
+      trimmed,
+    );
+    if (isoDateTime) {
+      return new Date(
+        Number(isoDateTime[1]),
+        Number(isoDateTime[2]) - 1,
+        Number(isoDateTime[3]),
+        Number(isoDateTime[4]),
+        Number(isoDateTime[5]),
+        Number(isoDateTime[6] ?? 0),
+        0,
+      );
+    }
+    const parsed = new Date(trimmed);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  return null;
 }
 
 function mergeClassNames<T extends { root?: string; popup?: unknown }>(
@@ -273,10 +317,75 @@ export const SDatePicker: React.FC<SDatePickerProps> = ({
   variant = 'filled',
   capsule = false,
   suffix,
+  value,
+  defaultValue,
+  onChange,
+  disabled,
+  showTime,
+  agentId,
   className = '',
   classNames,
   ...rest
 }) => {
+  const [innerDate, setInnerDate] = useState<DatePickerProps['value']>(
+    defaultValue ?? null,
+  );
+  const isControlled = value !== undefined;
+  const currentDate = isControlled ? value : innerDate;
+
+  const serializedDate = useMemo(() => {
+    const native = toNativeDate(currentDate);
+    if (!native) return null;
+    return formatWithPattern(
+      native,
+      showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD',
+    );
+  }, [currentDate, showTime]);
+
+  useOmadaAgentControl(
+    agentId
+      ? {
+          id: agentId,
+          kind: 'datepicker',
+          label:
+            ((rest as Record<string, unknown>)['aria-label'] as
+              | string
+              | undefined) ??
+            (typeof rest.placeholder === 'string' ? rest.placeholder : undefined),
+          value: serializedDate,
+          disabled: Boolean(disabled),
+          actions: {
+            setValue: (next: unknown) => {
+              if (next === null || next === '') {
+                if (!isControlled) setInnerDate(null);
+                onChange?.(null as never, '');
+                return null;
+              }
+              const parsed = parseAgentDateInput(next);
+              if (!parsed) {
+                throw new Error(`Invalid date value "${String(next)}".`);
+              }
+              const pickerDate = createPickerDate(parsed);
+              const formatted = formatWithPattern(
+                parsed,
+                showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD',
+              );
+              if (!isControlled) {
+                setInnerDate(pickerDate as never);
+              }
+              onChange?.(pickerDate as never, formatted);
+              return formatted;
+            },
+            clear: () => {
+              if (!isControlled) setInnerDate(null);
+              onChange?.(null as never, '');
+              return null;
+            },
+          },
+        }
+      : null,
+  );
+
   const mergedClassNames = mergeClassNames(
     `omada-input omada-date-picker ${capsule ? 'omada-date-picker-capsule' : ''}`.trim(),
     'omada-picker-popup',
@@ -286,6 +395,16 @@ export const SDatePicker: React.FC<SDatePickerProps> = ({
   return (
     <DatePicker
       variant={variant}
+      value={isControlled ? value : agentId ? innerDate : undefined}
+      defaultValue={agentId ? undefined : defaultValue}
+      disabled={disabled}
+      showTime={showTime}
+      onChange={(d, dStr) => {
+        if (!isControlled) {
+          setInnerDate(d);
+        }
+        onChange?.(d, dStr);
+      }}
       suffix={
         suffix ?? (
           <SIcon
@@ -355,6 +474,8 @@ export interface SRangePickerProps extends Omit<RangePickerProps, 'presets'> {
   defaultPreset?: string;
   /** Callback invoked when a capsule preset pill or custom range is selected. */
   onPresetChange?: (presetKey: string, range: [Date, Date]) => void;
+  /** Optional deterministic Agent Bridge control ID. */
+  agentId?: string;
 }
 
 /**
@@ -376,6 +497,7 @@ export const SRangePicker: React.FC<SRangePickerProps> = ({
   onChange,
   disabled,
   placeholder = ['Start Date', 'End Date'],
+  agentId,
   className = '',
   classNames,
   open: controlledOpen,
@@ -412,14 +534,131 @@ export const SRangePicker: React.FC<SRangePickerProps> = ({
     return formatOmadaDateRange(start, end);
   }, [currentRange]);
 
+  const serializedRange = useMemo<[string, string] | null>(() => {
+    if (!currentRange || !currentRange[0] || !currentRange[1]) return null;
+    const start = toNativeDate(currentRange[0]);
+    const end = toNativeDate(currentRange[1]);
+    if (!start || !end) return null;
+    return [
+      formatWithPattern(start, 'YYYY-MM-DD'),
+      formatWithPattern(end, 'YYYY-MM-DD'),
+    ];
+  }, [currentRange]);
+
+  useOmadaAgentControl(
+    agentId
+      ? {
+          id: agentId,
+          kind: 'rangepicker',
+          label:
+            ((rest as Record<string, unknown>)['aria-label'] as
+              | string
+              | undefined) ??
+            (capsule ? 'Date range quick filter' : `${placeholder[0]} - ${placeholder[1]}`),
+          value: capsule
+            ? { preset: currentPreset, range: serializedRange }
+            : serializedRange,
+          disabled: isAllDisabled,
+          options: capsule
+            ? capsulePresets.map((p) => ({
+                value: p.key,
+                label: p.label,
+              }))
+            : undefined,
+          actions: {
+            setRange: (pairArg: unknown) => {
+              let rawStart: unknown;
+              let rawEnd: unknown;
+              if (Array.isArray(pairArg) && pairArg.length >= 2) {
+                [rawStart, rawEnd] = pairArg;
+              } else if (pairArg && typeof pairArg === 'object') {
+                const rec = pairArg as Record<string, unknown>;
+                rawStart = rec.start;
+                rawEnd = rec.end;
+              }
+              const sDate = parseAgentDateInput(rawStart);
+              const eDate = parseAgentDateInput(rawEnd);
+              if (!sDate || !eDate) {
+                throw new Error(
+                  'Expected [startDate, endDate] or { start, end } with valid dates.',
+                );
+              }
+              const pickerRange: [OmadaPickerDate, OmadaPickerDate] = [
+                createPickerDate(sDate),
+                createPickerDate(eDate),
+              ];
+              const strPair: [string, string] = [
+                formatWithPattern(sDate, 'YYYY-MM-DD'),
+                formatWithPattern(eDate, 'YYYY-MM-DD'),
+              ];
+              if (value === undefined) {
+                setInnerCustomValue(pickerRange);
+              }
+              if (capsule) {
+                if (activePreset === undefined) {
+                  setInnerPreset('custom');
+                }
+                onPresetChange?.('custom', [sDate, eDate]);
+              }
+              onChange?.(pickerRange, strPair);
+              return strPair;
+            },
+            ...(capsule
+              ? {
+                  selectPreset: (presetKey: unknown) => {
+                    const target = capsulePresets.find(
+                      (p) => p.key === String(presetKey ?? ''),
+                    );
+                    if (!target) {
+                      throw new Error(
+                        `Unknown range preset "${String(presetKey)}".`,
+                      );
+                    }
+                    const [sDate, eDate] = target.getRange();
+                    const pickerRange: [OmadaPickerDate, OmadaPickerDate] = [
+                      createPickerDate(sDate),
+                      createPickerDate(eDate),
+                    ];
+                    if (activePreset === undefined) {
+                      setInnerPreset(target.key);
+                    }
+                    if (value === undefined) {
+                      setInnerCustomValue(pickerRange);
+                    }
+                    onChange?.(pickerRange, [
+                      formatWithPattern(sDate, 'YYYY-MM-DD'),
+                      formatWithPattern(eDate, 'YYYY-MM-DD'),
+                    ]);
+                    onPresetChange?.(target.key, [sDate, eDate]);
+                    return target.key;
+                  },
+                }
+              : {}),
+            clear: () => {
+              if (value === undefined) {
+                setInnerCustomValue(null);
+              }
+              onChange?.(null, ['', '']);
+              return null;
+            },
+          },
+        }
+      : null,
+  );
+
   if (!capsule) {
     return (
       <DatePicker.RangePicker
         variant={variant}
         presets={mergedPresets}
-        value={value}
-        defaultValue={defaultValue}
-        onChange={onChange}
+        value={value !== undefined ? value : agentId ? innerCustomValue : undefined}
+        defaultValue={agentId ? undefined : defaultValue}
+        onChange={(dates, dateStrings) => {
+          if (value === undefined) {
+            setInnerCustomValue(dates);
+          }
+          onChange?.(dates, dateStrings);
+        }}
         disabled={disabled}
         placeholder={placeholder}
         open={controlledOpen}

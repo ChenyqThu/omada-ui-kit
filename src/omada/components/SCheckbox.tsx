@@ -1,24 +1,96 @@
 import React, { useState } from 'react';
 import {
   Checkbox,
+  type CheckboxChangeEvent,
   type CheckboxOptionType,
   type CheckboxProps,
   type CheckboxRef,
 } from 'antd';
 import type { CheckboxGroupProps } from 'antd/es/checkbox';
+import { useOmadaAgentControl } from '../agent';
 
 export type SCheckboxGroupVariant = 'default' | 'button';
 
 export interface SCheckboxProps extends CheckboxProps {
   /** Optional explanatory copy rendered 4px beneath the checkbox label. */
   description?: React.ReactNode;
+  /** Optional deterministic Agent Bridge control ID. */
+  agentId?: string;
 }
 
 const BaseSCheckbox = React.forwardRef<CheckboxRef, SCheckboxProps>(
-  ({ description, children, className = '', ...rest }, ref) => {
+  (
+    {
+      description,
+      checked,
+      defaultChecked,
+      disabled,
+      onChange,
+      agentId,
+      children,
+      className = '',
+      ...rest
+    },
+    ref,
+  ) => {
+    const [innerChecked, setInnerChecked] = useState<boolean>(
+      Boolean(defaultChecked),
+    );
+    const isControlled = checked !== undefined;
+    const currentChecked = isControlled ? Boolean(checked) : innerChecked;
+
+    const commitChecked = (next: boolean, nativeEvent?: CheckboxChangeEvent) => {
+      if (!isControlled) {
+        setInnerChecked(next);
+      }
+      if (nativeEvent) {
+        onChange?.(nativeEvent);
+      } else {
+        onChange?.({
+          target: { checked: next },
+          stopPropagation: () => {},
+          preventDefault: () => {},
+          nativeEvent: new MouseEvent('click'),
+        } as unknown as CheckboxChangeEvent);
+      }
+    };
+
+    useOmadaAgentControl(
+      agentId
+        ? {
+            id: agentId,
+            kind: 'checkbox',
+            label:
+              typeof children === 'string'
+                ? children
+                : ((rest as Record<string, unknown>)['aria-label'] as
+                    | string
+                    | undefined),
+            value: currentChecked,
+            disabled: Boolean(disabled),
+            actions: {
+              setValue: (next: unknown) => {
+                const bool = Boolean(next);
+                commitChecked(bool);
+                return bool;
+              },
+              toggle: () => {
+                const next = !currentChecked;
+                commitChecked(next);
+                return next;
+              },
+            },
+          }
+        : null,
+    );
+
     return (
       <Checkbox
         ref={ref}
+        checked={isControlled ? checked : agentId ? innerChecked : undefined}
+        defaultChecked={agentId ? undefined : defaultChecked}
+        disabled={disabled}
+        onChange={(e) => commitChecked(e.target.checked, e)}
         className={`omada-checkbox-wrapper ${className}`.trim()}
         {...rest}
       >
@@ -62,6 +134,9 @@ export interface SCheckboxGroupProps<T = string | number>
   direction?: 'horizontal' | 'vertical';
   /** Optional fixed width per item (e.g. `160` for Figma's 160px grid alignment). */
   itemWidth?: number | string;
+  /** Optional deterministic Agent Bridge control ID. */
+  agentId?: string;
+  'aria-label'?: string;
 }
 
 /**
@@ -80,6 +155,7 @@ export function SCheckboxGroup<T extends string | number = string | number>({
   onChange,
   disabled = false,
   name,
+  agentId,
   className = '',
   style,
   children,
@@ -128,6 +204,63 @@ export function SCheckboxGroup<T extends string | number = string | number>({
       : currentValue.filter((v) => v !== opt.value);
     commitChange(next);
   };
+
+  useOmadaAgentControl(
+    agentId
+      ? {
+          id: agentId,
+          kind: 'checkbox-group',
+          label: rest['aria-label'],
+          value: currentValue,
+          disabled: Boolean(disabled),
+          options: normalizedOptions.map((opt) => ({
+            value: opt.value as string | number,
+            label: typeof opt.label === 'string' ? opt.label : String(opt.value),
+            disabled: Boolean(disabled || opt.disabled),
+          })),
+          actions: {
+            setValue: (next: unknown) => {
+              if (!Array.isArray(next)) {
+                throw new Error(
+                  'Expected an array of values for checkbox-group setValue.',
+                );
+              }
+              const typed = next as T[];
+              commitChange(typed);
+              return typed;
+            },
+            toggleOption: (optVal: unknown) => {
+              const match = normalizedOptions.find(
+                (o) => o.value === optVal || String(o.value) === String(optVal),
+              );
+              if (!match) {
+                throw new Error(`Unknown checkbox option "${String(optVal)}".`);
+              }
+              if (match.disabled) {
+                throw new Error(`Option "${String(optVal)}" is disabled.`);
+              }
+              const exists = currentValue.includes(match.value);
+              const next = exists
+                ? currentValue.filter((v) => v !== match.value)
+                : [...currentValue, match.value];
+              commitChange(next);
+              return next;
+            },
+            selectAll: () => {
+              const merged = Array.from(new Set([...currentValue, ...enabledValues]));
+              commitChange(merged);
+              return merged;
+            },
+            clear: () => {
+              const enabledSet = new Set(enabledValues);
+              const remaining = currentValue.filter((v) => !enabledSet.has(v));
+              commitChange(remaining);
+              return remaining;
+            },
+          },
+        }
+      : null,
+  );
 
   const selectAllNode = showSelectAll && normalizedOptions.length > 0 && (
     <div className="mb-2.5 border-b border-[var(--omada-border-divider)] pb-2">

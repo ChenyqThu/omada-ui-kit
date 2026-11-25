@@ -1,6 +1,6 @@
 # Omada UI Kit
 
-High-fidelity **TP-Link Omada Controller v6.3** React UI component library built on Ant Design 6, complete with Omada Design Tokens (Light/Dark), bundled Figma icons/illustrations/device photos, dual distribution formats (ESM + Single-File Browser Bundle), and an Agent Skill catalog.
+High-fidelity **TP-Link Omada Controller v6.3** React UI component library built on Ant Design 6 under the **Dual Agent-UI Design Paradigm** (**Let Agents Build Pages Better** via progressive-disclosure docs, verified `S*` Blocks, zero-build `standalone.js`, and `--render` + `axe` WCAG gates; **Let Agents Read & Operate Pages Better** via deterministic `agentId` controls, `window.__OMADA_AGENT__`, WebMCP `snapshot`/`query`/`act` tools, and `[REDACTED]` secret masking).
 
 ## 1. Usage in React / Vite Projects (like `antd`)
 
@@ -44,7 +44,7 @@ In Vite / Rollup / webpack builds, import from dedicated subpath entrypoints ins
 | `@chenyqthu/omada-ui-kit/charts` | `SChart` (modular `echarts/core`), `SLineChart`, `SBarChart`, `SDonutChart`, `SSparkChart`, `SDonutSummaryCard`, `SHealthGauge`, `SHealthRadar`, `SHealthTrendBar`, `SChannelUtilization` | Full Illustration/Product/Client catalogs |
 | `@chenyqthu/omada-ui-kit/emulator` | All Controller v6.3 domain components (`STopologyCanvas`, `SAclRuleBuilder`, `SSettingsPageShell`, `STerminalConsole`, `SDevicePortGraphic`, etc.) | — |
 | `@chenyqthu/omada-ui-kit/assets` | `SIcon`, `SProductImage`, `SIllustration`, `SClientIcon`, `SBrandAsset`, `OmadaLogo`, `SDeviceIcon`, asset & icon manifests | ECharts |
-| `@chenyqthu/omada-ui-kit/agent` | Deterministic Agent Bridge (`OmadaAgentProvider`, `useOmadaAgent`, `useOmadaAgentControl`, `useOmadaAgentAction`) with `snapshot()` / `query()` / `act()` / `allow` & secret masking | ECharts, AntD, asset catalogs |
+| `@chenyqthu/omada-ui-kit/agent` | Deterministic Agent Bridge & WebMCP (`OmadaAgentProvider`, `useOmadaAgent`, `useOmadaAgentControl`, `useOmadaAgentAction`, `registerWebMcpTools`, `OMADA_AGENT_TOOLS`) with `snapshot()` / `query()` / batch `actAsync({ steps })` / `allow` & `[REDACTED]` secret masking | ECharts, AntD, asset catalogs |
 | `@chenyqthu/omada-ui-kit/style.scoped.css` | Scoped stylesheet (no Tailwind `preflight` global reset; tokens scoped to `.omada-scope, .omada-emulator-root` for `<OmadaProvider syncDocumentTheme={false}>`) | Global CSS reset |
 | `@chenyqthu/omada-ui-kit/llms.txt` | Compact LLM/Agent index mapping subpaths, components, templates, and progressive-disclosure docs | — |
 | `@chenyqthu/omada-ui-kit` | Convenience root re-export of all modules (full backward compatibility) | — |
@@ -65,21 +65,23 @@ For quick PRD prototypes, load `dist/style.css` and `dist/standalone.js` (bundle
 <html>
   <head>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/standalone.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/standalone.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"></script>
   </head>
   <body style="margin: 0;">
     <div id="root"></div>
     <script type="text/babel">
-      const { OmadaProvider, SEmulatorShell, SCard, SButton } = window.OmadaUI;
+      const { OmadaProvider, OmadaAgentProvider, SEmulatorShell, SCard, SButton } = window.OmadaUI;
       OmadaUI.render(
         <OmadaProvider>
-          <SEmulatorShell activeKey="dashboard" onSelect={() => {}}>
-            <div style={{ padding: '20px 44px 24px 24px' }}>
-              <SCard title="PRD Demo"><SButton variant="primary">Action</SButton></SCard>
-            </div>
-          </SEmulatorShell>
+          <OmadaAgentProvider exposeWindowBridge>
+            <SEmulatorShell activeKey="dashboard" onSelect={() => {}}>
+              <div style={{ padding: '20px 44px 24px 24px' }}>
+                <SCard title="PRD Demo"><SButton variant="primary">Action</SButton></SCard>
+              </div>
+            </SEmulatorShell>
+          </OmadaAgentProvider>
         </OmadaProvider>,
       );
     </script>
@@ -151,6 +153,7 @@ node skills/omada-ui-kit/scripts/query-catalog.mjs list-components blocks
 node skills/omada-ui-kit/scripts/query-catalog.mjs templates
 node skills/omada-ui-kit/scripts/query-catalog.mjs template inventory --html > demo.html
 node skills/omada-ui-kit/scripts/verify-demo.mjs demo.html
+node skills/omada-ui-kit/scripts/verify-demo.mjs --render demo.html
 ```
 
 *(If installed under `.claude/skills/omada-ui-kit/`, `.cursor/skills/omada-ui-kit/`, or `.agents/skills/omada-ui-kit/`, adjust the `skills/omada-ui-kit/` path prefix accordingly.)*
@@ -173,4 +176,5 @@ Including the Omada Controller v6.3 page/section name, usage mode (Single-File H
 - `pnpm sync:local-skill` — Sync `skills/omada-ui-kit/` into local user `~/.gemini/config/skills/omada-ui-kit/`
 - `pnpm build:pages` — Build static site for GitHub Pages (`dist-app/`)
 - `pnpm test` — Run unit test suite
-- `pnpm test:agent-eval` — Run Agent readiness benchmark (progressive disclosure token budget, `verify-demo.mjs` mutation suite, and Agent Bridge determinism)
+- `pnpm test:agent-eval` — Run Agent readiness benchmark (progressive disclosure token budget, `verify-demo.mjs` static + `--render` axe suite, and Agent Bridge schema audit)
+- `pnpm test:agent-bench` — Run 3-task Headless Chrome PRD benchmark comparing Browser DOM/ARIA clicking vs. Agent Bridge / WebMCP (`snapshot` + batch `act`)

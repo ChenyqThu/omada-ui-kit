@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Tooltip } from 'antd';
 import { Maximize2, Minimize2 } from 'lucide-react';
+import { useOmadaAgentControl } from '../agent';
 import { SDeviceStatus, type DeviceStatusType } from '../components/SDeviceStatus';
 import { SDrawer } from '../components/SDrawer';
 import { STabs, type STabItem } from '../components/STabs';
@@ -32,6 +33,8 @@ export interface SDetailInspectorDrawerProps {
   onTabChange?: (key: string) => void;
   headerExtra?: React.ReactNode;
   footer?: React.ReactNode;
+  /** Optional deterministic Agent Bridge control ID. */
+  agentId?: string;
   children?: React.ReactNode;
 }
 
@@ -55,6 +58,7 @@ export const SDetailInspectorDrawer: React.FC<SDetailInspectorDrawerProps> = ({
   onTabChange,
   headerExtra,
   footer,
+  agentId,
   children,
 }) => {
   const [expanded, setExpanded] = useState(false);
@@ -70,6 +74,72 @@ export const SDetailInspectorDrawer: React.FC<SDetailInspectorDrawerProps> = ({
   const activeTabContent = useMemo(
     () => tabs?.find((t) => t.key === currentTabKey)?.content,
     [tabs, currentTabKey],
+  );
+
+  useOmadaAgentControl(
+    agentId
+      ? {
+          id: agentId,
+          kind: 'drawer',
+          label:
+            typeof title === 'string'
+              ? title
+              : typeof subtitle === 'string'
+                ? subtitle
+                : undefined,
+          value: {
+            open,
+            expanded,
+            activeTab: tabs && tabs.length > 0 ? currentTabKey : null,
+          },
+          options: tabs?.map((t) => ({
+            value: t.key,
+            label: typeof t.label === 'string' ? t.label : t.key,
+          })),
+          meta: {
+            open,
+            expanded,
+            status: status ?? null,
+          },
+          actions: {
+            close: () => {
+              setExpanded(false);
+              onClose();
+              return false;
+            },
+            ...(expandable
+              ? {
+                  setExpanded: (next: unknown) => {
+                    const nextExp = Boolean(next);
+                    setExpanded(nextExp);
+                    return nextExp;
+                  },
+                  toggleExpand: () => {
+                    const nextExp = !expanded;
+                    setExpanded(nextExp);
+                    return nextExp;
+                  },
+                }
+              : {}),
+            ...(tabs && tabs.length > 0
+              ? {
+                  selectTab: (nextKey: unknown) => {
+                    const key = String(nextKey ?? '');
+                    const found = tabs.find((t) => t.key === key);
+                    if (!found) {
+                      throw new Error(`Unknown drawer tab "${key}".`);
+                    }
+                    if (controlledActiveTab === undefined) {
+                      setInnerTab(found.key);
+                    }
+                    onTabChange?.(found.key);
+                    return found.key;
+                  },
+                }
+              : {}),
+          },
+        }
+      : null,
   );
 
   return (

@@ -13,6 +13,7 @@ import {
   SProductImage,
   STabs,
   STag,
+  useOmadaAgentAction,
 } from '@/omada';
 import {
   DEFAULT_DEVICE_HEALTH_SUMMARY_ITEMS,
@@ -271,6 +272,16 @@ export const DeviceListPage: React.FC<DeviceListPageProps> = ({
       description: `${trimmedName} (${trimmedMac}) added to Headquarters Building.`,
     });
   };
+
+  useOmadaAgentAction({
+    id: 'devices.openAddModal',
+    label: 'Open Add Devices Modal',
+    description: 'Opens the hardware discovery & adoption modal.',
+    handler: () => {
+      setAddModalOpen(true);
+      return true;
+    },
+  });
 
   const statusFilterPopover = (
     <div className="w-[180px] space-y-1">
@@ -792,6 +803,7 @@ export const DeviceListPage: React.FC<DeviceListPageProps> = ({
     <div className="omada-devices-page px-6 pt-4 pb-6">
       {/* Top Sub-Tabs */}
       <STabs
+        agentId="devices.subTabs"
         variant="page"
         size="lg"
         bordered
@@ -817,6 +829,7 @@ export const DeviceListPage: React.FC<DeviceListPageProps> = ({
             {/* Row 1: Search + Type Segmented Tabs + Health Filter Pills */}
             <div className="flex flex-wrap items-center gap-3">
               <SInput
+                agentId="devices.search"
                 variant="filled"
                 allowClear
                 value={search}
@@ -838,6 +851,7 @@ export const DeviceListPage: React.FC<DeviceListPageProps> = ({
               />
 
               <STabs
+                agentId="devices.typeFilter"
                 variant="filter"
                 aria-label="Device category filter"
                 activeKey={typeFilter}
@@ -858,6 +872,7 @@ export const DeviceListPage: React.FC<DeviceListPageProps> = ({
               />
 
               <STabs
+                agentId="devices.healthFilter"
                 variant="filter"
                 aria-label="Device health filter"
                 activeKey={healthFilter}
@@ -1029,6 +1044,7 @@ export const DeviceListPage: React.FC<DeviceListPageProps> = ({
 
       {/* Add Devices Modal */}
       <SModal
+        agentId="devices.addModal"
         open={addModalOpen}
         title="Add Devices"
         subtitle="Discover and adopt Omada hardware on Headquarters Building (192.168.0.0/24)."
@@ -1049,6 +1065,7 @@ export const DeviceListPage: React.FC<DeviceListPageProps> = ({
             </label>
             <SInput
               id="omada-add-device-name"
+              agentId="devices.addForm.name"
               placeholder="e.g. Lobby_Eap_4"
               value={newDeviceName}
               onChange={(e) => setNewDeviceName(e.target.value)}
@@ -1063,6 +1080,7 @@ export const DeviceListPage: React.FC<DeviceListPageProps> = ({
             </label>
             <SInput
               id="omada-add-device-mac"
+              agentId="devices.addForm.mac"
               placeholder="e.g. 00-FF-00-4C-88-12"
               value={newDeviceMac}
               onChange={(e) => setNewDeviceMac(e.target.value)}

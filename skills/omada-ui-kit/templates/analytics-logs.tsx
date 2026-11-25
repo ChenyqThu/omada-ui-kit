@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import '@chenyqthu/omada-ui-kit/style.css';
 import {
   Col,
+  OmadaAgentProvider,
   OmadaProvider,
   Row,
   SCategoryKpiCarousel,
@@ -10,6 +11,7 @@ import {
   SFilterTableBlock,
   SPageHeader,
   STag,
+  useOmadaAgentAction,
   type ColumnsType,
   type STagColor,
 } from '@chenyqthu/omada-ui-kit';
@@ -28,9 +30,47 @@ const LOG_ROWS: LogRow[] = [
   { key: '3', time: '2026-11-21 14:55:41', category: 'wan', severity: 'red', event: 'WAN2 link jitter exceeded 80 ms threshold for 45s' },
 ];
 
+const VALID_CATEGORIES = new Set(['all', 'wireless', 'auth', 'wan']);
+
 const AnalyticsLogsContent: React.FC = () => {
   const [category, setCategory] = useState('all');
   const [search, setSearch] = useState('');
+
+  useOmadaAgentAction({
+    id: 'logs.selectCategory',
+    label: 'Select Incident Category',
+    description: 'Filters event timeline by category ("all", "wireless", "auth", "wan").',
+    handler: (cat) => {
+      const next = String(cat ?? '').trim().toLowerCase();
+      if (!VALID_CATEGORIES.has(next)) {
+        throw new Error(`Unknown category "${next}". Expected all, wireless, auth, or wan.`);
+      }
+      setCategory(next);
+      return next;
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'logs.searchEvents',
+    label: 'Search Event Timeline',
+    description: 'Filters event messages by keyword substring.',
+    handler: (q) => {
+      const text = String(q ?? '');
+      setSearch(text);
+      return text;
+    },
+  });
+
+  useOmadaAgentAction({
+    id: 'logs.clearFilters',
+    label: 'Clear All Log Filters',
+    description: 'Resets category to "all" and clears search text.',
+    handler: () => {
+      setCategory('all');
+      setSearch('');
+      return { category: 'all', search: '' };
+    },
+  });
 
   const filtered = useMemo(
     () =>
@@ -96,6 +136,7 @@ const AnalyticsLogsContent: React.FC = () => {
           </Col>
           <Col xs={24} lg={15}>
             <SFilterTableBlock<LogRow>
+              agentId="logs.table"
               title="Event Timeline"
               searchPlaceholder="Filter event message"
               searchValue={search}
@@ -116,6 +157,8 @@ const AnalyticsLogsContent: React.FC = () => {
 
 export const AnalyticsLogsTemplate: React.FC = () => (
   <OmadaProvider defaultThemeMode="light">
-    <AnalyticsLogsContent />
+    <OmadaAgentProvider exposeWindowBridge>
+      <AnalyticsLogsContent />
+    </OmadaAgentProvider>
   </OmadaProvider>
 );

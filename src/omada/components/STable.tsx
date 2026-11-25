@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { SButton } from './SButton';
 import { SInput, SNumberInput, SSearchInput } from './SInput';
+import { useOmadaAgentControl } from '../agent';
 
 export type STableDensity = 'compact' | 'default';
 
@@ -56,6 +57,57 @@ export interface STableProps<T extends object>
   defaultDensity?: STableDensity;
   /** Callback invoked when density changes via `densityToggle`. */
   onDensityChange?: (density: STableDensity) => void;
+  /** Optional deterministic Agent Bridge control ID. */
+  agentId?: string;
+  /** Optional accessible label exposed in Agent Bridge `snapshot()` / `query()`. */
+  agentLabel?: string;
+}
+
+function resolveRowKeyValue<T extends object>(
+  row: T,
+  rowKeyProp: TableProps<T>['rowKey'],
+  index: number,
+): React.Key {
+  if (typeof rowKeyProp === 'function') {
+    return rowKeyProp(row, index);
+  }
+  if (typeof rowKeyProp === 'string' && rowKeyProp in row) {
+    const val = (row as Record<string, unknown>)[rowKeyProp];
+    if (typeof val === 'string' || typeof val === 'number') return val;
+  }
+  if ('key' in row) {
+    const k = (row as Record<string, unknown>).key;
+    if (typeof k === 'string' || typeof k === 'number') return k;
+  }
+  if ('id' in row) {
+    const id = (row as Record<string, unknown>).id;
+    if (typeof id === 'string' || typeof id === 'number') return id;
+  }
+  return index;
+}
+
+function extractPrimitiveRowSummary<T extends object>(
+  row: T,
+  rowKeyProp: TableProps<T>['rowKey'],
+  index: number,
+): Record<string, string | number | boolean | null> {
+  const summary: Record<string, string | number | boolean | null> = {
+    _rowKey: String(resolveRowKeyValue(row, rowKeyProp, index)),
+  };
+  let count = 0;
+  for (const [k, v] of Object.entries(row as Record<string, unknown>)) {
+    if (count >= 16) break;
+    if (
+      typeof v === 'string' ||
+      typeof v === 'number' ||
+      typeof v === 'boolean' ||
+      v === null
+    ) {
+      summary[k] = v;
+      count += 1;
+    }
+  }
+  return summary;
 }
 
 function getColumnKey<T>(col: ColumnType<T> | ColumnGroupType<T>, index: number): string {
@@ -94,6 +146,8 @@ export function STable<T extends object>({
   density,
   defaultDensity = 'default',
   onDensityChange,
+  agentId,
+  agentLabel,
   size,
   className = '',
   ...rest
@@ -209,6 +263,140 @@ export function STable<T extends object>({
   const endIdx = Math.min(current * pageSize, total);
   const hasSelected = (toolbar?.selectedCount ?? 0) > 0;
   const showToolbar = Boolean(toolbar || columnSettings || densityToggle);
+
+  const agentRows = useMemo(() => {
+    if (!agentId) return [];
+    return visibleData
+      .slice(0, 50)
+      .map((row, idx) => extractPrimitiveRowSummary(row, rest.rowKey, idx));
+  }, [agentId, visibleData, rest.rowKey]);
+
+  const selectedKeysSnapshot = useMemo(
+    () =>
+      rest.rowSelection?.selectedRowKeys
+        ? rest.rowSelection.selectedRowKeys.map((k) =>
+            typeof k === 'bigint' ? String(k) : k,
+          )
+        : [],
+    [rest.rowSelection?.selectedRowKeys],
+  );
+
+  useOmadaAgentControl(
+    agentId
+      ? {
+          id: agentId,
+          kind: 'table',
+          label: agentLabel ?? toolbar?.searchPlaceholder,
+          value: {
+            total,
+            page: current,
+            pageSize,
+            density: activeDensity,
+            visibleRowCount: visibleData.length,
+            selectedRowKeys: selectedKeysSnapshot,
+          },
+          meta: {
+            total,
+            page: current,
+            pageSize,
+            rows: agentRows,
+          },
+          actions: {
+            setPage: (nextPage: unknown) => {
+              const parsed = Number(nextPage);
+              if (!Number.isFinite(parsed) || parsed < 1) {
+                throw new Error(`Invalid page number "${String(nextPage)}".`);
+              }
+              const targetPage = Math.floor(parsed);
+              handlePageChange(targetPage, pageSize);
+              return targetPage;
+            },
+            setDensity: (nextDensity: unknown) => {
+              if (nextDensity !== 'default' && nextDensity !== 'compact') {
+                throw new Error(
+                  `Invalid density "${String(nextDensity)}". Expected "default" or "compact".`,
+                );
+              }
+              handleDensityChange(nextDensity);
+              return nextDensity;
+            },
+            ...(toolbar?.onSearchChange
+              ? {
+                  search: (q: unknown) => {
+                    const nextQ = String(q ?? '');
+                    toolbar.onSearchChange?.(nextQ);
+                    return nextQ;
+                  },
+                }
+              : {}),
+            ...(rest.rowSelection?.onChange
+              ? {
+                  selectRows: (keysArg: unknown) => {
+                    const rawKeys = Array.isArray(keysArg) ? keysArg : [keysArg];
+                    const keyStrings = new Set(rawKeys.map((k) => String(k)));
+                    const matchedRows: T[] = [];
+                    const matchedKeys: React.Key[] = [];
+                    dataSource.forEach((row, idx) => {
+                      const rk = resolveRowKeyValue(row, rest.rowKey, idx);
+                      if (keyStrings.has(String(rk))) {
+                        matchedKeys.push(rk);
+                        matchedRows.push(row);
+                      }
+                    });
+                    rest.rowSelection?.onChange?.(matchedKeys, matchedRows, {
+                      type: 'all',
+                    });
+                    return matchedKeys;
+                  },
+                  clearSelection: () => {
+                    rest.rowSelection?.onChange?.([], [], { type: 'none' });
+                    toolbar?.onClearSelection?.();
+                    return [];
+                  },
+                }
+              : toolbar?.onClearSelection
+                ? {
+                    clearSelection: () => {
+                      toolbar.onClearSelection?.();
+                      return [];
+                    },
+                  }
+                : {}),
+            ...(rest.onRow
+              ? {
+                  clickRow: (keyOrIdx: unknown) => {
+                    const targetStr = String(keyOrIdx ?? '');
+                    let foundIdx = visibleData.findIndex(
+                      (row, idx) =>
+                        String(resolveRowKeyValue(row, rest.rowKey, idx)) ===
+                        targetStr,
+                    );
+                    if (foundIdx < 0 && /^\d+$/.test(targetStr)) {
+                      const numericIdx = Number(targetStr);
+                      if (numericIdx >= 0 && numericIdx < visibleData.length) {
+                        foundIdx = numericIdx;
+                      }
+                    }
+                    if (foundIdx < 0) {
+                      throw new Error(
+                        `Row "${targetStr}" not found in visible table rows.`,
+                      );
+                    }
+                    const record = visibleData[foundIdx];
+                    const rowAttrs = rest.onRow?.(record, foundIdx);
+                    rowAttrs?.onClick?.({} as React.MouseEvent<HTMLElement>);
+                    return extractPrimitiveRowSummary(
+                      record,
+                      rest.rowKey,
+                      foundIdx,
+                    );
+                  },
+                }
+              : {}),
+          },
+        }
+      : null,
+  );
 
   const resolvedComponents = useMemo<TableProps<T>['components']>(() => {
     if (!expandable || expandable.expandIcon || components?.ExpandIcon) {

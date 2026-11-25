@@ -15,6 +15,7 @@ import {
   SSelect,
   SSwitch,
   STabs,
+  useOmadaAgentAction,
   useOmadaConfirm,
   useOmadaNotification,
 } from '@/omada';
@@ -366,6 +367,30 @@ export const DnsConfigPage: React.FC<DnsConfigPageProps> = ({
     });
   };
 
+  useOmadaAgentAction({
+    id: 'dns.applyProxySettings',
+    label: 'Apply DNS Proxy Settings',
+    description: 'Applies DNS Proxy settings ({ enabled, proxyType }) and clears dirty state.',
+    handler: (payload) => {
+      const p = (payload && typeof payload === 'object' ? payload : {}) as {
+        enabled?: boolean;
+        proxyType?: DnsProxyType;
+      };
+      const nextEnabled = p.enabled !== undefined ? Boolean(p.enabled) : proxyEnabled;
+      const nextType = p.proxyType ?? proxyType;
+      setProxyEnabled(nextEnabled);
+      setProxyType(nextType);
+      setProxyDirty(false);
+      notification.success({
+        title: 'DNS Proxy Applied',
+        description: nextEnabled
+          ? `${nextType} DNS Proxy saved.`
+          : 'DNS Proxy disabled for Main Office Floor.',
+      });
+      return { enabled: nextEnabled, proxyType: nextType };
+    },
+  });
+
   return (
     <div
       className="omada-devcfg-page px-6 pt-4 pb-6"
@@ -373,6 +398,7 @@ export const DnsConfigPage: React.FC<DnsConfigPageProps> = ({
     >
       {/* Top Underline Sub-Tabs + Top-Right (?) Help Icon */}
       <STabs
+        agentId="dns.subTabs"
         variant="page"
         size="lg"
         bordered
@@ -444,6 +470,7 @@ export const DnsConfigPage: React.FC<DnsConfigPageProps> = ({
                 DNS Proxy
               </div>
               <SSwitch
+                agentId="dns.proxyEnabled"
                 checked={proxyEnabled}
                 aria-label="DNS Proxy"
                 onChange={(checked) => {
@@ -459,6 +486,8 @@ export const DnsConfigPage: React.FC<DnsConfigPageProps> = ({
                 Proxy Type
               </div>
               <SRadio.Group
+                agentId="dns.proxyType"
+                aria-label="Proxy Type"
                 value={proxyType}
                 disabled={!proxyEnabled}
                 onChange={(e) => {
@@ -595,6 +624,7 @@ export const DnsConfigPage: React.FC<DnsConfigPageProps> = ({
                 DNS Cache
               </div>
               <SSwitch
+                agentId="dns.cacheEnabled"
                 checked={cacheConfig.enabled}
                 aria-label="DNS Cache"
                 onChange={(checked) =>
@@ -613,6 +643,7 @@ export const DnsConfigPage: React.FC<DnsConfigPageProps> = ({
               <div className="flex items-center gap-3">
                 <SNumberInput
                   id="omada-dns-cache-size"
+                  agentId="dns.cacheSize"
                   min={1}
                   max={5000}
                   value={cacheConfig.cacheSize}
@@ -643,6 +674,7 @@ export const DnsConfigPage: React.FC<DnsConfigPageProps> = ({
               <div className="flex items-center gap-3">
                 <SNumberInput
                   id="omada-dns-cache-ttl"
+                  agentId="dns.cacheTtl"
                   min={1}
                   max={86400}
                   value={cacheConfig.cacheTtl}
@@ -681,6 +713,7 @@ export const DnsConfigPage: React.FC<DnsConfigPageProps> = ({
 
       {/* Create / Edit Dynamic DNS Modal */}
       <SModal
+        agentId="dns.ddnsModal"
         size="sm"
         open={ddnsModalOpen}
         title={
