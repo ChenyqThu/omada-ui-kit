@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Popover } from 'antd';
 import { Info } from 'lucide-react';
-import { SButton } from './SButton';
-import { STooltip } from './STooltip';
+import { useOmadaAgentControl } from '../agent';
 import { SIcon } from '../assets/SIcon';
+import { SButton } from './SButton';
+import { STabs } from './STabs';
+import { STooltip } from './STooltip';
 
 export interface SSettingsTabItem {
   key: string;
@@ -50,6 +52,10 @@ export interface SSettingsPageShellProps {
   applyDisabled?: boolean;
   /** Optional auxiliary content shown on the right of the sticky footer bar. */
   footerExtra?: React.ReactNode;
+  /** Adds `>=44px` right clearance on top header/tab rows so `(?)` Help clears `<SEmulatorShell>`'s `<||` quick-drawer handle. Default `true`. */
+  clearQuickDrawer?: boolean;
+  /** Optional deterministic Agent Bridge control ID. */
+  agentId?: string;
   /** Optional data-testid applied to the root shell container. */
   'data-testid'?: string;
   className?: string;
@@ -59,7 +65,8 @@ export interface SSettingsPageShellProps {
 /**
  * Reusable Omada Controller v6.3 configuration page container providing:
  * - `20px` title header + optional top-right circular green `(?)` Help trigger
- * - Optional `18px` underline sub-tab bar
+ * - Optional `18px` underline sub-tab bar (`<STabs variant="page" />`)
+ * - Automatic `>=44px` right clearance (`clearQuickDrawer`) for `<SEmulatorShell>`'s `<||` handle
  * - Clean borderless content workspace + optional dirty-state sticky `Apply` / `Cancel` footer bar
  */
 export const SSettingsPageShell: React.FC<SSettingsPageShellProps> = ({
@@ -82,6 +89,8 @@ export const SSettingsPageShell: React.FC<SSettingsPageShellProps> = ({
   applying = false,
   applyDisabled = false,
   footerExtra,
+  clearQuickDrawer = true,
+  agentId,
   'data-testid': testId,
   className = '',
   children,
@@ -98,6 +107,56 @@ export const SSettingsPageShell: React.FC<SSettingsPageShellProps> = ({
     }
     onTabChange?.(key);
   };
+
+  useOmadaAgentControl(
+    agentId
+      ? {
+          id: agentId,
+          kind: 'settings',
+          label: typeof title === 'string' ? title : tabAriaLabel,
+          value: {
+            activeTab: currentTab || null,
+            dirty: Boolean(dirty),
+            applying: Boolean(applying),
+            applyDisabled: Boolean(applyDisabled),
+          },
+          options: tabs?.map((t) => ({
+            value: t.key,
+            label: typeof t.label === 'string' ? t.label : t.key,
+            disabled: t.disabled,
+          })),
+          actions: {
+            ...(tabs && tabs.length > 0
+              ? {
+                  selectTab: (nextKey: unknown) => {
+                    const target = tabs.find((t) => t.key === String(nextKey));
+                    if (!target) {
+                      throw new Error(`Unknown tab "${String(nextKey)}".`);
+                    }
+                    if (target.disabled) {
+                      throw new Error(`Tab "${target.key}" is disabled.`);
+                    }
+                    handleTabClick(target.key);
+                    return target.key;
+                  },
+                }
+              : {}),
+            apply: () => {
+              if (applyDisabled || applying) {
+                throw new Error('Apply action is currently disabled.');
+              }
+              onApply?.();
+            },
+            cancel: () => {
+              if (applying) {
+                throw new Error('Cannot cancel while applying.');
+              }
+              onCancel?.();
+            },
+          },
+        }
+      : null,
+  );
 
   const renderHelpButton = () => {
     if (!showHelp) return null;
@@ -148,6 +207,9 @@ export const SSettingsPageShell: React.FC<SSettingsPageShellProps> = ({
   };
 
   const hasTabs = Boolean(tabs && tabs.length > 0);
+  const topClearanceStyle: React.CSSProperties | undefined = clearQuickDrawer
+    ? { paddingRight: 44 }
+    : undefined;
 
   return (
     <div
@@ -157,7 +219,12 @@ export const SSettingsPageShell: React.FC<SSettingsPageShellProps> = ({
       <div className="flex-1 px-6 pt-5 pb-6">
         {/* Title Row (when title is provided) */}
         {title !== undefined && (
-          <div className="mb-4 flex items-center justify-between gap-4">
+          <div
+            style={topClearanceStyle}
+            className={`mb-4 flex items-center justify-between gap-4 ${
+              clearQuickDrawer ? 'pr-11' : ''
+            }`.trim()}
+          >
             <h1 className="m-0 text-[20px] font-medium leading-[28px] text-[var(--omada-text-primary)]">
               {title}
             </h1>
@@ -170,38 +237,25 @@ export const SSettingsPageShell: React.FC<SSettingsPageShellProps> = ({
 
         {/* Underline Sub-Tabs Row (when tabs are provided) */}
         {hasTabs && tabs && (
-          <div className="mb-4 flex items-center justify-between gap-4 border-b border-[var(--omada-border-divider)]">
-            <div
-              role="tablist"
+          <div
+            style={topClearanceStyle}
+            className={`mb-4 ${clearQuickDrawer ? 'pr-11' : ''}`.trim()}
+          >
+            <STabs
+              variant="page"
+              size="lg"
+              bordered
               aria-label={tabAriaLabel}
-              className="flex flex-wrap items-center gap-8"
-            >
-              {tabs.map((tab) => {
-                const isActive = tab.key === currentTab;
-                return (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    role="tab"
-                    disabled={tab.disabled}
-                    aria-selected={isActive}
-                    onClick={() => !tab.disabled && handleTabClick(tab.key)}
-                    className={`omada-settings-subtab-btn text-[18px] leading-[26px] disabled:cursor-not-allowed disabled:opacity-40 ${
-                      isActive ? 'is-active font-medium' : 'font-normal'
-                    }`}
-                  >
-                    <span>{tab.label}</span>
-                    {isActive && (
-                      <span className="omada-settings-subtab-indicator absolute inset-x-0 -bottom-[1px] h-[2px]" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-            <div className="mb-2 flex shrink-0 items-center gap-3">
-              {title === undefined && headerExtra}
-              {renderHelpButton()}
-            </div>
+              items={tabs}
+              activeKey={currentTab}
+              onChange={handleTabClick}
+              extra={
+                <>
+                  {title === undefined && headerExtra}
+                  {renderHelpButton()}
+                </>
+              }
+            />
           </div>
         )}
 

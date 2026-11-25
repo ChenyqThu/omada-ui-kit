@@ -35,7 +35,7 @@ const SiteDashboardContent: React.FC = () => {
       <div style={{ padding: '20px 44px 24px 24px' }}>
         <SPageHeader
           title="Site Dashboard"
-          subtitle="Real-time network health & Wi-Fi spectrum overview"
+          description="Real-time network health & Wi-Fi spectrum overview"
           extra={
             <div style={{ display: 'flex', gap: 8 }}>
               <SButton

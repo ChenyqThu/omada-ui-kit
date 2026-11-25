@@ -78,6 +78,13 @@ function groupThemedAssets(entries: readonly OmadaAssetMeta[]): GroupedAssetEntr
 const GROUPED_ILLUSTRATIONS = groupThemedAssets(OMADA_ILLUSTRATIONS);
 const GROUPED_CLIENTS = groupThemedAssets(OMADA_CLIENTS);
 const GROUPED_PRODUCTS = groupThemedAssets(OMADA_PRODUCTS);
+const GROUPED_BRAND = groupThemedAssets(OMADA_BRAND_ASSETS);
+const TOTAL_ASSET_FILES =
+  OMADA_ICONS.length +
+  OMADA_ILLUSTRATIONS.length +
+  OMADA_CLIENTS.length +
+  OMADA_PRODUCTS.length +
+  OMADA_BRAND_ASSETS.length;
 
 function getVariantBadge(item: GroupedAssetEntry): { label: string; color: 'green' | 'blue' | 'purple' } {
   if (item.hasLight && item.hasDark) return { label: 'L+D', color: 'green' };
@@ -158,17 +165,18 @@ export const AssetsSection: React.FC = () => {
     <div className="space-y-4">
       <SPageHeader
         title="Icons & Assets"
-        description="Complete Figma asset library (998 SVG/PNG files): click any card to copy its typed JSX snippet, or toggle Dark Mode in the Top Bar to preview live Light/Dark asset switching."
+        description={`Complete Figma asset library (${TOTAL_ASSET_FILES.toLocaleString()} SVG/PNG files): click any card to copy its typed JSX snippet, or toggle Dark Mode in the Top Bar to preview live Light/Dark asset switching.`}
         extra={
           <div className="flex flex-wrap items-center gap-2">
             <STag color="green" variant="subtle">
-              586 Icons
+              {OMADA_ICONS.length} Icons
             </STag>
             <STag color="blue" variant="subtle">
-              199 Illustrations
+              {GROUPED_ILLUSTRATIONS.length} Illustrations
             </STag>
             <STag color="purple" variant="subtle">
-              99 Clients · 105 Products · 9 Brand
+              {GROUPED_CLIENTS.length} Clients · {GROUPED_PRODUCTS.length} Products ·{' '}
+              {GROUPED_BRAND.length} Brand
             </STag>
           </div>
         }
@@ -416,7 +424,7 @@ export const AssetsSection: React.FC = () => {
                       : 'bg-[#037D68]';
                 return (
                   <button
-                    key={item.name}
+                    key={`${item.theme}-${item.name}`}
                     type="button"
                     onClick={() => void copySnippet(`<SBrandAsset name="${item.name}" />`)}
                     className="flex cursor-pointer flex-col justify-between rounded-md border border-[var(--omada-border-divider)] bg-[var(--omada-bg-surface)] p-3 text-left transition-colors hover:border-[var(--omada-brand)]"
@@ -426,6 +434,7 @@ export const AssetsSection: React.FC = () => {
                     >
                       <SBrandAsset
                         name={item.name as OmadaBrandAssetName}
+                        theme={item.theme}
                         height={80}
                         className="max-h-20 w-auto max-w-full"
                       />

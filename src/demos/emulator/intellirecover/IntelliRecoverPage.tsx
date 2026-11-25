@@ -13,6 +13,7 @@ import {
   SProductImage,
   SSelect,
   SSwitch,
+  STabs,
   useOmadaNotification,
 } from '@/omada';
 import {
@@ -640,32 +641,16 @@ export const IntelliRecoverPage: React.FC<IntelliRecoverPageProps> = ({
       {/* Toolbar: Devices | Clients + Search + Add */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
-          <div
-            role="tablist"
+          <STabs
+            variant="filter"
             aria-label="IntelliRecover target filter"
-            className="omada-logs-seg-track"
-          >
-            {(
-              [
-                { key: 'devices', label: 'Devices' },
-                { key: 'clients', label: 'Clients' },
-              ] as const
-            ).map((item) => {
-              const isActive = targetTab === item.key;
-              return (
-                <button
-                  key={item.key}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => setTargetTab(item.key)}
-                  className={`omada-logs-seg-pill ${isActive ? 'is-active' : ''}`}
-                >
-                  {item.label}
-                </button>
-              );
-            })}
-          </div>
+            activeKey={targetTab}
+            onChange={(k) => setTargetTab(k as IntelliRecoverTargetTab)}
+            items={[
+              { key: 'devices', label: 'Devices' },
+              { key: 'clients', label: 'Clients' },
+            ]}
+          />
 
           <SInput
             variant="filled"

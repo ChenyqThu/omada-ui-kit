@@ -85,7 +85,7 @@ const AclRulesContent: React.FC = () => {
       title: 'Enabled',
       dataIndex: 'enabled',
       key: 'enabled',
-      render: (checked: boolean) => <SSwitch checked={checked} />,
+      render: (checked: boolean) => <SSwitch aria-label="Enable ACL rule" checked={checked} />,
     },
     { title: 'Description', dataIndex: 'description', key: 'description' },
     { title: 'Policy', dataIndex: 'policy', key: 'policy' },

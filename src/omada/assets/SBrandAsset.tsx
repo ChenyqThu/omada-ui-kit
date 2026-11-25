@@ -2,7 +2,7 @@ import React from 'react';
 import { OMADA_BRAND_ASSETS, type OmadaBrandAssetName } from './assetsManifest';
 import { ThemedAssetImage } from './ThemedAssetImage';
 
-const BRAND_URL_MAP = import.meta.glob<string>('../../assets/brand/*.{svg,png}', {
+const BRAND_URL_MAP = import.meta.glob<string>('../../assets/brand/**/*.{svg,png}', {
   eager: true,
   import: 'default',
 });

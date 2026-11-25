@@ -1,0 +1,15 @@
+<svg width="300" height="160" viewBox="0 0 300 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="300" height="160" fill="white"/>
+<path d="M70 92.6176H230" stroke-width="0.780488" stroke="#999999"/>
+<path d="M70 95.2192H230" stroke-width="0.780488" stroke="#999999"/>
+<rect x="86.9106" y="79.6094" width="26.0163" height="2.60163" fill="#00E195"/>
+<rect x="70" y="69.2029" width="160" height="33.8211" stroke-width="1.56098" stroke="#0A5A5A"/>
+<rect x="188.374" y="83.5119" width="5.20325" height="5.20325" fill="#00E195" stroke-width="0.580469" stroke-linecap="square" stroke="#636363"/>
+<rect x="196.179" y="83.5119" width="5.20325" height="5.20325" fill="#00E195" stroke-width="0.580469" stroke-linecap="square" stroke="#636363"/>
+<rect x="203.984" y="83.5119" width="5.20325" height="5.20325" fill="#00E195" stroke-width="0.580469" stroke-linecap="square" stroke="#636363"/>
+<rect x="211.789" y="83.5119" width="5.20325" height="5.20325" fill="#00E195" stroke-width="0.580469" stroke-linecap="square" stroke="#636363"/>
+<ellipse cx="230" cy="103.024" rx="17.9759" ry="17.9759" fill="#0069CB"/>
+<path d="M239.158 99.1824C237.023 94.1377 231.203 91.7789 226.158 93.9139C223.578 95.0061 221.7 97.0626 220.767 99.4865M220.89 106.914C223.025 111.959 228.845 114.317 233.89 112.182C236.354 111.14 238.177 109.218 239.149 106.936" stroke-width="1.58698" stroke-linecap="square" stroke="white"/>
+<path d="M219.573 95.5797V100.598L224.591 100.598" stroke-width="1.58698" stroke="white"/>
+<path d="M239.968 111.678V106.659L234.95 106.659" stroke-width="1.58698" stroke="white"/>
+</svg>

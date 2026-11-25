@@ -60,10 +60,12 @@ const AnalyticsLogsContent: React.FC = () => {
   return (
     <SEmulatorShell activeKey="incidents" onSelect={() => {}} controllerName="Headquarters Building">
       <div style={{ padding: '20px 24px' }}>
-        <SPageHeader
-          title="Incident & Event Analytics"
-          subtitle="Intelligent correlation across wireless, auth, and WAN anomalies"
-        />
+        <div style={{ paddingRight: 20 }}>
+          <SPageHeader
+            title="Incident & Event Analytics"
+            description="Intelligent correlation across wireless, auth, and WAN anomalies"
+          />
+        </div>
 
         <div className="pr-9" style={{ marginBottom: 16 }}>
           <SCategoryKpiCarousel

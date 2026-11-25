@@ -20,6 +20,7 @@ import {
   SProductImage,
   SSelect,
   SSlider,
+  STabs,
   STooltip,
   useOmadaNotification,
 } from '@/omada';
@@ -211,35 +212,19 @@ export const MapPage: React.FC<MapPageProps> = ({
     >
       {/* Top Underline Tabs + Heat Map Right Controls */}
       <header className="flex h-[48px] shrink-0 items-center justify-between border-b border-[var(--omada-border-divider)] bg-[var(--omada-map-canvas-bg)] px-6">
-        <div role="tablist" aria-label="Map views" className="flex h-full items-center gap-7">
-          {(
-            [
+        <div className="flex h-full items-end">
+          <STabs
+            variant="page"
+            size="md"
+            bordered={false}
+            aria-label="Map views"
+            activeKey={activeTab}
+            onChange={(k) => setActiveTab(k as typeof activeTab)}
+            items={[
               { key: 'heat-map', label: 'Heat Map' },
               { key: 'device-map', label: 'Device Map' },
-            ] as const
-          ).map((tab) => {
-            const isActive = activeTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setActiveTab(tab.key)}
-                className={`omada-map-subtab-btn relative flex h-full cursor-pointer items-center border-0 bg-transparent px-0 text-[15px] ${
-                  isActive ? 'is-active font-medium' : 'font-normal'
-                }`}
-              >
-                <span>{tab.label}</span>
-                {isActive && (
-                  <span
-                    className="omada-map-subtab-indicator absolute inset-x-0 bottom-0 h-[2px] rounded-full"
-                    aria-hidden="true"
-                  />
-                )}
-              </button>
-            );
-          })}
+            ]}
+          />
         </div>
 
         {activeTab === 'heat-map' && (
@@ -549,30 +534,14 @@ export const MapPage: React.FC<MapPageProps> = ({
           {/* Floorplan Canvas */}
           <div className="relative flex flex-1 items-center justify-center overflow-hidden bg-[var(--omada-map-canvas-bg)] px-10 py-6">
             {/* Top-Right Floating Band Switcher */}
-            <div
-              role="tablist"
-              aria-label="Wi-Fi frequency band"
-              className="omada-map-floating-card absolute top-4 right-7 z-20 inline-flex items-center rounded-[4px] p-[2px]"
-            >
-              {BAND_OPTIONS.map((band) => {
-                const isActive = activeBand === band;
-                return (
-                  <button
-                    key={band}
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    onClick={() => setActiveBand(band)}
-                    className={`cursor-pointer rounded-[3px] border-0 px-3 py-1 text-[12px] transition-colors ${
-                      isActive
-                        ? 'bg-[var(--omada-brand-bg-subtlest)] font-medium text-[var(--omada-brand-text)]'
-                        : 'bg-transparent text-[var(--omada-text-secondary)] hover:text-[var(--omada-text-primary)]'
-                    }`}
-                  >
-                    {band}
-                  </button>
-                );
-              })}
+            <div className="omada-map-floating-card absolute top-4 right-7 z-20 inline-flex items-center rounded-[4px] p-[2px]">
+              <STabs
+                variant="filter"
+                aria-label="Wi-Fi frequency band"
+                activeKey={activeBand}
+                onChange={(k) => setActiveBand(k as typeof activeBand)}
+                items={BAND_OPTIONS.map((band) => ({ key: band, label: band }))}
+              />
             </div>
 
             {/* Left / Right Floorplan Carousel Arrows */}

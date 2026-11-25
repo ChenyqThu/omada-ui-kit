@@ -1,5 +1,6 @@
 import React from 'react';
 import { OMADA_ICONS, type OmadaIconMeta, type OmadaIconName } from './iconsManifest';
+import { resolveRuntimeAssetUrl } from './ThemedAssetImage';
 
 const ICON_RAW_MAP = import.meta.glob<string>('../../assets/icons/**/*.svg', {
   query: '?raw',
@@ -7,15 +8,34 @@ const ICON_RAW_MAP = import.meta.glob<string>('../../assets/icons/**/*.svg', {
   eager: true,
 });
 
-let iconLookupCache: Map<string, { meta: OmadaIconMeta; rawSvg: string }> | null = null;
+const ICON_PNG_MAP = import.meta.glob<string>('../../assets/icons/**/*.png', {
+  import: 'default',
+  eager: true,
+});
 
-function getIconLookup(): Map<string, { meta: OmadaIconMeta; rawSvg: string }> {
+interface IconLookupEntry {
+  meta: OmadaIconMeta;
+  rawSvg?: string;
+  imgUrl?: string;
+}
+
+let iconLookupCache: Map<string, IconLookupEntry> | null = null;
+
+function getIconLookup(): Map<string, IconLookupEntry> {
   if (iconLookupCache) return iconLookupCache;
-  const map = new Map<string, { meta: OmadaIconMeta; rawSvg: string }>();
+  const map = new Map<string, IconLookupEntry>();
   for (const meta of OMADA_ICONS) {
-    const rawSvg = ICON_RAW_MAP[`../../assets/icons/${meta.relPath}`];
-    if (rawSvg) {
-      map.set(meta.name, { meta, rawSvg });
+    const key = `../../assets/icons/${meta.relPath}`;
+    if (meta.format === 'png') {
+      const imgUrl = ICON_PNG_MAP[key];
+      if (imgUrl) {
+        map.set(meta.name, { meta, imgUrl });
+      }
+    } else {
+      const rawSvg = ICON_RAW_MAP[key];
+      if (rawSvg) {
+        map.set(meta.name, { meta, rawSvg });
+      }
     }
   }
   iconLookupCache = map;
@@ -59,6 +79,27 @@ export const SIcon: React.FC<SIconProps> = ({
     return null;
   }
 
+  if (entry.imgUrl) {
+    return (
+      <span
+        role={ariaLabel ? 'img' : undefined}
+        aria-label={ariaLabel}
+        aria-hidden={ariaHidden ?? !ariaLabel}
+        title={title}
+        data-omada-icon={name}
+        data-monochrome="false"
+        className={`inline-flex shrink-0 items-center justify-center align-middle leading-none ${className}`.trim()}
+        style={{ width: size, height: size, color, ...style }}
+      >
+        <img
+          src={resolveRuntimeAssetUrl(entry.imgUrl)}
+          alt={ariaLabel ?? name}
+          className="block h-full w-full object-contain"
+        />
+      </span>
+    );
+  }
+
   return (
     <span
       role={ariaLabel ? 'img' : undefined}
@@ -69,7 +110,7 @@ export const SIcon: React.FC<SIconProps> = ({
       data-monochrome={String(entry.meta.monochrome)}
       className={`inline-flex shrink-0 items-center justify-center align-middle leading-none [&>svg]:block [&>svg]:h-full [&>svg]:w-full ${className}`.trim()}
       style={{ width: size, height: size, color, ...style }}
-      dangerouslySetInnerHTML={{ __html: entry.rawSvg }}
+      dangerouslySetInnerHTML={{ __html: entry.rawSvg ?? '' }}
     />
   );
 };

@@ -39,8 +39,9 @@
   --omada-emu-handle-text: #2B2B2B;
 }
 
-[data-theme="dark"] .omada-emulator-root,
-.dark .omada-emulator-root {
+.omada-emulator-root[data-theme="dark"],
+.omada-emulator-root.dark,
+:where([data-theme="dark"], .dark) .omada-emulator-root:not([data-theme="light"]):not(.omada-scope[data-theme="light"] *) {
   --omada-topbar-bg: #2C2C2C;
   --omada-topbar-text: #FFFFFF;
   --omada-bg-page: #1C1C1C;

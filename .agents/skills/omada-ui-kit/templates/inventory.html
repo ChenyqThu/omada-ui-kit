@@ -4,15 +4,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Omada Device Inventory Template</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/standalone.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/standalone.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"></script>
   </head>
   <body style="margin: 0;">
     <div id="root"></div>
     <script type="text/babel">
       const { useMemo, useState } = OmadaUI.React;
       const {
+        OmadaAgentProvider,
         OmadaProvider,
         SEmulatorShell,
         SFilterTableBlock,
@@ -59,6 +60,7 @@
           >
             <div style={{ padding: '16px 24px' }}>
               <SFilterTableBlock
+                agentId="devices.table"
                 title="Managed Devices"
                 subtitle={`${filtered.length} online or pending`}
                 searchPlaceholder="Search device name or IP"
@@ -66,6 +68,8 @@
                 onSearchChange={setSearch}
                 filters={
                   <SSelect
+                    agentId="devices.statusFilter"
+                    aria-label="Filter by status"
                     value={statusFilter}
                     onChange={setStatusFilter}
                     style={{ width: 170 }}
@@ -153,7 +157,9 @@
 
       OmadaUI.render(
         <OmadaProvider defaultThemeMode="light">
-          <InventoryDemo />
+          <OmadaAgentProvider>
+            <InventoryDemo />
+          </OmadaAgentProvider>
         </OmadaProvider>,
         '#root',
       );

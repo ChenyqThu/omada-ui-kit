@@ -8,6 +8,7 @@ import {
   SInput,
   SSelect,
   SSwitch,
+  STabs,
   STag,
   useOmadaNotification,
 } from '@/omada';
@@ -497,35 +498,20 @@ export const NetworkToolsPage: React.FC<NetworkToolsPageProps> = ({
       data-testid="network-tools-page"
     >
       {/* Top Underline Sub-Tabs */}
-      <div className="border-b border-[var(--omada-border-divider)] pr-9">
-        <div
-          role="tablist"
-          aria-label="Network Tools views"
-          className="flex flex-wrap items-center gap-7"
-        >
-          {TOOL_TABS.map((tab) => {
-            const isActive = activeTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setActiveTab(tab.key)}
-                className={`omada-tools-subtab-btn inline-flex cursor-pointer items-center gap-1.5 text-[18px] leading-[26px] ${
-                  isActive ? 'is-active font-medium' : 'font-normal'
-                }`}
-              >
-                <span>{tab.label}</span>
-                {tab.beta && <span className="omada-emu-beta-tag">BETA</span>}
-                {isActive && (
-                  <span className="omada-tools-subtab-indicator absolute inset-x-0 -bottom-[1px] h-[2px]" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <STabs
+        variant="page"
+        size="lg"
+        bordered
+        aria-label="Network Tools views"
+        activeKey={activeTab}
+        onChange={(k) => setActiveTab(k as typeof activeTab)}
+        className="pr-9"
+        items={TOOL_TABS.map((tab) => ({
+          key: tab.key,
+          label: tab.label,
+          count: tab.beta ? <span className="omada-emu-beta-tag">BETA</span> : undefined,
+        }))}
+      />
 
       {/* Tab 1: Network Check (Default) */}
       {activeTab === 'network-check' && (

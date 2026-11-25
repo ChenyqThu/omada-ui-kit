@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Omada ACL Rules Template</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/standalone.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/standalone.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"></script>
   </head>
   <body style="margin: 0;">
     <div id="root"></div>
@@ -133,7 +133,7 @@
                     pagination: false,
                     columns: [
                       { title: 'Index', key: 'idx', render: (_, __, i) => i + 1 },
-                      { title: 'Enabled', dataIndex: 'enabled', key: 'enabled', render: (v) => <SSwitch checked={v} /> },
+                      { title: 'Enabled', dataIndex: 'enabled', key: 'enabled', render: (v) => <SSwitch aria-label="Enable ACL rule" checked={v} /> },
                       { title: 'Description', dataIndex: 'description', key: 'description' },
                       { title: 'Policy', dataIndex: 'policy', key: 'policy' },
                       { title: 'Source', dataIndex: 'source', key: 'source' },

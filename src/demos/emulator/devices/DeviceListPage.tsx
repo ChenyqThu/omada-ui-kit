@@ -11,6 +11,7 @@ import {
   SModal,
   SPagination,
   SProductImage,
+  STabs,
   STag,
 } from '@/omada';
 import {
@@ -790,38 +791,19 @@ export const DeviceListPage: React.FC<DeviceListPageProps> = ({
   return (
     <div className="omada-devices-page px-6 pt-4 pb-6">
       {/* Top Sub-Tabs */}
-      <div
-        role="tablist"
+      <STabs
+        variant="page"
+        size="lg"
+        bordered
         aria-label="Devices views"
-        className="flex items-center gap-8 border-b border-[var(--omada-border-divider)]"
-      >
-        {(
-          [
-            { key: 'device-list', label: 'Device List' },
-            { key: 'device-group', label: 'Device Group' },
-            { key: 'config-result', label: 'Configuration Result' },
-          ] as const
-        ).map((tab) => {
-          const isActive = subTab === tab.key;
-          return (
-            <button
-              key={tab.key}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => setSubTab(tab.key)}
-              className={`omada-devices-subtab-btn cursor-pointer pb-2.5 text-[18px] leading-[26px] ${
-                isActive ? 'is-active font-medium' : 'font-normal'
-              }`}
-            >
-              <span>{tab.label}</span>
-              {isActive && (
-                <span className="omada-devices-subtab-indicator absolute inset-x-0 -bottom-[1px] h-[2px]" />
-              )}
-            </button>
-          );
-        })}
-      </div>
+        activeKey={subTab}
+        onChange={(k) => setSubTab(k as typeof subTab)}
+        items={[
+          { key: 'device-list', label: 'Device List' },
+          { key: 'device-group', label: 'Device Group' },
+          { key: 'config-result', label: 'Configuration Result' },
+        ]}
+      />
 
       {subTab === 'device-list' && (
         <>
@@ -855,96 +837,62 @@ export const DeviceListPage: React.FC<DeviceListPageProps> = ({
                 style={{ width: 260 }}
               />
 
-              <div
-                role="tablist"
+              <STabs
+                variant="filter"
                 aria-label="Device category filter"
-                className="omada-devices-seg-track"
-              >
-                {(
-                  [
-                    { key: 'all', label: `All (${typeCounts.all})` },
-                    {
-                      key: 'gateway-switch',
-                      label: `Gateway/Switches (${typeCounts.gatewaySwitch})`,
-                    },
-                    { key: 'olt', label: `OLTs (${typeCounts.olt})` },
-                    { key: 'ap', label: `APs (${typeCounts.ap})` },
-                  ] as const
-                ).map((item) => {
-                  const isActive = typeFilter === item.key;
-                  return (
-                    <button
-                      key={item.key}
-                      type="button"
-                      role="tab"
-                      aria-selected={isActive}
-                      onClick={() => {
-                        setTypeFilter(item.key);
-                        setCurrentPage(1);
-                      }}
-                      className={`omada-devices-seg-pill ${isActive ? 'is-active' : ''}`}
-                    >
-                      {item.label}
-                    </button>
-                  );
-                })}
-              </div>
+                activeKey={typeFilter}
+                onChange={(k) => {
+                  setTypeFilter(k as typeof typeFilter);
+                  setCurrentPage(1);
+                }}
+                items={[
+                  { key: 'all', label: 'All', count: typeCounts.all },
+                  {
+                    key: 'gateway-switch',
+                    label: 'Gateway/Switches',
+                    count: typeCounts.gatewaySwitch,
+                  },
+                  { key: 'olt', label: 'OLTs', count: typeCounts.olt },
+                  { key: 'ap', label: 'APs', count: typeCounts.ap },
+                ]}
+              />
 
-              <div
-                role="tablist"
+              <STabs
+                variant="filter"
                 aria-label="Device health filter"
-                className="omada-devices-seg-track"
-              >
-                {(
-                  [
-                    { key: 'all', label: `All (${healthCounts.all})` },
-                    {
-                      key: 'good',
-                      label: `Good (${healthCounts.good})`,
-                      dotColor: HEALTH_DOT_COLOR.good,
-                    },
-                    {
-                      key: 'fair',
-                      label: `Fair (${healthCounts.fair})`,
-                      dotColor: HEALTH_DOT_COLOR.fair,
-                    },
-                    {
-                      key: 'poor',
-                      label: `Poor (${healthCounts.poor})`,
-                      dotColor: HEALTH_DOT_COLOR.poor,
-                    },
-                    {
-                      key: 'no-data',
-                      label: `No Data (${healthCounts.noData})`,
-                      dotColor: HEALTH_DOT_COLOR['no-data'],
-                    },
-                  ] as const
-                ).map((item) => {
-                  const isActive = healthFilter === item.key;
-                  return (
-                    <button
-                      key={item.key}
-                      type="button"
-                      role="tab"
-                      aria-selected={isActive}
-                      onClick={() => {
-                        setHealthFilter(item.key);
-                        setCurrentPage(1);
-                      }}
-                      className={`omada-devices-seg-pill ${isActive ? 'is-active' : ''}`}
-                    >
-                      {'dotColor' in item && item.dotColor && (
-                        <span
-                          aria-hidden="true"
-                          className="h-[6px] w-[6px] shrink-0 rounded-full"
-                          style={{ backgroundColor: item.dotColor }}
-                        />
-                      )}
-                      <span>{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
+                activeKey={healthFilter}
+                onChange={(k) => {
+                  setHealthFilter(k as typeof healthFilter);
+                  setCurrentPage(1);
+                }}
+                items={[
+                  { key: 'all', label: 'All', count: healthCounts.all },
+                  {
+                    key: 'good',
+                    label: 'Good',
+                    count: healthCounts.good,
+                    dotColor: HEALTH_DOT_COLOR.good,
+                  },
+                  {
+                    key: 'fair',
+                    label: 'Fair',
+                    count: healthCounts.fair,
+                    dotColor: HEALTH_DOT_COLOR.fair,
+                  },
+                  {
+                    key: 'poor',
+                    label: 'Poor',
+                    count: healthCounts.poor,
+                    dotColor: HEALTH_DOT_COLOR.poor,
+                  },
+                  {
+                    key: 'no-data',
+                    label: 'No Data',
+                    count: healthCounts.noData,
+                    dotColor: HEALTH_DOT_COLOR['no-data'],
+                  },
+                ]}
+              />
             </div>
 
             {/* Row 2: Export + Batch Action + Add Devices */}

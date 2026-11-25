@@ -12,17 +12,10 @@ export type SCheckboxGroupVariant = 'default' | 'button';
 export interface SCheckboxProps extends CheckboxProps {
   /** Optional explanatory copy rendered 4px beneath the checkbox label. */
   description?: React.ReactNode;
-  /** Ref forwarded to the underlying AntD 6 Checkbox instance. */
-  ref?: React.Ref<CheckboxRef>;
 }
 
-/**
- * Omada Checkbox with optional secondary `description` line aligned cleanly under the label.
- */
-export const SCheckbox: React.FC<SCheckboxProps> & {
-  Group: typeof SCheckboxGroup;
-} = Object.assign(
-  (({ description, children, className = '', ref, ...rest }: SCheckboxProps) => {
+const BaseSCheckbox = React.forwardRef<CheckboxRef, SCheckboxProps>(
+  ({ description, children, className = '', ...rest }, ref) => {
     return (
       <Checkbox
         ref={ref}
@@ -43,11 +36,9 @@ export const SCheckbox: React.FC<SCheckboxProps> & {
         )}
       </Checkbox>
     );
-  }) as React.FC<SCheckboxProps>,
-  {
-    Group: undefined as unknown as typeof SCheckboxGroup,
   },
 );
+BaseSCheckbox.displayName = 'SCheckbox';
 
 export interface SCheckboxOption<T = string | number>
   extends CheckboxOptionType<T> {
@@ -140,14 +131,14 @@ export function SCheckboxGroup<T extends string | number = string | number>({
 
   const selectAllNode = showSelectAll && normalizedOptions.length > 0 && (
     <div className="mb-2.5 border-b border-[var(--omada-border-divider)] pb-2">
-      <SCheckbox
+      <BaseSCheckbox
         checked={allChecked}
         indeterminate={someChecked}
         disabled={disabled || enabledValues.length === 0}
         onChange={(e) => handleSelectAllChange(e.target.checked)}
       >
         <span className="font-medium">{selectAllLabel}</span>
-      </SCheckbox>
+      </BaseSCheckbox>
     </div>
   );
 
@@ -221,7 +212,7 @@ export function SCheckboxGroup<T extends string | number = string | number>({
       >
         {normalizedOptions.length > 0
           ? normalizedOptions.map((opt) => (
-              <SCheckbox
+              <BaseSCheckbox
                 key={String(opt.value)}
                 value={opt.value}
                 disabled={opt.disabled}
@@ -237,7 +228,7 @@ export function SCheckboxGroup<T extends string | number = string | number>({
                   {opt.icon}
                   <span>{opt.label}</span>
                 </span>
-              </SCheckbox>
+              </BaseSCheckbox>
             ))
           : children}
       </Checkbox.Group>
@@ -245,4 +236,9 @@ export function SCheckboxGroup<T extends string | number = string | number>({
   );
 }
 
-SCheckbox.Group = SCheckboxGroup;
+/**
+ * Omada Checkbox with optional secondary `description` line aligned cleanly under the label.
+ */
+export const SCheckbox = Object.assign(BaseSCheckbox, {
+  Group: SCheckboxGroup,
+});

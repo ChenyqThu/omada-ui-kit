@@ -10,6 +10,7 @@ import {
   SPagination,
   SSelect,
   SSwitch,
+  STabs,
   useOmadaNotification,
 } from '@/omada';
 import {
@@ -735,85 +736,50 @@ export const LogsPage: React.FC<LogsPageProps> = ({
   return (
     <div className="omada-logs-page px-6 pt-4 pb-6" data-testid="logs-page">
       {/* Top Underline Sub-Tabs + Setting Button */}
-      <div className="flex items-center justify-between border-b border-[var(--omada-border-divider)]">
-        <div
-          role="tablist"
-          aria-label="Logs views"
-          className="flex items-center gap-8"
-        >
-          {(
-            [
-              { key: 'alerts', label: 'Alerts' },
-              { key: 'events', label: 'Events' },
-              { key: 'audit-logs', label: 'Audit Logs' },
-            ] as const
-          ).map((tab) => {
-            const isActive = subTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setSubTab(tab.key)}
-                className={`omada-logs-subtab-btn cursor-pointer text-[18px] leading-[26px] ${
-                  isActive ? 'is-active font-medium' : 'font-normal'
-                }`}
-              >
-                <span>{tab.label}</span>
-                {isActive && (
-                  <span className="omada-logs-subtab-indicator absolute inset-x-0 -bottom-[1px] h-[2px]" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setSettingsOpen(true)}
-          className="omada-logs-ghost-action mb-2"
-        >
-          <SIcon name="settings" size={16} />
-          <span>Setting</span>
-        </button>
-      </div>
+      <STabs
+        variant="page"
+        size="lg"
+        bordered
+        aria-label="Logs views"
+        activeKey={subTab}
+        onChange={(k) => setSubTab(k as LogSubTabKey)}
+        className="pr-9"
+        items={[
+          { key: 'alerts', label: 'Alerts' },
+          { key: 'events', label: 'Events' },
+          { key: 'audit-logs', label: 'Audit Logs' },
+        ]}
+        extra={
+          <button
+            type="button"
+            onClick={() => setSettingsOpen(true)}
+            className="omada-logs-ghost-action"
+          >
+            <SIcon name="settings" size={16} />
+            <span>Setting</span>
+          </button>
+        }
+      />
 
       {/* Events Tab */}
       {subTab === 'events' && (
         <>
           <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-3 pr-9">
-            <div
-              role="tablist"
+            <STabs
+              variant="filter"
               aria-label="Event module filter"
-              className="omada-logs-seg-track"
-            >
-              {(
-                [
-                  { key: 'all', label: `All (${moduleCounts.all})` },
-                  { key: 'system', label: `System (${moduleCounts.system})` },
-                  { key: 'device', label: `Device (${moduleCounts.device})` },
-                  { key: 'client', label: `Client (${moduleCounts.client})` },
-                ] as const
-              ).map((item) => {
-                const isActive = moduleFilter === item.key;
-                return (
-                  <button
-                    key={item.key}
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    onClick={() => {
-                      setModuleFilter(item.key);
-                      setEventsPage(1);
-                    }}
-                    className={`omada-logs-seg-pill ${isActive ? 'is-active' : ''}`}
-                  >
-                    {item.label}
-                  </button>
-                );
-              })}
-            </div>
+              activeKey={moduleFilter}
+              onChange={(k) => {
+                setModuleFilter(k as EventModuleKey);
+                setEventsPage(1);
+              }}
+              items={[
+                { key: 'all', label: 'All', count: moduleCounts.all },
+                { key: 'system', label: 'System', count: moduleCounts.system },
+                { key: 'device', label: 'Device', count: moduleCounts.device },
+                { key: 'client', label: 'Client', count: moduleCounts.client },
+              ]}
+            />
 
             <div className="flex items-center gap-5">
               {selectedEventKeys.length > 0 && (
@@ -903,38 +869,16 @@ export const LogsPage: React.FC<LogsPageProps> = ({
         <>
           <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-3 pr-9">
             <div className="flex flex-wrap items-center gap-3">
-              <div
-                role="tablist"
+              <STabs
+                variant="filter"
                 aria-label="Alert status filter"
-                className="omada-logs-seg-track"
-              >
-                {(
-                  [
-                    {
-                      key: 'unresolved',
-                      label: `Unresolved (${alertCounts.unresolved})`,
-                    },
-                    {
-                      key: 'resolved',
-                      label: `Resolved (${alertCounts.resolved})`,
-                    },
-                  ] as const
-                ).map((item) => {
-                  const isActive = alertStatusTab === item.key;
-                  return (
-                    <button
-                      key={item.key}
-                      type="button"
-                      role="tab"
-                      aria-selected={isActive}
-                      onClick={() => setAlertStatusTab(item.key)}
-                      className={`omada-logs-seg-pill ${isActive ? 'is-active' : ''}`}
-                    >
-                      {item.label}
-                    </button>
-                  );
-                })}
-              </div>
+                activeKey={alertStatusTab}
+                onChange={(k) => setAlertStatusTab(k as AlertStatusTabKey)}
+                items={[
+                  { key: 'unresolved', label: 'Unresolved', count: alertCounts.unresolved },
+                  { key: 'resolved', label: 'Resolved', count: alertCounts.resolved },
+                ]}
+              />
 
               <SInput
                 variant="filled"
@@ -1025,33 +969,17 @@ export const LogsPage: React.FC<LogsPageProps> = ({
                 style={{ width: 260 }}
               />
 
-              <div
-                role="tablist"
+              <STabs
+                variant="filter"
                 aria-label="Audit result filter"
-                className="omada-logs-seg-track"
-              >
-                {(
-                  [
-                    { key: 'all', label: `All (${auditCounts.all})` },
-                    { key: 'success', label: `Success (${auditCounts.success})` },
-                    { key: 'failed', label: `Failed (${auditCounts.failed})` },
-                  ] as const
-                ).map((item) => {
-                  const isActive = auditResultFilter === item.key;
-                  return (
-                    <button
-                      key={item.key}
-                      type="button"
-                      role="tab"
-                      aria-selected={isActive}
-                      onClick={() => setAuditResultFilter(item.key)}
-                      className={`omada-logs-seg-pill ${isActive ? 'is-active' : ''}`}
-                    >
-                      {item.label}
-                    </button>
-                  );
-                })}
-              </div>
+                activeKey={auditResultFilter}
+                onChange={(k) => setAuditResultFilter(k as AuditResultFilterKey)}
+                items={[
+                  { key: 'all', label: 'All', count: auditCounts.all },
+                  { key: 'success', label: 'Success', count: auditCounts.success },
+                  { key: 'failed', label: 'Failed', count: auditCounts.failed },
+                ]}
+              />
             </div>
 
             <button

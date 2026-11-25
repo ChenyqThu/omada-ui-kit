@@ -1,38 +1,36 @@
+@keyframes omada-spin-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes omada-progress-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+@keyframes omada-skeleton-wave {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 @layer components {
-  /* Spinner rotation & indeterminate progress animations */
-  @keyframes omada-spin-rotate {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @keyframes omada-progress-indeterminate {
-    0% {
-      transform: translateX(-100%);
-    }
-    100% {
-      transform: translateX(350%);
-    }
-  }
-
-  @keyframes omada-skeleton-wave {
-    0% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-
   .omada-spin {
     animation: omada-spin-rotate 0.9s linear infinite;
   }
 
-  [data-theme='dark'] .omada-spinner-neutral,
-  .dark .omada-spinner-neutral {
+  :where([data-theme='dark'], .dark) .omada-spinner-neutral:not([data-theme='light'] *) {
     filter: invert(1) brightness(1.4);
   }
 

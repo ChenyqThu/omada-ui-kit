@@ -21,6 +21,7 @@ export const OMADA_ICON_CATEGORIES = [
   "event",
   "general",
   "map",
+  "member",
   "other",
   "quick-action",
   "scene",
@@ -2467,6 +2468,54 @@ export const OMADA_ICONS: readonly OmadaIconMeta[] = [
     "format": "svg",
     "width": 64,
     "height": 64,
+    "monochrome": false
+  },
+  {
+    "name": "member-phoenix",
+    "category": "member",
+    "figmaName": "成员=Phoenix",
+    "figmaCategory": "member",
+    "figmaId": "29084:15741",
+    "relPath": "member/member-phoenix.png",
+    "format": "png",
+    "width": 80,
+    "height": 80,
+    "monochrome": false
+  },
+  {
+    "name": "member-vegeta",
+    "category": "member",
+    "figmaName": "成员=Vegeta",
+    "figmaCategory": "member",
+    "figmaId": "35982:95916",
+    "relPath": "member/member-vegeta.svg",
+    "format": "svg",
+    "width": 80,
+    "height": 80,
+    "monochrome": false
+  },
+  {
+    "name": "member-wendy",
+    "category": "member",
+    "figmaName": "成员=Wendy",
+    "figmaCategory": "member",
+    "figmaId": "35982:95902",
+    "relPath": "member/member-wendy.svg",
+    "format": "svg",
+    "width": 80,
+    "height": 80,
+    "monochrome": false
+  },
+  {
+    "name": "member-zoe",
+    "category": "member",
+    "figmaName": "成员=Zoe",
+    "figmaCategory": "member",
+    "figmaId": "29084:15740",
+    "relPath": "member/member-zoe.svg",
+    "format": "svg",
+    "width": 80,
+    "height": 80,
     "monochrome": false
   },
   {

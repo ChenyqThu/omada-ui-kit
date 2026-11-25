@@ -11,6 +11,7 @@ import {
   OMADA_ILLUSTRATIONS,
   OMADA_PRODUCTS,
   OmadaProvider,
+  SBrandAsset,
   SEmpty,
   SIcon,
   SIllustration,
@@ -18,30 +19,37 @@ import {
   hasOmadaIllustration,
   hasOmadaProductImage,
 } from '@/omada';
+import { resolveRuntimeAssetUrl } from '@/omada/assets/ThemedAssetImage';
+import { resolveStandaloneScriptBase } from '@/lib/standalone';
 
 const ASSETS_ROOT = path.resolve(import.meta.dirname, '..', 'assets');
+const assetGlobal = globalThis as { __OMADA_ASSET_BASE__?: string };
 
 describe('Omada Figma Asset Library', () => {
   beforeEach(() => {
     window.localStorage.clear();
+    delete assetGlobal.__OMADA_ASSET_BASE__;
   });
 
   afterEach(() => {
     cleanup();
+    delete assetGlobal.__OMADA_ASSET_BASE__;
   });
 
   it('meets expected Figma asset inventory thresholds with both light and dark variants', () => {
-    expect(OMADA_ICONS.length).toBeGreaterThanOrEqual(550);
-    expect(OMADA_ILLUSTRATIONS.length).toBeGreaterThanOrEqual(180);
-    expect(OMADA_CLIENTS.length).toBeGreaterThanOrEqual(90);
-    expect(OMADA_PRODUCTS.length).toBeGreaterThanOrEqual(100);
-    expect(OMADA_BRAND_ASSETS.length).toBeGreaterThanOrEqual(8);
+    expect(OMADA_ICONS.length).toBeGreaterThanOrEqual(590);
+    expect(OMADA_ILLUSTRATIONS.length).toBeGreaterThanOrEqual(210);
+    expect(OMADA_CLIENTS.length).toBeGreaterThanOrEqual(245);
+    expect(OMADA_PRODUCTS.length).toBeGreaterThanOrEqual(108);
+    expect(OMADA_BRAND_ASSETS.length).toBeGreaterThanOrEqual(75);
 
     const illThemes = new Set(OMADA_ILLUSTRATIONS.map((entry) => entry.theme));
     expect(illThemes.has('light')).toBe(true);
     expect(illThemes.has('dark')).toBe(true);
 
     expect(hasOmadaIcon('app-category-ai')).toBe(true);
+    expect(hasOmadaIcon('member-zoe')).toBe(true);
+    expect(hasOmadaIcon('member-phoenix')).toBe(true);
     expect(hasOmadaIllustration('no-data')).toBe(true);
     expect(hasOmadaProductImage('er8411')).toBe(true);
   });
@@ -143,5 +151,116 @@ describe('Omada Figma Asset Library', () => {
     );
     expect(screen.queryByRole('img')).toBeNull();
     expect(screen.getByText('Minimal Empty')).toBeInTheDocument();
+  });
+
+  it('switches <SBrandAsset name="oauth-google" /> automatically between light and dark themes', () => {
+    const { unmount } = render(
+      React.createElement(OmadaProvider, {
+        defaultThemeMode: 'light',
+        children: React.createElement(SBrandAsset, { name: 'oauth-google' }),
+      }),
+    );
+    const lightImg = screen.getByRole('img');
+    const lightSrc = lightImg.getAttribute('src');
+    expect(lightImg).toHaveAttribute('data-omada-asset', 'oauth-google');
+    expect(lightImg).toHaveAttribute('data-asset-theme', 'light');
+    expect(lightSrc).toBeTruthy();
+    unmount();
+
+    render(
+      React.createElement(OmadaProvider, {
+        defaultThemeMode: 'dark',
+        children: React.createElement(SBrandAsset, { name: 'oauth-google' }),
+      }),
+    );
+    const darkImg = screen.getByRole('img');
+    const darkSrc = darkImg.getAttribute('src');
+    expect(darkImg).toHaveAttribute('data-omada-asset', 'oauth-google');
+    expect(darkImg).toHaveAttribute('data-asset-theme', 'dark');
+    expect(darkSrc).toBeTruthy();
+    expect(darkSrc).not.toBe(lightSrc);
+  });
+
+  it('resolves standalone __OMADA_ASSET_BASE__ from script src or falls back to pinned jsDelivr CDN when inlined', () => {
+    const pkg = JSON.parse(
+      fs.readFileSync(path.resolve(import.meta.dirname, '..', '..', 'package.json'), 'utf8'),
+    ) as { version: string };
+    const expectedCdnBase = `https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@${pkg.version}/dist/`;
+    const origCurrentScript = Object.getOwnPropertyDescriptor(document, 'currentScript');
+
+    try {
+      // 1. Direct currentScript with src attribute
+      const cdnScript = document.createElement('script');
+      cdnScript.setAttribute('src', 'https://mirror.example.com/omada/dist/standalone.js');
+      Object.defineProperty(document, 'currentScript', {
+        configurable: true,
+        get: () => cdnScript,
+      });
+      expect(resolveStandaloneScriptBase()).toBe('https://mirror.example.com/omada/dist/');
+
+      // 2. Fallback to DOM <script src=".../standalone.js"> when currentScript is null
+      Object.defineProperty(document, 'currentScript', {
+        configurable: true,
+        get: () => null,
+      });
+      const domScript = document.createElement('script');
+      domScript.setAttribute('src', 'https://static.example.org/ui/standalone.js?v=0.4.1');
+      document.head.appendChild(domScript);
+      expect(resolveStandaloneScriptBase()).toBe('https://static.example.org/ui/');
+      domScript.remove();
+
+      // 3. Inline <script> (plus @babel/standalone tag in <head>) falls back to pinned jsDelivr CDN, never window.location.href
+      const inlineScript = document.createElement('script');
+      inlineScript.textContent = '/* inlined standalone bundle */';
+      const babelScript = document.createElement('script');
+      babelScript.setAttribute(
+        'src',
+        'https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js',
+      );
+      document.head.appendChild(babelScript);
+      Object.defineProperty(document, 'currentScript', {
+        configurable: true,
+        get: () => inlineScript,
+      });
+
+      const inlineFallbackBase = resolveStandaloneScriptBase();
+      expect(inlineFallbackBase).toBe(expectedCdnBase);
+      assetGlobal.__OMADA_ASSET_BASE__ = inlineFallbackBase;
+      expect(resolveRuntimeAssetUrl('assets/products/light/eap650.png')).toBe(
+        `${expectedCdnBase}assets/products/light/eap650.png`,
+      );
+      babelScript.remove();
+
+      // 4. Empty or whitespace src="" / src="   " and blob:/data: script URLs fall back to jsDelivr CDN, never window.location.href
+      for (const edgeSrc of ['', '   ', 'blob:https://example.com/1234', 'data:text/javascript,1']) {
+        const edgeScript = document.createElement('script');
+        edgeScript.setAttribute('src', edgeSrc);
+        Object.defineProperty(document, 'currentScript', {
+          configurable: true,
+          get: () => edgeScript,
+        });
+        expect(resolveStandaloneScriptBase()).toBe(expectedCdnBase);
+      }
+
+      // 5. Explicit __OMADA_ASSET_BASE__ without trailing slash or using root-relative / relative paths resolves cleanly
+      assetGlobal.__OMADA_ASSET_BASE__ = 'https://my-cdn.example.com/omada/dist';
+      expect(resolveRuntimeAssetUrl('assets/products/light/eap650.png')).toBe(
+        'https://my-cdn.example.com/omada/dist/assets/products/light/eap650.png',
+      );
+      assetGlobal.__OMADA_ASSET_BASE__ = '/vendor/omada/dist';
+      expect(resolveRuntimeAssetUrl('assets/products/light/eap650.png')).toBe(
+        '/vendor/omada/dist/assets/products/light/eap650.png',
+      );
+      assetGlobal.__OMADA_ASSET_BASE__ = '../dist';
+      expect(resolveRuntimeAssetUrl('assets/products/light/eap650.png')).toBe(
+        '../dist/assets/products/light/eap650.png',
+      );
+    } finally {
+      if (origCurrentScript) {
+        Object.defineProperty(document, 'currentScript', origCurrentScript);
+      } else {
+        delete (document as { currentScript?: unknown }).currentScript;
+      }
+    }
   });
 });

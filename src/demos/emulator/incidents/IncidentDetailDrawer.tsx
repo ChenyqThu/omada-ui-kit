@@ -6,6 +6,7 @@ import {
   SChart,
   SIcon,
   SProductImage,
+  STabs,
   useOmadaNotification,
   useOmadaTheme,
 } from '@/omada';
@@ -273,37 +274,19 @@ export const IncidentDetailDrawer: React.FC<IncidentDetailDrawerProps> = ({
       </div>
 
       {/* Sub-Tabs */}
-      <div
-        role="tablist"
+      <STabs
+        variant="page"
+        size="md"
+        bordered
         aria-label="Incident detail sections"
-        className="mt-4 flex shrink-0 items-center gap-8 border-b border-[var(--omada-border-divider)] px-6"
-      >
-        {(
-          [
-            { key: 'details', label: 'Incident Details' },
-            { key: 'affected-devices', label: 'Affected Devices' },
-          ] as const
-        ).map((tab) => {
-          const isActive = subTab === tab.key;
-          return (
-            <button
-              key={tab.key}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => setSubTab(tab.key)}
-              className={`omada-incidents-subtab-btn cursor-pointer border-0 bg-transparent pb-2.5 text-[16px] leading-[22px] ${
-                isActive ? 'is-active font-medium' : 'font-normal'
-              }`}
-            >
-              <span>{tab.label}</span>
-              {isActive && (
-                <span className="omada-incidents-subtab-indicator absolute inset-x-0 -bottom-[1px] h-[2px]" />
-              )}
-            </button>
-          );
-        })}
-      </div>
+        activeKey={subTab}
+        onChange={(k) => setSubTab(k as typeof subTab)}
+        className="mt-4 shrink-0 px-6"
+        items={[
+          { key: 'details', label: 'Incident Details' },
+          { key: 'affected-devices', label: 'Affected Devices' },
+        ]}
+      />
 
       {/* Body */}
       <div className="flex-1 overflow-y-auto px-6 py-4">

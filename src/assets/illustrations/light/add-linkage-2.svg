@@ -1,0 +1,17 @@
+<svg width="300" height="160" viewBox="0 0 300 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="300" height="160" fill="white"/>
+<path d="M79.2667 43.3118L89.1149 43.3118L114.72 43.3118V58.6692V110.5H79.2667V43.3118Z" fill="#E3F1EC" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<path d="M91.9986 27.6575L123.314 27.6575L146.487 47.9595H204.733V116.479H91.9986V27.6575Z" fill="#E3F1EC" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<path d="M96.834 32.6223H121.748L145.832 53.4926L200.349 53.4925V112.137L96.6959 112.137L96.834 32.6223Z" fill="white" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<path d="M137.596 92.5742C137.596 88.4282 134.235 85.0673 130.089 85.0673C128.958 85.0673 127.886 85.3173 126.924 85.765L122.582 92.5742H137.596Z" fill="#B7EE00" stroke-width="0.593719" stroke-linecap="square" stroke="#636363"/>
+<ellipse cx="117.756" cy="73.7809" rx="5.89822" ry="5.8983" fill="#32DE9B" stroke-width="0.593719" stroke-linecap="square" stroke="#636363"/>
+<path d="M117.756 80.751C111.538 80.751 106.496 86.0325 106.496 92.5476H129.017C129.017 86.0325 123.975 80.751 117.756 80.751Z" fill="#32DE9B" stroke-width="0.593719" stroke-linecap="square" stroke="#636363"/>
+<ellipse cx="130.088" cy="78.207" rx="3.75342" ry="3.75346" fill="#B7EE00" stroke-width="0.593719" stroke-linecap="square" stroke="#636363"/>
+<rect x="144.766" y="68.66" width="7.26238" height="8.03022" fill="#0069CB"/>
+<rect x="144.766" y="83.7666" width="7.26238" height="8.03022" fill="#05C178"/>
+<rect x="155.266" y="68.66" width="34.9681" height="8.03022" fill="#E3F1EC"/>
+<rect x="155.266" y="83.7666" width="15.3648" height="8.03022" fill="#E3F1EC"/>
+<rect x="173.869" y="83.7666" width="15.8946" height="8.03022" fill="#E3F1EC"/>
+<path d="M204.733 100.343C213.57 100.343 220.733 107.506 220.733 116.343C220.733 125.179 213.57 132.343 204.733 132.343C195.897 132.343 188.733 125.179 188.733 116.343C188.733 107.506 195.897 100.343 204.733 100.343Z" fill-rule="evenodd" clip-rule="evenodd" fill="#00A870"/>
+<path d="M205.732 115.479H214.68V117.479H205.732V126.426H203.732V117.479H194.787V115.479H203.732V106.533H205.732V115.479Z" fill="white"/>
+</svg>

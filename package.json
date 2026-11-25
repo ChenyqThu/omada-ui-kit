@@ -1,6 +1,6 @@
 {
   "name": "@chenyqthu/omada-ui-kit",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Omada Controller v6.3 React UI component library (Ant Design 6 + Design Tokens + Figma Assets + Single-file HTML standalone bundle)",
   "license": "MIT",
   "repository": {
@@ -12,7 +12,9 @@
     "url": "https://github.com/ChenyqThu/omada-ui-kit/issues"
   },
   "type": "module",
-  "sideEffects": ["**/*.css"],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/types/lib/index.d.ts",
@@ -41,9 +43,15 @@
       "types": "./dist/types/lib/assets.d.ts",
       "import": "./dist/assets.js"
     },
+    "./agent": {
+      "types": "./dist/types/lib/agent.d.ts",
+      "import": "./dist/agent.js"
+    },
     "./style.css": "./dist/style.css",
+    "./style.scoped.css": "./dist/style.scoped.css",
     "./standalone": "./dist/standalone.js",
-    "./catalog.json": "./dist/catalog.json"
+    "./catalog.json": "./dist/catalog.json",
+    "./llms.txt": "./dist/llms.txt"
   },
   "files": [
     "dist",
@@ -65,8 +73,10 @@
     "build:lib": "pnpm build:esm && pnpm build:standalone && pnpm build:types && pnpm build:catalog",
     "prepublishOnly": "pnpm build:lib",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json",
-    "test": "vitest run"
+    "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.lib.json && tsc --noEmit -p tsconfig.templates.json",
+    "sync:local-skill": "node scripts/sync-local-skill.mjs",
+    "test": "vitest run",
+    "test:agent-eval": "node scripts/eval-agent-readiness.mjs"
   },
   "peerDependencies": {
     "react": ">=18.2.0 || >=19.0.0",
@@ -84,6 +94,7 @@
     "@tailwindcss/vite": "^4.3.5",
     "@testing-library/jest-dom": "^8.0.0",
     "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.13",
     "@types/node": "^22.0.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",

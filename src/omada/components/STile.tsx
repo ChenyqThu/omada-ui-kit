@@ -1,5 +1,10 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useMemo, useState } from 'react';
 import { Check } from 'lucide-react';
+import {
+  useRovingFocus,
+  type RovingFocusItem,
+  type UseRovingFocusReturn,
+} from '../behaviors/useRovingFocus';
 
 export type STileSelectionMode = 'single' | 'multiple';
 export type STileLayout = 'horizontal' | 'vertical';
@@ -21,6 +26,7 @@ interface STileGroupContextValue {
   size?: 'sm' | 'md';
   indicator?: 'corner-check' | 'check' | 'none';
   disabled?: boolean;
+  getRovingItemProps?: UseRovingFocusReturn['getItemProps'];
 }
 
 const STileGroupContext = createContext<STileGroupContextValue | null>(null);
@@ -39,6 +45,7 @@ export interface STileProps {
   /** Change callback when used standalone. */
   onChange?: (checked: boolean) => void;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
   disabled?: boolean;
   layout?: STileLayout;
   size?: 'sm' | 'md';
@@ -62,6 +69,7 @@ export const STile: React.FC<STileProps> = ({
   defaultChecked = false,
   onChange,
   onClick,
+  onKeyDown,
   disabled,
   layout,
   size,
@@ -98,6 +106,14 @@ export const STile: React.FC<STileProps> = ({
     onClick?.(e);
   };
 
+  const rovingProps =
+    isGrouped && resolvedMode === 'single' && group?.getRovingItemProps
+      ? group.getRovingItemProps<HTMLButtonElement>(value!, {
+          disabled: isDisabled,
+          onKeyDown,
+        })
+      : undefined;
+
   const isSmall = resolvedSize === 'sm';
   const isVertical = resolvedLayout === 'vertical';
 
@@ -108,6 +124,7 @@ export const STile: React.FC<STileProps> = ({
       aria-checked={isSelected}
       disabled={isDisabled}
       onClick={handleClick}
+      onKeyDown={rovingProps ? undefined : onKeyDown}
       style={style}
       className={`group relative overflow-hidden rounded-lg border text-left transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--omada-brand)] ${
         isSmall ? 'px-3 py-2' : 'px-4 py-3.5'
@@ -118,12 +135,13 @@ export const STile: React.FC<STileProps> = ({
             ? 'cursor-pointer border-[var(--omada-brand)] bg-[var(--omada-brand-bg-subtlest)] ring-1 ring-[var(--omada-brand)]/20'
             : 'cursor-pointer border-[var(--omada-border-divider)] bg-[var(--omada-bg-surface)] hover:border-[var(--omada-brand)] hover:bg-[var(--omada-bg-field)]'
       } ${className}`.trim()}
+      {...rovingProps}
     >
       {isSelected && resolvedIndicator === 'corner-check' && (
         <span
           data-tile-check="true"
           aria-hidden="true"
-          className={`absolute top-0 right-0 flex items-center justify-center rounded-bl-lg bg-[var(--omada-brand)] text-white ${
+          className={`absolute top-0 right-0 flex items-center justify-center rounded-bl-lg bg-[var(--omada-brand)] text-[var(--omada-text-inverse)] ${
             isSmall ? 'h-4 w-4' : 'h-5 w-5'
           }`}
         >
@@ -181,7 +199,7 @@ export const STile: React.FC<STileProps> = ({
               resolvedMode === 'multiple' ? 'rounded-[3px]' : 'rounded-full'
             } ${
               isSelected
-                ? 'border-[var(--omada-brand)] bg-[var(--omada-brand)] text-white'
+                ? 'border-[var(--omada-brand)] bg-[var(--omada-brand)] text-[var(--omada-text-inverse)]'
                 : 'border-[var(--omada-border-strong)] bg-transparent'
             }`}
           >
@@ -201,6 +219,7 @@ export interface STileGroupBaseProps {
   size?: 'sm' | 'md';
   indicator?: 'corner-check' | 'check' | 'none';
   disabled?: boolean;
+  'aria-label'?: string;
   className?: string;
 }
 
@@ -228,9 +247,36 @@ const COLUMN_CLASSES: Record<NonNullable<STileGroupBaseProps['columns']>, string
   auto: 'flex flex-wrap gap-2.5',
 };
 
+function extractChildTileItems(
+  children: React.ReactNode,
+  groupDisabled: boolean,
+): RovingFocusItem[] {
+  const out: RovingFocusItem[] = [];
+  const walk = (nodes: React.ReactNode) => {
+    React.Children.forEach(nodes, (child) => {
+      if (!React.isValidElement(child)) return;
+      const props = child.props as {
+        value?: string;
+        disabled?: boolean;
+        children?: React.ReactNode;
+      };
+      if (typeof props.value === 'string') {
+        out.push({
+          key: props.value,
+          disabled: Boolean(groupDisabled || props.disabled),
+        });
+      } else if (props.children) {
+        walk(props.children);
+      }
+    });
+  };
+  walk(children);
+  return out;
+}
+
 /**
  * Single- or multi-select Omada option tile group supporting declarative `options`
- * or composable `<STile>` children.
+ * or composable `<STile>` children, with roving `radiogroup` arrow-key focus in `single` mode.
  */
 export const STileGroup: React.FC<STileGroupProps> = (props) => {
   const {
@@ -245,6 +291,7 @@ export const STileGroup: React.FC<STileGroupProps> = (props) => {
     size = 'md',
     indicator = 'corner-check',
     disabled = false,
+    'aria-label': ariaLabel,
     className = '',
   } = props;
 
@@ -285,6 +332,24 @@ export const STileGroup: React.FC<STileGroupProps> = (props) => {
     }
   };
 
+  const rovingItems = useMemo<RovingFocusItem[]>(() => {
+    if (options) {
+      return options.map((opt) => ({
+        key: opt.value,
+        disabled: Boolean(disabled || opt.disabled),
+      }));
+    }
+    return extractChildTileItems(children, disabled);
+  }, [options, children, disabled]);
+
+  const { getItemProps } = useRovingFocus({
+    items: rovingItems,
+    activeKey: selectedValues[0],
+    onActivate: toggleValue,
+    orientation: 'both',
+    activationMode: 'automatic',
+  });
+
   return (
     <STileGroupContext.Provider
       value={{
@@ -295,10 +360,12 @@ export const STileGroup: React.FC<STileGroupProps> = (props) => {
         size,
         indicator,
         disabled,
+        getRovingItemProps: mode === 'single' ? getItemProps : undefined,
       }}
     >
       <div
         role={mode === 'multiple' ? 'group' : 'radiogroup'}
+        aria-label={ariaLabel}
         className={`${COLUMN_CLASSES[columns]} ${className}`.trim()}
       >
         {options

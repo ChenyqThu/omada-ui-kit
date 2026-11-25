@@ -39,6 +39,8 @@
   --omada-color-magenta-bg: rgba(244, 118, 255, 0.12);
   --omada-color-purple: #2F2FFF;
   --omada-color-purple-bg: rgba(47, 47, 255, 0.10);
+  --omada-color-strength-strong: #87C969;
+  --omada-port-tile-text-dark: #2B2B2B;
 
   /* Text */
   --omada-text-primary: #2B2B2B;
@@ -78,6 +80,33 @@
   --omada-shadow-dropdown: 0 4px 10px rgba(43, 43, 43, 0.25);
   --omada-shadow-popover: 0 2px 16px rgba(43, 43, 43, 0.14);
   --omada-shadow-drawer: -4px 2px 24px rgba(43, 43, 43, 0.10);
+
+  /* Component Domain Tokens (Charts, Health, Settings, Topology) */
+  --omada-settings-info-bg: #F0F5FA;
+  --omada-settings-info-icon: #0069CB;
+  --omada-dash-card-bg: transparent;
+  --omada-dash-card-border: var(--omada-border-divider);
+  --omada-dash-arc-fill: var(--omada-brand-hover);
+  --omada-dash-arc-track: var(--omada-border-divider);
+  --omada-dash-radar-grid: var(--omada-border-divider);
+  --omada-dash-radar-fill: rgba(5, 193, 120, 0.14);
+  --omada-dash-radar-stroke: var(--omada-brand-hover);
+  --omada-dash-tick-good: rgba(5, 193, 120, 0.5);
+  --omada-dash-tick-fair: rgba(255, 140, 39, 0.5);
+  --omada-dash-tick-poor: rgba(238, 56, 92, 0.5);
+  --omada-dash-tick-empty: rgba(204, 204, 204, 0.45);
+  --omada-dash-channel-track: rgba(0, 0, 0, 0.05);
+  --omada-dash-ap-bubble-bg: var(--omada-text-inverse);
+  --omada-insights-card-bg: var(--omada-bg-surface);
+  --omada-insights-card-border: var(--omada-border-divider);
+  --omada-map-canvas-bg: var(--omada-bg-surface);
+  --omada-map-panel-bg: var(--omada-bg-surface);
+  --omada-map-border: var(--omada-border-divider);
+  --omada-map-floating-shadow: 0 2px 10px rgba(43, 43, 43, 0.10);
+  --omada-topo-link: rgba(204, 204, 204, 0.78);
+  --omada-topo-link-dashed: var(--omada-border-strong);
+  --omada-tabs-active-text: var(--omada-brand-text);
+  --omada-tabs-filter-active-bg: var(--omada-bg-surface);
 }
 
 [data-theme="dark"],
@@ -110,6 +139,8 @@
   --omada-color-magenta-bg: rgba(244, 118, 255, 0.20);
   --omada-color-purple: #9886FF;
   --omada-color-purple-bg: rgba(152, 134, 255, 0.20);
+  --omada-color-strength-strong: #87C969;
+  --omada-port-tile-text-dark: #2B2B2B;
 
   --omada-text-primary: rgba(255, 255, 255, 0.90);
   --omada-text-secondary: rgba(255, 255, 255, 0.64);
@@ -145,6 +176,32 @@
   --omada-shadow-dropdown: 0 3px 10px rgba(0, 0, 0, 0.20);
   --omada-shadow-popover: 0 2px 16px rgba(0, 0, 0, 0.20);
   --omada-shadow-drawer: -4px 2px 24px rgba(0, 0, 0, 0.24);
+
+  --omada-settings-info-bg: #1D2939;
+  --omada-settings-info-icon: #33A0E9;
+  --omada-dash-card-bg: transparent;
+  --omada-dash-card-border: #353535;
+  --omada-dash-arc-fill: var(--omada-brand-text);
+  --omada-dash-arc-track: #353535;
+  --omada-dash-radar-grid: rgba(255, 255, 255, 0.09);
+  --omada-dash-radar-fill: rgba(0, 168, 112, 0.16);
+  --omada-dash-radar-stroke: var(--omada-brand-text);
+  --omada-dash-tick-good: rgba(5, 193, 120, 0.45);
+  --omada-dash-tick-fair: rgba(255, 140, 39, 0.45);
+  --omada-dash-tick-poor: rgba(238, 56, 92, 0.45);
+  --omada-dash-tick-empty: rgba(255, 255, 255, 0.12);
+  --omada-dash-channel-track: rgba(255, 255, 255, 0.08);
+  --omada-dash-ap-bubble-bg: var(--omada-text-inverse);
+  --omada-insights-card-bg: transparent;
+  --omada-insights-card-border: rgba(255, 255, 255, 0.14);
+  --omada-map-canvas-bg: var(--omada-bg-overlay);
+  --omada-map-panel-bg: var(--omada-bg-overlay);
+  --omada-map-border: var(--omada-border-divider);
+  --omada-map-floating-shadow: 0 4px 14px rgba(20, 20, 20, 0.65);
+  --omada-topo-link: rgba(255, 255, 255, 0.28);
+  --omada-topo-link-dashed: rgba(255, 255, 255, 0.34);
+  --omada-tabs-active-text: var(--omada-brand-hover);
+  --omada-tabs-filter-active-bg: var(--omada-bg-field-hover);
 }
 
 @layer base {

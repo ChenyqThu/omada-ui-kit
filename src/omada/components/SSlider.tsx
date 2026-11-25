@@ -30,8 +30,6 @@ export interface SSliderExtraProps {
   startIcon?: React.ReactNode;
   /** Optional trailing icon rendered to the right of the slider track. */
   endIcon?: React.ReactNode;
-  /** Ref forwarded to the underlying AntD 6 Slider instance. */
-  ref?: React.Ref<SliderRef>;
 }
 
 export type SSliderProps = (SliderSingleProps | SliderRangeProps) & SSliderExtraProps;
@@ -125,7 +123,7 @@ function parseInputText(raw: string, unit?: string): number | null {
  * Omada Slider supporting single, range, stepped `marks`/`stepPreset`,
  * paired `showInput` numeric fields with blur clamping, and `color-temp` / `hue` / `brightness` presets.
  */
-export const SSlider: React.FC<SSliderProps> = ({
+export const SSlider = React.forwardRef<SliderRef, SSliderProps>(({
   showInput = false,
   preset = 'default',
   handleVariant,
@@ -147,9 +145,8 @@ export const SSlider: React.FC<SSliderProps> = ({
   disabled,
   className = '',
   style,
-  ref,
   ...rest
-}) => {
+}, ref) => {
   const presetConfig = stepPreset ? STEP_PRESETS[stepPreset] : undefined;
   const resolvedMin = min ?? presetConfig?.min ?? 0;
   const resolvedMax = max ?? presetConfig?.max ?? 100;
@@ -391,4 +388,5 @@ export const SSlider: React.FC<SSliderProps> = ({
       )}
     </div>
   );
-};
+});
+SSlider.displayName = 'SSlider';

@@ -2,6 +2,15 @@
 export { OmadaProvider, useOmadaTheme, type OmadaProviderProps } from '../omada/theme/OmadaProvider';
 export { buildOmadaAntdTheme } from '../omada/theme/antdTheme';
 export {
+  useRovingFocus,
+  type RovingFocusActivationMode,
+  type RovingFocusItem,
+  type RovingFocusOrientation,
+  type RovingItemProps,
+  type UseRovingFocusOptions,
+  type UseRovingFocusReturn,
+} from '../omada/behaviors/useRovingFocus';
+export {
   omadaChartPalette,
   omadaFontFamily,
   omadaLayout,
@@ -92,6 +101,7 @@ export {
 export {
   STabs,
   type STabItem,
+  type STabsPageSize,
   type STabsProps,
   type STabsVariant,
 } from '../omada/components/STabs';

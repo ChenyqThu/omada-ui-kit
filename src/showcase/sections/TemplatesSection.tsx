@@ -9,16 +9,16 @@ import {
   STag,
   useOmadaFeedback,
 } from '@/omada';
-import dashboardHtml from '../../../templates/dashboard.html?raw';
-import dashboardTsx from '../../../templates/dashboard.tsx?raw';
-import inventoryHtml from '../../../templates/inventory.html?raw';
-import inventoryTsx from '../../../templates/inventory.tsx?raw';
-import aclRulesHtml from '../../../templates/acl-rules.html?raw';
-import aclRulesTsx from '../../../templates/acl-rules.tsx?raw';
-import settingsHtml from '../../../templates/settings.html?raw';
-import settingsTsx from '../../../templates/settings.tsx?raw';
-import analyticsHtml from '../../../templates/analytics-logs.html?raw';
-import analyticsTsx from '../../../templates/analytics-logs.tsx?raw';
+import dashboardHtml from '../../../skills/omada-ui-kit/templates/dashboard.html?raw';
+import dashboardTsx from '../../../skills/omada-ui-kit/templates/dashboard.tsx?raw';
+import inventoryHtml from '../../../skills/omada-ui-kit/templates/inventory.html?raw';
+import inventoryTsx from '../../../skills/omada-ui-kit/templates/inventory.tsx?raw';
+import aclRulesHtml from '../../../skills/omada-ui-kit/templates/acl-rules.html?raw';
+import aclRulesTsx from '../../../skills/omada-ui-kit/templates/acl-rules.tsx?raw';
+import settingsHtml from '../../../skills/omada-ui-kit/templates/settings.html?raw';
+import settingsTsx from '../../../skills/omada-ui-kit/templates/settings.tsx?raw';
+import analyticsHtml from '../../../skills/omada-ui-kit/templates/analytics-logs.html?raw';
+import analyticsTsx from '../../../skills/omada-ui-kit/templates/analytics-logs.tsx?raw';
 
 interface TemplateItem {
   id: string;
@@ -44,7 +44,7 @@ const TEMPLATES: TemplateItem[] = [
     id: 'inventory',
     title: 'Devices Inventory + 2-Stage Drawer',
     summary: 'Searchable & status-filtered device list powered by SFilterTableBlock and expandable 420px/1040px SDetailInspectorDrawer.',
-    blocks: ['SEmulatorShell', 'SFilterTableBlock', 'SDetailInspectorDrawer', 'SProductImage'],
+    blocks: ['SEmulatorShell', 'SFilterTableBlock', 'SDetailInspectorDrawer', 'SProductImage', 'OmadaAgentProvider'],
     cliCommand: 'node skills/omada-ui-kit/scripts/query-catalog.mjs template inventory --html',
     html: inventoryHtml,
     tsx: inventoryTsx,
@@ -62,7 +62,7 @@ const TEMPLATES: TemplateItem[] = [
     id: 'settings',
     title: 'Multi-Tab Network Settings Form',
     summary: 'Settings workspace using SSettingsPageShell sticky Apply/Cancel bar, SSettingsInfoBanner, SIpInput, and SExpandableSection.',
-    blocks: ['SEmulatorShell', 'SSettingsPageShell', 'SExpandableSection', 'SIpInput'],
+    blocks: ['SEmulatorShell', 'SSettingsPageShell', 'SExpandableSection', 'SIpInput', 'OmadaAgentProvider'],
     cliCommand: 'node skills/omada-ui-kit/scripts/query-catalog.mjs template settings --html',
     html: settingsHtml,
     tsx: settingsTsx,
@@ -99,7 +99,7 @@ export const TemplatesSection: React.FC = () => {
     <div className="space-y-6">
       <SPageHeader
         title="Full-Page Starter Templates"
-        description="Ready-to-run Single-File HTML (CDN zero-build) & React TSX page templates derived directly from templates/."
+        description="Ready-to-run Single-File HTML (CDN zero-build) & React TSX page templates derived directly from skills/omada-ui-kit/templates/."
       />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

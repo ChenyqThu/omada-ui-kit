@@ -305,8 +305,8 @@ export const SAclRuleBuilder: React.FC<SAclRuleBuilderProps> = ({
             fill="none"
             aria-hidden="true"
           >
-            <line x1="2" y1="8" x2="70" y2="8" stroke="#00A870" strokeWidth="1.5" />
-            <polygon points="76,8 68,4 68,12" fill="#00A870" />
+            <line x1="2" y1="8" x2="70" y2="8" stroke="var(--omada-color-success)" strokeWidth="1.5" />
+            <polygon points="76,8 68,4 68,12" fill="var(--omada-color-success)" />
           </svg>
         ) : (
           <svg
@@ -318,11 +318,11 @@ export const SAclRuleBuilder: React.FC<SAclRuleBuilderProps> = ({
           >
             <path
               d="M2 5 H72 V17"
-              stroke="#FF8C27"
+              stroke="var(--omada-color-warning)"
               strokeWidth="1.5"
               fill="none"
             />
-            <polygon points="72,22 68,15 76,15" fill="#FF8C27" />
+            <polygon points="72,22 68,15 76,15" fill="var(--omada-color-warning)" />
           </svg>
         )}
       </div>

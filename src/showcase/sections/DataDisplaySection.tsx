@@ -129,19 +129,53 @@ export const DataDisplaySection: React.FC = () => {
       />
 
       {/* Tabs */}
-      <SCard title="Tabs (Line / Capsule / Pill / Segment)">
+      <SCard title="Tabs (Line / Page / Filter / Capsule / Pill / Segment)">
         <div className="space-y-5">
           <STabs
             variant="line"
+            aria-label="Primary device detail tabs"
             items={[
               { key: '1', label: 'Overview', children: <span className="text-xs text-[var(--omada-text-secondary)]">Primary line tab content area.</span> },
               { key: '2', label: 'Interfaces' },
               { key: '3', label: 'Clients (412)' },
             ]}
           />
+          <div className="space-y-3">
+            <STabs
+              variant="page"
+              size="lg"
+              aria-label="Controller v6.3 header sub-tabs"
+              items={[
+                { key: 'general', label: 'General Settings', count: 6 },
+                { key: 'dns', label: 'DNS Proxy' },
+                { key: 'dhcp', label: 'DHCP Relay', disabled: true },
+              ]}
+            />
+            <STabs
+              variant="page"
+              size="md"
+              bordered={false}
+              aria-label="Drawer sub-section tabs"
+              items={[
+                { key: 'telemetry', label: 'Telemetry' },
+                { key: 'radios', label: 'Radios', count: 3 },
+                { key: 'events', label: 'Recent Events' },
+              ]}
+            />
+          </div>
           <div className="flex flex-wrap items-center gap-6">
             <STabs
+              variant="filter"
+              aria-label="Controller v6.3 filter pill tabs"
+              items={[
+                { key: 'all', label: 'All', count: 48 },
+                { key: 'online', label: 'Online', dotColor: 'var(--omada-color-success)', count: 44 },
+                { key: 'alert', label: 'Alerts', dotColor: 'var(--omada-color-warning)', count: 4 },
+              ]}
+            />
+            <STabs
               variant="capsule"
+              aria-label="Device category capsule tabs"
               items={[
                 { key: 'all', label: 'All (48)' },
                 { key: 'ap', label: 'APs (32)' },
@@ -151,6 +185,7 @@ export const DataDisplaySection: React.FC = () => {
             <STabs
               variant="capsule"
               pill
+              aria-label="Time range pill tabs"
               items={[
                 { key: '24h', label: '24 Hours' },
                 { key: '7d', label: '7 Days' },
@@ -159,6 +194,7 @@ export const DataDisplaySection: React.FC = () => {
             />
             <STabs
               variant="segment"
+              aria-label="Rx/Tx metric switcher"
               items={[
                 { key: 'rx', label: 'Rx', dotColor: '#006F71' },
                 { key: 'tx', label: 'Tx', dotColor: '#00E194' },

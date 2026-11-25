@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import * as agentEntry from '../lib/agent';
 import * as assetsEntry from '../lib/assets';
 import * as blocksEntry from '../lib/blocks';
 import * as chartsEntry from '../lib/charts';
@@ -79,6 +80,13 @@ describe('ESM Subpath Entrypoints & Tree-Shaking', () => {
     expect(assetsEntry.SIllustration).toBeDefined();
     expect(assetsEntry.SClientIcon).toBeDefined();
     expect(assetsEntry.SBrandAsset).toBeDefined();
+
+    expect(agentEntry.OmadaAgentProvider).toBeDefined();
+    expect(agentEntry.useOmadaAgent).toBeDefined();
+    expect(agentEntry.useOmadaAgentControl).toBeDefined();
+    expect(agentEntry.useOmadaAgentAction).toBeDefined();
+    expect(agentEntry.OMADA_SECRET_MASK).toBe('[REDACTED]');
+    expect(coreEntry.useRovingFocus).toBeDefined();
   });
 
   it('keeps heavy ECharts and full asset catalogs decoupled from dist subpaths when dist/ exists', () => {
@@ -104,11 +112,37 @@ describe('ESM Subpath Entrypoints & Tree-Shaking', () => {
     expect(chartsClosure.some((id) => id.includes('asset-clients'))).toBe(false);
     expect(chartsClosure.some((id) => id.includes('asset-brand'))).toBe(false);
 
-    for (const entry of ['index', 'core', 'blocks', 'charts', 'emulator', 'assets']) {
+    const agentClosure = collectStaticImportClosure(path.join(DIST_DIR, 'agent.js'));
+    expect(agentClosure.some((id) => id.includes('echarts'))).toBe(false);
+    expect(agentClosure.some((id) => id.includes('asset-'))).toBe(false);
+
+    const scopedCssPath = path.join(DIST_DIR, 'style.scoped.css');
+    expect(fs.existsSync(scopedCssPath), `Missing scoped stylesheet: ${scopedCssPath}`).toBe(true);
+    const scopedCss = fs.readFileSync(scopedCssPath, 'utf8');
+    expect(scopedCss.includes('.omada-scope')).toBe(true);
+    expect(/html,:host\{line-height:1\.5/.test(scopedCss)).toBe(false);
+    expect(scopedCss.includes(':where(.omada-scope,.omada-emulator-root)')).toBe(true);
+    expect(/\}\.ant-input-filled\b/.test(scopedCss)).toBe(false);
+
+    for (const entry of ['index', 'core', 'blocks', 'charts', 'emulator', 'assets', 'agent']) {
       const dtsPath = path.join(DIST_DIR, 'types', 'lib', `${entry}.d.ts`);
       expect(fs.existsSync(dtsPath), `Missing .d.ts: ${dtsPath}`).toBe(true);
       const dtsText = fs.readFileSync(dtsPath, 'utf8');
       expect(dtsText.includes('.css')).toBe(false);
+    }
+
+    const standaloneDistPath = path.join(DIST_DIR, 'standalone.js');
+    if (fs.existsSync(standaloneDistPath)) {
+      const pkg = JSON.parse(fs.readFileSync(path.join(ROOT_DIR, 'package.json'), 'utf8')) as {
+        version: string;
+      };
+      const standaloneCode = fs.readFileSync(standaloneDistPath, 'utf8');
+      expect(
+        standaloneCode.includes(
+          `https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@${pkg.version}/dist/`,
+        ),
+      ).toBe(true);
+      expect(standaloneCode.includes('__OMADA_PKG_VERSION__')).toBe(false);
     }
   });
 });

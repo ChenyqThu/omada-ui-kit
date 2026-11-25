@@ -14,6 +14,7 @@ import {
   SProductImage,
   SSelect,
   SSwitch,
+  STabs,
   resolveConnectedProductSlug,
   useOmadaConfirm,
   useOmadaNotification,
@@ -1226,50 +1227,31 @@ export const SwitchPortsConfigPage: React.FC<SwitchPortsConfigPageProps> = ({
       data-testid="switch-ports-config-page"
     >
       {/* Top Underline Sub-Tabs + Top-Right (?) Help Icon */}
-      <div className="flex items-end justify-between border-b border-[var(--omada-border-divider)]">
-        <div
-          role="tablist"
-          aria-label="Switch Ports sections"
-          className="flex items-center gap-8"
-        >
-          {(
-            [
-              { key: 'port-settings', label: 'Port Settings' },
-              { key: 'port-profile', label: 'Port Profile' },
-            ] as const
-          ).map((tab) => {
-            const isActive = subTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setSubTab(tab.key)}
-                className={`omada-devcfg-subtab-btn cursor-pointer text-[18px] leading-[26px] ${
-                  isActive ? 'is-active font-medium' : 'font-normal'
-                }`}
-              >
-                <span>{tab.label}</span>
-                {isActive && (
-                  <span className="omada-devcfg-subtab-indicator absolute inset-x-0 -bottom-[1px] h-[2px]" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        <Tooltip title="Switch Ports Help">
-          <button
-            type="button"
-            aria-label="Switch Ports help"
-            onClick={() => setHelpOpen(true)}
-            className="omada-devcfg-help-btn mb-2"
-          >
-            <SIcon name="question" size={20} />
-          </button>
-        </Tooltip>
-      </div>
+      <STabs
+        variant="page"
+        size="lg"
+        bordered
+        aria-label="Switch Ports sections"
+        activeKey={subTab}
+        onChange={(k) => setSubTab(k as SubTabKey)}
+        className="pr-9"
+        items={[
+          { key: 'port-settings', label: 'Port Settings' },
+          { key: 'port-profile', label: 'Port Profile' },
+        ]}
+        extra={
+          <Tooltip title="Switch Ports Help">
+            <button
+              type="button"
+              aria-label="Switch Ports help"
+              onClick={() => setHelpOpen(true)}
+              className="omada-devcfg-help-btn"
+            >
+              <SIcon name="question" size={20} />
+            </button>
+          </Tooltip>
+        }
+      />
 
       {subTab === 'port-settings' && (
         <>
@@ -1298,70 +1280,34 @@ export const SwitchPortsConfigPage: React.FC<SwitchPortsConfigPageProps> = ({
               />
 
               {/* View Mode Segmented Track */}
-              <div
-                role="tablist"
+              <STabs
+                variant="filter"
                 aria-label="Port table view mode"
-                className="omada-devcfg-seg-track"
-              >
-                {(
-                  [
-                    { key: 'overview', label: 'Overview' },
-                    { key: 'poe', label: 'PoE' },
-                    { key: 'counters', label: 'Counters' },
-                  ] as const
-                ).map((item) => {
-                  const isActive = viewMode === item.key;
-                  return (
-                    <button
-                      key={item.key}
-                      type="button"
-                      role="tab"
-                      aria-selected={isActive}
-                      onClick={() => setViewMode(item.key)}
-                      className={`omada-devcfg-seg-pill ${
-                        isActive ? 'is-active' : ''
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  );
-                })}
-              </div>
+                activeKey={viewMode}
+                onChange={(k) => setViewMode(k as typeof viewMode)}
+                items={[
+                  { key: 'overview', label: 'Overview' },
+                  { key: 'poe', label: 'PoE' },
+                  { key: 'counters', label: 'Counters' },
+                ]}
+              />
 
               {/* Link Status Segmented Track */}
-              <div
-                role="tablist"
+              <STabs
+                variant="filter"
                 aria-label="Port link status filter"
-                className="omada-devcfg-seg-track"
-              >
-                {(
-                  [
-                    { key: 'all', label: 'All' },
-                    { key: 'connected', label: 'Connected' },
-                    { key: 'disconnected', label: 'Disconnected' },
-                    { key: 'disabled', label: 'Disabled' },
-                  ] as const
-                ).map((item) => {
-                  const isActive = linkFilter === item.key;
-                  return (
-                    <button
-                      key={item.key}
-                      type="button"
-                      role="tab"
-                      aria-selected={isActive}
-                      onClick={() => {
-                        setLinkFilter(item.key);
-                        setCurrentPage(1);
-                      }}
-                      className={`omada-devcfg-seg-pill ${
-                        isActive ? 'is-active' : ''
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  );
-                })}
-              </div>
+                activeKey={linkFilter}
+                onChange={(k) => {
+                  setLinkFilter(k as typeof linkFilter);
+                  setCurrentPage(1);
+                }}
+                items={[
+                  { key: 'all', label: 'All' },
+                  { key: 'connected', label: 'Connected' },
+                  { key: 'disconnected', label: 'Disconnected' },
+                  { key: 'disabled', label: 'Disabled' },
+                ]}
+              />
             </div>
 
             <div className="flex items-center gap-4">

@@ -1,0 +1,37 @@
+# @chenyqthu/omada-ui-kit@0.5.0
+
+> TP-Link Omada Controller v6.3 React 19 + Ant Design 6 UI component kit with Light/Dark design tokens, scoped micro-frontend CSS, bundled Figma assets, deterministic Agent Bridge, and zero-build single-file HTML standalone bundle.
+
+## Subpath Entrypoints
+- `@chenyqthu/omada-ui-kit/core`: Theme (`OmadaProvider`, `useOmadaTheme`, `useRovingFocus`), layout, base `S*` inputs/tables/feedback
+- `@chenyqthu/omada-ui-kit/blocks`: `SEmulatorShell`, `SFilterTableBlock`, `SInlineRuleEditorLayout`, `SInlineFormRow`, `SDetailInspectorDrawer`, `SMasterDetailSplitBlock`, `SWizardModal`, `SSwitchPortPicker`
+- `@chenyqthu/omada-ui-kit/charts`: Modular ECharts (`SChart`, `SLineChart`, `SBarChart`, `SDonutChart`, `SSparkChart`, `SDonutSummaryCard`, `SHealthGauge`, `SHealthRadar`, `SHealthTrendBar`, `SChannelUtilization`)
+- `@chenyqthu/omada-ui-kit/emulator`: Controller v6.3 domain widgets (`STopologyCanvas`, `SAclRuleBuilder`, `SSettingsPageShell`, `STerminalConsole`, `SDevicePortGraphic`, `SPortPanel`)
+- `@chenyqthu/omada-ui-kit/assets`: `SIcon` (590), `SProductImage` (83), `SIllustration` (122), `SClientIcon` (217), `SBrandAsset` (47), `OmadaLogo`, `SDeviceIcon`
+- `@chenyqthu/omada-ui-kit/agent`: `OmadaAgentProvider`, `useOmadaAgent`, `useOmadaAgentControl`, `useOmadaAgentAction`, `OMADA_SECRET_MASK`
+- `@chenyqthu/omada-ui-kit/style.css`: Full stylesheet (includes Tailwind v4 preflight)
+- `@chenyqthu/omada-ui-kit/style.scoped.css`: Scoped stylesheet without global reset (pair with `<OmadaProvider syncDocumentTheme={false}>`)
+- `@chenyqthu/omada-ui-kit/standalone`: Browser IIFE bundle (`window.OmadaUI`)
+
+## Pinned Single-File HTML CDN URLs
+- CSS: `https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/style.css`
+- JS: `https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/standalone.js`
+- Babel: `https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js`
+
+## Progressive-Disclosure Skill References (`skills/omada-ui-kit/`)
+- `SKILL.md`: Entrypoint workflow, output mode selection, universal guardrails & verification gate
+- `references/standalone.md`: Zero-build HTML globals, curated `antd`/`AntdIcons` subset, and `dist/assets/` resolution
+- `references/docs/blocks.md`: SDetailInspectorDrawer, SEmulatorShell, SFilterTableBlock, SInlineFormRow, SInlineRuleEditorLayout, SMasterDetailSplitBlock, SSwitchPortPicker, SWizardModal
+- `references/docs/layout.md`: buildOmadaAntdTheme, OmadaProvider, useOmadaTheme, SAnchor, SAppShell, SBreadcrumb, SDivider, SDropdown, SPageHeader, SPagination, SSteps, useRovingFocus
+- `references/docs/input.md`: createEmptySchedule, createPickerDate, createSchedulePreset, formatFileSize, formatOmadaDateRange, formatScheduleSummary, formatSlotRange, normalizeMac, normalizeScheduleValue, parseIpValue, SButton, SCascader, SCheckbox, SCheckboxGroup, SColorPicker, SDatePicker, SForm, SFormFooter, SFormItem, SFormSection, SInput, SIpInput, SMacInput, SNumberInput, SPasswordInput, SRadio, SRadioGroup, SRangePicker, SRate, SSchedule, SSearchInput, SSelect, SSlider, SSwitch, STextArea, STimePicker, STimeRangePicker, STransfer, STreeSelect, SUpload, toNativeDate, validateCidr, validateIpv4, validateMac, validateUploadFile
+- `references/docs/data-display.md`: SAvatar, SAvatarGroup, SBadge, SCard, SCollapse, SCustomTag, SDescriptions, SEditableCell, SKpiCard, SProgress, STable, STabs, STag, STile, STileGroup
+- `references/docs/charts.md`: SBarChart, SChannelUtilization, SChart, SDonutChart, SDonutSummaryCard, SHealthGauge, SHealthRadar, SHealthTrendBar, SLineChart, SSparkChart
+- `references/docs/feedback.md`: SAlert, SDrawer, SDrawerFooter, SEmpty, SInfoDialog, SLoading, SMask, SModal, SNotification, SPopconfirm, SPopover, SSkeleton, SStepModal, STooltip, STruncatedText, useOmadaConfirm, useOmadaFeedback, useOmadaNotification
+- `references/docs/emulator-v6.md`: LagGlyph, PortBadgeTile, PortStatusLegend, resolveConnectedProductSlug, SAclRuleBuilder, SApDistributionRuler, SCategoryKpiCarousel, SClientOverviewStrip, SDeviceHealthSummary, SDevicePortGraphic, SDeviceStatus, SExpandableSection, SfpGlyph, SPortPanel, SSettingsInfoBanner, SSettingsPageShell, SSettingsRow, SSettingsSection, STerminalConsole, STopologyCanvas
+- `references/docs/assets.md`: hasOmadaIcon, hasOmadaIllustration, hasOmadaProductImage, OmadaLogo, SBrandAsset, SClientIcon, SDeviceIcon, SIcon, SIllustration, SProductImage
+- `references/docs/agent.md`: OmadaAgentProvider, useOmadaAgent, useOmadaAgentAction, useOmadaAgentControl
+
+## Starter Templates & Verification CLI
+- Templates (`templates/*.{html,tsx}`): `dashboard`, `inventory`, `acl-rules`, `settings`, `analytics-logs`
+- Query CLI: `node skills/omada-ui-kit/scripts/query-catalog.mjs component <Name>`
+- Verifier CLI: `node skills/omada-ui-kit/scripts/verify-demo.mjs <demo.html|Demo.tsx>`

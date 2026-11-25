@@ -28,7 +28,9 @@ import {
   SIllustration,
   SProductImage,
   SSelect,
+  STabs,
   hasOmadaProductImage,
+  useRovingFocus,
   type OmadaClientIconName,
   type OmadaIllustrationName,
   type OmadaProductName,
@@ -465,6 +467,28 @@ export const DevicePropertiesDrawer: React.FC<DevicePropertiesDrawerProps> = ({
     () => buildHealthTicks(activeDevice?.key ?? 'default'),
     [activeDevice?.key],
   );
+
+  const openDeviceRovingItems = useMemo(
+    () => resolvedTabs.map((tabDev) => ({ key: tabDev.key })),
+    [resolvedTabs],
+  );
+
+  const { getItemProps: getOpenDeviceTabProps } = useRovingFocus({
+    items: openDeviceRovingItems,
+    activeKey: activeDevice?.key,
+    onActivate: (nextKey) => {
+      const target = resolvedTabs.find((d) => d.key === nextKey);
+      if (target) {
+        setActiveTabKey(target.key);
+        setIsRenaming(false);
+        setSelectedPortNumber(null);
+        setSelectedRowKeys([]);
+        onSelectDevice?.(target);
+      }
+    },
+    orientation: 'horizontal',
+    activationMode: 'automatic',
+  });
 
   if (!open || !activeDevice) {
     return null;
@@ -1184,38 +1208,16 @@ export const DevicePropertiesDrawer: React.FC<DevicePropertiesDrawerProps> = ({
                 <h3 className="m-0 text-[15px] font-semibold text-[var(--omada-text-primary)]">
                   Connection
                 </h3>
-                <div
-                  role="tablist"
+                <STabs
+                  variant="filter"
                   aria-label="Connection view"
-                  className="inline-flex rounded-[4px] bg-[var(--omada-bg-field)] p-0.5"
-                >
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={connectionView === 'device'}
-                    onClick={() => setConnectionView('device')}
-                    className={`h-[24px] cursor-pointer rounded-[3px] px-2.5 text-[12px] transition-colors ${
-                      connectionView === 'device'
-                        ? 'bg-[var(--omada-bg-surface)] font-medium text-[var(--omada-brand-text)] shadow-2xs'
-                        : 'text-[var(--omada-text-secondary)] hover:text-[var(--omada-text-primary)]'
-                    }`}
-                  >
-                    Device
-                  </button>
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={connectionView === 'client'}
-                    onClick={() => setConnectionView('client')}
-                    className={`h-[24px] cursor-pointer rounded-[3px] px-2.5 text-[12px] transition-colors ${
-                      connectionView === 'client'
-                        ? 'bg-[var(--omada-bg-surface)] font-medium text-[var(--omada-brand-text)] shadow-2xs'
-                        : 'text-[var(--omada-text-secondary)] hover:text-[var(--omada-text-primary)]'
-                    }`}
-                  >
-                    Client
-                  </button>
-                </div>
+                  activeKey={connectionView}
+                  onChange={(k) => setConnectionView(k as 'device' | 'client')}
+                  items={[
+                    { key: 'device', label: 'Device' },
+                    { key: 'client', label: 'Client' },
+                  ]}
+                />
               </div>
 
               {connectionView === 'device' ? (
@@ -1423,32 +1425,36 @@ export const DevicePropertiesDrawer: React.FC<DevicePropertiesDrawerProps> = ({
               </button>
             </Tooltip>
 
-            <div className="flex items-center gap-2" role="tablist" aria-label="Open device tabs">
-              {resolvedTabs.map((tabDev) => {
-                const isActive = tabDev.key === activeDevice.key;
-                const tabName = renamedNames[tabDev.key] ?? tabDev.name;
-                return (
-                  <button
-                    key={tabDev.key}
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    onClick={() => handleSwitchDeviceTab(tabDev)}
-                    className={`omada-device-drawer-tab ${
-                      isActive
-                        ? 'omada-device-drawer-tab--active'
-                        : 'omada-device-drawer-tab--inactive'
-                    }`}
-                  >
-                    <SProductImage
-                      name={resolveDeviceProductSlug(tabDev)}
-                      size={22}
-                      className="h-[20px] w-[26px] shrink-0 object-contain"
-                    />
-                    <span>{tabName}</span>
-                  </button>
-                );
-              })}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2" role="tablist" aria-label="Open device tabs">
+                {resolvedTabs.map((tabDev) => {
+                  const isActive = tabDev.key === activeDevice.key;
+                  const tabName = renamedNames[tabDev.key] ?? tabDev.name;
+                  const rovingProps = getOpenDeviceTabProps<HTMLButtonElement>(tabDev.key);
+                  return (
+                    <button
+                      key={tabDev.key}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActive}
+                      onClick={() => handleSwitchDeviceTab(tabDev)}
+                      className={`omada-device-drawer-tab ${
+                        isActive
+                          ? 'omada-device-drawer-tab--active'
+                          : 'omada-device-drawer-tab--inactive'
+                      }`}
+                      {...rovingProps}
+                    >
+                      <SProductImage
+                        name={resolveDeviceProductSlug(tabDev)}
+                        size={22}
+                        className="h-[20px] w-[26px] shrink-0 object-contain"
+                      />
+                      <span>{tabName}</span>
+                    </button>
+                  );
+                })}
+              </div>
 
               <Dropdown
                 menu={{ items: addTabMenuItems }}
@@ -1631,37 +1637,17 @@ export const DevicePropertiesDrawer: React.FC<DevicePropertiesDrawerProps> = ({
 
                   {/* Sub-toolbar */}
                   <div className="mt-5 mb-3 flex flex-wrap items-center justify-between gap-3">
-                    <div
-                      role="tablist"
+                    <STabs
+                      variant="filter"
                       aria-label="Port data mode"
-                      className="inline-flex items-center rounded-[4px] bg-[var(--omada-bg-field)] p-1"
-                    >
-                      {(
-                        [
-                          { key: 'config', label: 'Config' },
-                          { key: 'statistics', label: 'Statistics' },
-                          { key: 'ddm', label: 'DDM' },
-                        ] as const
-                      ).map((sub) => {
-                        const isActive = portSubTab === sub.key;
-                        return (
-                          <button
-                            key={sub.key}
-                            type="button"
-                            role="tab"
-                            aria-selected={isActive}
-                            onClick={() => setPortSubTab(sub.key)}
-                            className={`h-[26px] cursor-pointer rounded-[3px] px-3.5 text-[13px] transition-colors ${
-                              isActive
-                                ? 'bg-[var(--omada-bg-surface)] font-medium text-[var(--omada-brand-text)] shadow-2xs'
-                                : 'text-[var(--omada-text-secondary)] hover:text-[var(--omada-text-primary)]'
-                            }`}
-                          >
-                            {sub.label}
-                          </button>
-                        );
-                      })}
-                    </div>
+                      activeKey={portSubTab}
+                      onChange={(k) => setPortSubTab(k as typeof portSubTab)}
+                      items={[
+                        { key: 'config', label: 'Config' },
+                        { key: 'statistics', label: 'Statistics' },
+                        { key: 'ddm', label: 'DDM' },
+                      ]}
+                    />
 
                     <div className="flex items-center gap-4">
                       <button

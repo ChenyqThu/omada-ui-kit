@@ -15,34 +15,43 @@ export interface STreeSelectProps<
   popupSearch?: boolean;
   /** Placeholder text for the popup search input when `popupSearch` is enabled. */
   searchPlaceholder?: string;
-  /** Ref forwarded to the underlying AntD 6 TreeSelect instance. */
-  ref?: React.Ref<RefSelectProps>;
 }
 
-/**
- * Omada TreeSelect control defaulting to `variant="filled"`, supporting single selection,
- * checkable / multi-select trees with removable Omada tags, and inline or popup search filtering.
- */
-export function STreeSelect<
+type STreeSelectComponent = (<
   ValueType = unknown,
   OptionType extends TreeSelectDataNode = TreeSelectDataNode,
->({
-  variant = 'filled',
-  listHeight = 256,
-  treeCheckable,
-  multiple,
-  showSearch,
-  popupSearch = false,
-  searchPlaceholder = 'Search',
-  popupRender,
-  tagRender,
-  fieldNames,
-  className = '',
-  classNames,
-  styles,
-  ref,
-  ...rest
-}: STreeSelectProps<ValueType, OptionType>) {
+>(
+  props: STreeSelectProps<ValueType, OptionType> & React.RefAttributes<RefSelectProps>,
+) => React.ReactElement | null) & {
+  TreeNode: typeof TreeSelect.TreeNode;
+  SHOW_ALL: typeof TreeSelect.SHOW_ALL;
+  SHOW_PARENT: typeof TreeSelect.SHOW_PARENT;
+  SHOW_CHILD: typeof TreeSelect.SHOW_CHILD;
+  displayName?: string;
+};
+
+function STreeSelectInner<
+  ValueType = unknown,
+  OptionType extends TreeSelectDataNode = TreeSelectDataNode,
+>(
+  {
+    variant = 'filled',
+    listHeight = 256,
+    treeCheckable,
+    multiple,
+    showSearch,
+    popupSearch = false,
+    searchPlaceholder = 'Search',
+    popupRender,
+    tagRender,
+    fieldNames,
+    className = '',
+    classNames,
+    styles,
+    ...rest
+  }: STreeSelectProps<ValueType, OptionType>,
+  ref: React.ForwardedRef<RefSelectProps>,
+) {
   const [popupSearchValue, setPopupSearchValue] = useState('');
   const isMulti = Boolean(treeCheckable || multiple);
 
@@ -200,7 +209,22 @@ export function STreeSelect<
   );
 }
 
-STreeSelect.TreeNode = TreeSelect.TreeNode;
-STreeSelect.SHOW_ALL = TreeSelect.SHOW_ALL;
-STreeSelect.SHOW_PARENT = TreeSelect.SHOW_PARENT;
-STreeSelect.SHOW_CHILD = TreeSelect.SHOW_CHILD;
+/**
+ * Omada TreeSelect control defaulting to `variant="filled"`, supporting single selection,
+ * checkable / multi-select trees with removable Omada tags, and inline or popup search filtering.
+ */
+export const STreeSelect = Object.assign(
+  React.forwardRef(
+    STreeSelectInner as (
+      props: STreeSelectProps<unknown, TreeSelectDataNode>,
+      ref: React.ForwardedRef<RefSelectProps>,
+    ) => React.ReactElement | null,
+  ),
+  {
+    TreeNode: TreeSelect.TreeNode,
+    SHOW_ALL: TreeSelect.SHOW_ALL,
+    SHOW_PARENT: TreeSelect.SHOW_PARENT,
+    SHOW_CHILD: TreeSelect.SHOW_CHILD,
+  },
+) as unknown as STreeSelectComponent;
+STreeSelect.displayName = 'STreeSelect';

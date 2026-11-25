@@ -1,0 +1,285 @@
+@layer theme, base, antd, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source("../omada");
+
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *):not([data-theme="light"], [data-theme="light"] *));
+
+.omada-scope,
+.omada-emulator-root,
+.omada-scope[data-theme="light"],
+.omada-scope[data-theme="light"] .omada-emulator-root {
+  --omada-font-sans: 'Manrope', Arial, Geneva, Verdana, sans-serif;
+  --omada-font-mono: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+
+  /* Brand */
+  --omada-brand: #00A870;
+  --omada-brand-hover: #05C178;
+  --omada-brand-active: #008F5F;
+  --omada-brand-text: #00A870;
+  --omada-brand-bg-subtle: rgba(0, 168, 112, 0.12);
+  --omada-brand-bg-subtlest: rgba(0, 168, 112, 0.08);
+
+  /* Top Bar */
+  --omada-topbar-bg: linear-gradient(90deg, #038069 0%, #026E64 100%);
+  --omada-topbar-text: #FFFFFF;
+
+  /* Link */
+  --omada-link: #0069CB;
+  --omada-link-hover: #0D89FD;
+
+  /* Status */
+  --omada-color-success: #00A870;
+  --omada-color-success-bg: rgba(0, 168, 112, 0.12);
+  --omada-color-error: #EE385C;
+  --omada-color-error-hover: #FF476B;
+  --omada-color-error-bg: rgba(238, 56, 92, 0.12);
+  --omada-color-warning: #FF8C27;
+  --omada-color-warning-bg: rgba(255, 140, 39, 0.12);
+  --omada-color-warning-minor: #FFCB00;
+  --omada-color-warning-minor-bg: rgba(255, 203, 0, 0.14);
+  --omada-color-info: #0069CB;
+  --omada-color-info-bg: rgba(0, 105, 203, 0.12);
+  --omada-color-magenta: #C52AD4;
+  --omada-color-magenta-bg: rgba(244, 118, 255, 0.12);
+  --omada-color-purple: #2F2FFF;
+  --omada-color-purple-bg: rgba(47, 47, 255, 0.10);
+  --omada-color-strength-strong: #87C969;
+  --omada-port-tile-text-dark: #2B2B2B;
+
+  /* Text */
+  --omada-text-primary: #2B2B2B;
+  --omada-text-secondary: #636363;
+  --omada-text-tertiary: #999999;
+  --omada-text-disabled: #CCCCCC;
+  --omada-text-inverse: #FFFFFF;
+
+  /* Surfaces & Fills */
+  --omada-bg-page: #F7F7F7;
+  --omada-bg-surface: #FFFFFF;
+  --omada-bg-sidebar: #F7F7F7;
+  --omada-bg-sidebar-active: #FFFFFF;
+  --omada-bg-field: #F4F4F4;
+  --omada-bg-field-hover: #ECECEC;
+  --omada-bg-secondary-btn: #F4F4F4;
+  --omada-bg-secondary-btn-hover: #ECECEC;
+  --omada-bg-table-header: #F7F7F7;
+  --omada-bg-table-row-hover: #FBFBFB;
+  --omada-bg-overlay: #FFFFFF;
+  --omada-bg-popover: #FFFFFF;
+  --omada-bg-tooltip: rgba(43, 43, 43, 0.96);
+  --omada-bg-switch-off: #CCCCCC;
+  --omada-bg-switch-off-hover: #BEBEBE;
+  --omada-bg-mask: rgba(43, 43, 43, 0.45);
+  --omada-scrollbar: #CCCCCC;
+
+  /* Borders */
+  --omada-border-divider: #ECECEC;
+  --omada-border-strong: #CCCCCC;
+  --omada-border-outline-btn: #E8E8E8;
+  --omada-border-field: #F4F4F4;
+  --omada-border-focus: #05C178;
+
+  /* Shadows */
+  --omada-shadow-tooltip: 0 2px 4px rgba(0, 0, 0, 0.10);
+  --omada-shadow-dropdown: 0 4px 10px rgba(43, 43, 43, 0.25);
+  --omada-shadow-popover: 0 2px 16px rgba(43, 43, 43, 0.14);
+  --omada-shadow-drawer: -4px 2px 24px rgba(43, 43, 43, 0.10);
+
+  /* Component Domain Tokens */
+  --omada-settings-info-bg: #F0F5FA;
+  --omada-settings-info-icon: #0069CB;
+  --omada-dash-card-bg: transparent;
+  --omada-dash-card-border: var(--omada-border-divider);
+  --omada-dash-arc-fill: var(--omada-brand-hover);
+  --omada-dash-arc-track: var(--omada-border-divider);
+  --omada-dash-radar-grid: var(--omada-border-divider);
+  --omada-dash-radar-fill: rgba(5, 193, 120, 0.14);
+  --omada-dash-radar-stroke: var(--omada-brand-hover);
+  --omada-dash-tick-good: rgba(5, 193, 120, 0.5);
+  --omada-dash-tick-fair: rgba(255, 140, 39, 0.5);
+  --omada-dash-tick-poor: rgba(238, 56, 92, 0.5);
+  --omada-dash-tick-empty: rgba(204, 204, 204, 0.45);
+  --omada-dash-channel-track: rgba(0, 0, 0, 0.05);
+  --omada-dash-ap-bubble-bg: var(--omada-text-inverse);
+  --omada-insights-card-bg: var(--omada-bg-surface);
+  --omada-insights-card-border: var(--omada-border-divider);
+  --omada-map-canvas-bg: var(--omada-bg-surface);
+  --omada-map-panel-bg: var(--omada-bg-surface);
+  --omada-map-border: var(--omada-border-divider);
+  --omada-map-floating-shadow: 0 2px 10px rgba(43, 43, 43, 0.10);
+  --omada-topo-link: rgba(204, 204, 204, 0.78);
+  --omada-topo-link-dashed: var(--omada-border-strong);
+  --omada-tabs-active-text: var(--omada-brand-text);
+  --omada-tabs-filter-active-bg: var(--omada-bg-surface);
+}
+
+.omada-scope[data-theme="dark"],
+.omada-scope.dark,
+:where([data-theme="dark"], .dark) .omada-scope:not([data-theme="light"]),
+.omada-emulator-root[data-theme="dark"],
+.omada-emulator-root.dark,
+:where([data-theme="dark"], .dark) .omada-emulator-root:not([data-theme="light"]):not(.omada-scope[data-theme="light"] *) {
+  --omada-brand: #008055;
+  --omada-brand-hover: #00A163;
+  --omada-brand-active: #006B47;
+  --omada-brand-text: #00A870;
+  --omada-brand-bg-subtle: rgba(0, 168, 112, 0.20);
+  --omada-brand-bg-subtlest: rgba(0, 168, 112, 0.12);
+
+  --omada-topbar-bg: linear-gradient(90deg, #0D2F29 0%, #09231F 100%);
+  --omada-topbar-text: #FFFFFF;
+
+  --omada-link: #33A0E9;
+  --omada-link-hover: #297BCC;
+
+  --omada-color-success: #00A870;
+  --omada-color-success-bg: rgba(0, 168, 112, 0.20);
+  --omada-color-error: #FF4D62;
+  --omada-color-error-hover: #EE385C;
+  --omada-color-error-bg: rgba(238, 56, 92, 0.20);
+  --omada-color-warning: #F19151;
+  --omada-color-warning-bg: rgba(241, 145, 81, 0.20);
+  --omada-color-warning-minor: #CCA200;
+  --omada-color-warning-minor-bg: rgba(204, 162, 0, 0.20);
+  --omada-color-info: #33A0E9;
+  --omada-color-info-bg: rgba(51, 160, 233, 0.20);
+  --omada-color-magenta: #F476FF;
+  --omada-color-magenta-bg: rgba(244, 118, 255, 0.20);
+  --omada-color-purple: #9886FF;
+  --omada-color-purple-bg: rgba(152, 134, 255, 0.20);
+  --omada-color-strength-strong: #87C969;
+  --omada-port-tile-text-dark: #2B2B2B;
+
+  --omada-text-primary: rgba(255, 255, 255, 0.90);
+  --omada-text-secondary: rgba(255, 255, 255, 0.64);
+  --omada-text-tertiary: rgba(255, 255, 255, 0.50);
+  --omada-text-disabled: rgba(255, 255, 255, 0.24);
+  --omada-text-inverse: #FFFFFF;
+
+  --omada-bg-page: #141414;
+  --omada-bg-surface: #1A1A1A;
+  --omada-bg-sidebar: #242424;
+  --omada-bg-sidebar-active: #303030;
+  --omada-bg-field: #272727;
+  --omada-bg-field-hover: #363636;
+  --omada-bg-secondary-btn: #272727;
+  --omada-bg-secondary-btn-hover: #363636;
+  --omada-bg-table-header: #212121;
+  --omada-bg-table-row-hover: rgba(255, 255, 255, 0.04);
+  --omada-bg-overlay: #1C1C1C;
+  --omada-bg-popover: #272727;
+  --omada-bg-tooltip: #333333;
+  --omada-bg-switch-off: rgba(255, 255, 255, 0.24);
+  --omada-bg-switch-off-hover: rgba(255, 255, 255, 0.40);
+  --omada-bg-mask: rgba(0, 0, 0, 0.65);
+  --omada-scrollbar: #636363;
+
+  --omada-border-divider: rgba(255, 255, 255, 0.10);
+  --omada-border-strong: #636363;
+  --omada-border-outline-btn: rgba(255, 255, 255, 0.24);
+  --omada-border-field: #272727;
+  --omada-border-focus: #00A870;
+
+  --omada-shadow-tooltip: 0 2px 4px rgba(0, 0, 0, 0.24);
+  --omada-shadow-dropdown: 0 3px 10px rgba(0, 0, 0, 0.20);
+  --omada-shadow-popover: 0 2px 16px rgba(0, 0, 0, 0.20);
+  --omada-shadow-drawer: -4px 2px 24px rgba(0, 0, 0, 0.24);
+
+  --omada-settings-info-bg: #1D2939;
+  --omada-settings-info-icon: #33A0E9;
+  --omada-dash-card-bg: transparent;
+  --omada-dash-card-border: #353535;
+  --omada-dash-arc-fill: var(--omada-brand-text);
+  --omada-dash-arc-track: #353535;
+  --omada-dash-radar-grid: rgba(255, 255, 255, 0.09);
+  --omada-dash-radar-fill: rgba(0, 168, 112, 0.16);
+  --omada-dash-radar-stroke: var(--omada-brand-text);
+  --omada-dash-tick-good: rgba(5, 193, 120, 0.45);
+  --omada-dash-tick-fair: rgba(255, 140, 39, 0.45);
+  --omada-dash-tick-poor: rgba(238, 56, 92, 0.45);
+  --omada-dash-tick-empty: rgba(255, 255, 255, 0.12);
+  --omada-dash-channel-track: rgba(255, 255, 255, 0.08);
+  --omada-dash-ap-bubble-bg: var(--omada-text-inverse);
+  --omada-insights-card-bg: transparent;
+  --omada-insights-card-border: rgba(255, 255, 255, 0.14);
+  --omada-map-canvas-bg: var(--omada-bg-overlay);
+  --omada-map-panel-bg: var(--omada-bg-overlay);
+  --omada-map-border: var(--omada-border-divider);
+  --omada-map-floating-shadow: 0 4px 14px rgba(20, 20, 20, 0.65);
+  --omada-topo-link: rgba(255, 255, 255, 0.28);
+  --omada-topo-link-dashed: rgba(255, 255, 255, 0.34);
+  --omada-tabs-active-text: var(--omada-brand-hover);
+  --omada-tabs-filter-active-bg: var(--omada-bg-field-hover);
+}
+
+@layer base {
+  :where(.omada-scope, .omada-emulator-root) {
+    font-family: var(--omada-font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--omada-text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  :where(.omada-scope, .omada-emulator-root) *,
+  :where(.omada-scope, .omada-emulator-root) ::before,
+  :where(.omada-scope, .omada-emulator-root) ::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: var(--omada-border-divider);
+  }
+
+  :where(.omada-scope, .omada-emulator-root) :where(h1, h2, h3, h4, h5, h6, p, ul, ol, figure, blockquote, dl, dd) {
+    margin: 0;
+    padding: 0;
+  }
+
+  :where(.omada-scope, .omada-emulator-root) :where(ul, ol) {
+    list-style: none;
+  }
+
+  :where(.omada-scope, .omada-emulator-root) :where(button, input, optgroup, select, textarea) {
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+  }
+
+  :where(.omada-scope, .omada-emulator-root) :where(img, svg, video, canvas) {
+    display: block;
+    vertical-align: middle;
+  }
+
+  :where(.omada-scope, .omada-emulator-root) :where(img, video) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .omada-scope .tabular-nums,
+  .omada-emulator-root .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .omada-scope ::-webkit-scrollbar,
+  .omada-emulator-root ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .omada-scope ::-webkit-scrollbar-track,
+  .omada-emulator-root ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .omada-scope ::-webkit-scrollbar-thumb,
+  .omada-emulator-root ::-webkit-scrollbar-thumb {
+    background: var(--omada-scrollbar);
+    border-radius: 9999px;
+  }
+}

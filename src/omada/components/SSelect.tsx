@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Select,
   type RefSelectProps,
   type SelectProps,
 } from 'antd';
 import type { BaseOptionType, DefaultOptionType } from 'antd/es/select';
+import { useOmadaAgentControl } from '../agent';
 import { SIcon } from '../assets/SIcon';
 import { SCustomTag } from './STag';
 
@@ -25,39 +26,121 @@ export interface SSelectProps<
   addNewLabel?: React.ReactNode;
   /** Callback fired when the sticky popup footer Add action is clicked. */
   onAddNew?: () => void;
-  /** Ref forwarded to the underlying AntD 6 Select instance. */
-  ref?: React.Ref<RefSelectProps>;
+  /** Optional deterministic Agent Bridge control ID. */
+  agentId?: string;
 }
 
-/**
- * Omada Select control defaulting to `variant="filled"` (`#F4F4F4` Light / `#272727` Dark),
- * supporting single/multiple/tags modes, removable Omada tags, rich icon/description rows,
- * 8-item scroll height (`256px`), and an optional sticky popup footer Add action.
- */
-export function SSelect<
+type SSelectComponent = (<
   ValueType = unknown,
   OptionType extends BaseOptionType | DefaultOptionType = SSelectOption,
->({
-  variant = 'filled',
-  listHeight = 256,
-  mode,
-  showSearch,
-  fieldNames,
-  tagRender,
-  optionRender,
-  popupRender,
-  addNewLabel,
-  onAddNew,
-  className = '',
-  classNames,
-  styles,
-  ref,
-  ...rest
-}: SSelectProps<ValueType, OptionType>) {
+>(
+  props: SSelectProps<ValueType, OptionType> & React.RefAttributes<RefSelectProps>,
+) => React.ReactElement | null) & {
+  displayName?: string;
+};
+
+function SSelectInner<
+  ValueType = unknown,
+  OptionType extends BaseOptionType | DefaultOptionType = SSelectOption,
+>(
+  {
+    variant = 'filled',
+    listHeight = 256,
+    mode,
+    showSearch,
+    fieldNames,
+    tagRender,
+    optionRender,
+    popupRender,
+    addNewLabel,
+    onAddNew,
+    value,
+    defaultValue,
+    onChange,
+    disabled,
+    options,
+    agentId,
+    className = '',
+    classNames,
+    styles,
+    ...rest
+  }: SSelectProps<ValueType, OptionType>,
+  ref: React.ForwardedRef<RefSelectProps>,
+) {
   const isMulti = mode === 'multiple' || mode === 'tags';
+  const [innerValue, setInnerValue] = useState<ValueType | null | undefined>(defaultValue);
+  const isControlled = value !== undefined;
+  const wasControlledRef = useRef<boolean>(isControlled);
+  const currentValue = isControlled ? value : innerValue;
+
+  useEffect(() => {
+    if (wasControlledRef.current && !isControlled) {
+      setInnerValue(defaultValue);
+    }
+    wasControlledRef.current = isControlled;
+  }, [isControlled, defaultValue]);
 
   const labelField = (fieldNames?.label as string | undefined) ?? 'label';
   const valueField = (fieldNames?.value as string | undefined) ?? 'value';
+
+  const commitSelect = (
+    nextVal: ValueType,
+    opt?: OptionType | OptionType[],
+  ) => {
+    if (!isControlled) {
+      setInnerValue(nextVal);
+    }
+    onChange?.(
+      nextVal,
+      (opt ?? ({} as OptionType)) as OptionType | OptionType[],
+    );
+  };
+
+  useOmadaAgentControl(
+    agentId
+      ? {
+          id: agentId,
+          kind: 'select',
+          label:
+            (rest['aria-label'] as string | undefined) ??
+            (typeof rest.placeholder === 'string' ? rest.placeholder : undefined),
+          value: currentValue,
+          disabled: Boolean(disabled),
+          options: (options ?? [])
+            .map((opt) => {
+              const rec = opt as Record<string, unknown>;
+              const v = rec[valueField];
+              if (typeof v !== 'string' && typeof v !== 'number') return null;
+              const lbl = rec[labelField];
+              return {
+                value: v,
+                label: typeof lbl === 'string' ? lbl : String(v),
+                disabled: Boolean(rec.disabled),
+              };
+            })
+            .filter((item): item is NonNullable<typeof item> => item !== null),
+          actions: {
+            setValue: (next: unknown) => {
+              const matched = (options ?? []).find(
+                (o) => (o as Record<string, unknown>)[valueField] === next,
+              );
+              commitSelect(next as ValueType, matched);
+            },
+            select: (next: unknown) => {
+              const matched = (options ?? []).find(
+                (o) => (o as Record<string, unknown>)[valueField] === next,
+              );
+              commitSelect(next as ValueType, matched);
+            },
+            clear: () => {
+              const cleared = (isMulti ? [] : undefined) as unknown as ValueType;
+              commitSelect(cleared);
+              return isMulti ? [] : null;
+            },
+          },
+        }
+      : null,
+  );
 
   const defaultFilterOption = (input: string, option?: OptionType) => {
     if (!option) return false;
@@ -193,6 +276,11 @@ export function SSelect<
       variant={variant}
       listHeight={listHeight}
       mode={mode}
+      value={isControlled ? value : (agentId ? (innerValue ?? undefined) : undefined)}
+      defaultValue={agentId ? undefined : defaultValue}
+      disabled={disabled}
+      options={options}
+      onChange={(nextVal, opt) => commitSelect(nextVal, opt)}
       showSearch={resolvedShowSearch}
       fieldNames={fieldNames}
       tagRender={isMulti ? (tagRender ?? defaultTagRender) : tagRender}
@@ -205,3 +293,16 @@ export function SSelect<
     />
   );
 }
+
+/**
+ * Omada Select control defaulting to `variant="filled"` (`#F4F4F4` Light / `#272727` Dark),
+ * supporting single/multiple/tags modes, removable Omada tags, rich icon/description rows,
+ * 8-item scroll height (`256px`), and an optional sticky popup footer Add action.
+ */
+export const SSelect = React.forwardRef(
+  SSelectInner as (
+    props: SSelectProps<unknown, SSelectOption>,
+    ref: React.ForwardedRef<RefSelectProps>,
+  ) => React.ReactElement | null,
+) as unknown as SSelectComponent;
+SSelect.displayName = 'SSelect';

@@ -15,6 +15,7 @@ import {
   SSchedule,
   SSelect,
   SSwitch,
+  STabs,
   STag,
   STextArea,
   useOmadaNotification,
@@ -396,32 +397,16 @@ const ConfigSubmoduleBody: React.FC<{
 
       {/* Optional Sub-Tabs */}
       {schema.tabs && schema.tabs.length > 0 && (
-        <div
-          role="tablist"
+        <STabs
+          variant="page"
+          size="md"
+          bordered
           aria-label={`${schema.title} sections`}
-          className="mt-3 flex flex-wrap items-center gap-7 border-b border-[var(--omada-border-divider)]"
-        >
-          {schema.tabs.map((tab) => {
-            const isActive = activeTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setActiveTab(tab.key)}
-                className={`omada-cfg-subtab-btn cursor-pointer pb-2 text-[15px] leading-6 ${
-                  isActive ? 'is-active font-medium' : 'font-normal'
-                }`}
-              >
-                <span>{tab.label}</span>
-                {isActive && (
-                  <span className="omada-cfg-subtab-indicator absolute inset-x-0 -bottom-[1px] h-[2px]" />
-                )}
-              </button>
-            );
-          })}
-        </div>
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          className="mt-3 pr-9"
+          items={schema.tabs.map((tab) => ({ key: tab.key, label: tab.label }))}
+        />
       )}
 
       {/* Optional Info Banner */}

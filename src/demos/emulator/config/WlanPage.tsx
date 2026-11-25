@@ -11,6 +11,7 @@ import {
   SPasswordInput,
   SSelect,
   SSwitch,
+  STabs,
   useOmadaNotification,
 } from '@/omada';
 import {
@@ -682,47 +683,32 @@ export const WlanPage: React.FC<WlanPageProps> = ({ initialTab = 'ssid' }) => {
   return (
     <div className="omada-wlan-page px-6 pt-4 pb-6">
       {/* Top Underline Tabs + Help Icon */}
-      <div className="flex items-center justify-between border-b border-[var(--omada-border-divider)]">
-        <div role="tablist" aria-label="WLAN configuration tabs" className="flex items-center gap-8">
-          {(
-            [
-              { key: 'ssid', label: 'SSID' },
-              { key: 'optimization', label: 'WLAN Optimization' },
-              { key: 'history', label: 'Optimization History' },
-            ] as const
-          ).map((tab) => {
-            const isActive = subTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setSubTab(tab.key)}
-                className={`omada-cfg-subtab-btn cursor-pointer pb-2.5 text-[18px] leading-[26px] ${
-                  isActive ? 'is-active font-medium' : 'font-normal'
-                }`}
-              >
-                <span>{tab.label}</span>
-                {isActive && (
-                  <span className="omada-cfg-subtab-indicator absolute inset-x-0 -bottom-[1px] h-[2px]" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        <Tooltip title="WLAN Help">
-          <button
-            type="button"
-            aria-label="WLAN help"
-            onClick={() => setHelpOpen(true)}
-            className="omada-cfg-help-btn mb-1.5"
-          >
-            <SIcon name="question" size={20} />
-          </button>
-        </Tooltip>
-      </div>
+      <STabs
+        variant="page"
+        size="lg"
+        bordered
+        aria-label="WLAN configuration tabs"
+        activeKey={subTab}
+        onChange={(k) => setSubTab(k as WlanSubTabKey)}
+        className="pr-9"
+        items={[
+          { key: 'ssid', label: 'SSID' },
+          { key: 'optimization', label: 'WLAN Optimization' },
+          { key: 'history', label: 'Optimization History' },
+        ]}
+        extra={
+          <Tooltip title="WLAN Help">
+            <button
+              type="button"
+              aria-label="WLAN help"
+              onClick={() => setHelpOpen(true)}
+              className="omada-cfg-help-btn"
+            >
+              <SIcon name="question" size={20} />
+            </button>
+          </Tooltip>
+        }
+      />
 
       {/* Tab 1: SSID */}
       {subTab === 'ssid' && (

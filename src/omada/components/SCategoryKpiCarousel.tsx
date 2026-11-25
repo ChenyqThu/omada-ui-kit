@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { SIcon, hasOmadaIcon } from '../assets/SIcon';
 import type { OmadaIconName } from '../assets/iconsManifest';
+import { useRovingFocus } from '../behaviors/useRovingFocus';
 
 export interface CategoryKpiItem {
   key: string;
@@ -80,7 +81,7 @@ function renderCategoryIcon(item: CategoryKpiItem): React.ReactNode {
 
 /**
  * Horizontal scrollable KPI category strip with `<` / `>` scroll arrows,
- * active `#00A870` border + subtle tint highlight, and Light/Dark theme support.
+ * roving keyboard focus, active `#00A870` border + subtle tint highlight, and Light/Dark theme support.
  */
 export const SCategoryKpiCarousel: React.FC<SCategoryKpiCarouselProps> = ({
   items = DEFAULT_INCIDENT_CATEGORY_ITEMS,
@@ -95,12 +96,26 @@ export const SCategoryKpiCarousel: React.FC<SCategoryKpiCarouselProps> = ({
   );
   const resolvedActiveKey = activeKey ?? innerActiveKey;
 
-  const handleSelect = (key: string) => {
+  const handleSelect = (key: string, targetEl?: HTMLElement | null) => {
     if (activeKey === undefined) {
       setInnerActiveKey(key);
     }
+    targetEl?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
     onSelect?.(key);
   };
+
+  const rovingItems = useMemo(
+    () => items.map((item) => ({ key: item.key })),
+    [items],
+  );
+
+  const { getItemProps } = useRovingFocus({
+    items: rovingItems,
+    activeKey: resolvedActiveKey,
+    onActivate: (key) => handleSelect(key),
+    orientation: 'horizontal',
+    activationMode: 'automatic',
+  });
 
   const handleScroll = (direction: -1 | 1) => {
     const el = trackRef.current;
@@ -136,6 +151,7 @@ export const SCategoryKpiCarousel: React.FC<SCategoryKpiCarouselProps> = ({
       >
         {items.map((item) => {
           const isActive = item.key === resolvedActiveKey;
+          const rovingProps = getItemProps<HTMLButtonElement>(item.key);
           return (
             <button
               key={item.key}
@@ -143,8 +159,9 @@ export const SCategoryKpiCarousel: React.FC<SCategoryKpiCarouselProps> = ({
               role="tab"
               aria-selected={isActive}
               data-category-key={item.key}
-              onClick={() => handleSelect(item.key)}
+              onClick={(e) => handleSelect(item.key, e.currentTarget)}
               className={`omada-kpi-carousel-card ${isActive ? 'is-active' : ''}`}
+              {...rovingProps}
             >
               <span className="inline-flex h-[32px] w-[32px] shrink-0 items-center justify-center text-[var(--omada-text-secondary)]">
                 {renderCategoryIcon(item)}

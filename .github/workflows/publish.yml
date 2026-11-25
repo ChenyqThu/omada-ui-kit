@@ -33,11 +33,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run unit tests
-        run: pnpm test
+      - name: Typecheck
+        run: pnpm typecheck
 
       - name: Build library & catalog
         run: pnpm build:lib
+
+      - name: Run unit tests
+        run: pnpm test
+
+      - name: Run Agent readiness evaluation
+        run: pnpm test:agent-eval
 
       - name: Publish to npm via Trusted Publishing
         run: npm publish --provenance --access public --ignore-scripts

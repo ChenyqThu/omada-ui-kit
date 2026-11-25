@@ -1,5 +1,7 @@
 import React from 'react';
+import { useOmadaAgentControl } from '../agent';
 import { STable, type STableProps } from '../components/STable';
+import { STabs } from '../components/STabs';
 
 export interface SFilterTableTab {
   key: string;
@@ -39,6 +41,8 @@ export interface SFilterTableBlockProps<T extends object> {
   tableProps: STableProps<T>;
   /** Adds right padding (`pr-9`) on top header/toolbar rows to clear `<SEmulatorShell>`'s `<||` handle. Default `true`. */
   clearQuickDrawer?: boolean;
+  /** Optional deterministic Agent Bridge control ID. */
+  agentId?: string;
   className?: string;
 }
 
@@ -63,9 +67,67 @@ export function SFilterTableBlock<T extends object>({
   onClearSelection,
   tableProps,
   clearQuickDrawer = true,
+  agentId,
   className = '',
 }: SFilterTableBlockProps<T>) {
   const clearanceClass = clearQuickDrawer ? 'pr-9' : '';
+  const resolvedActiveTab = activeTab ?? tabs?.[0]?.key;
+
+  useOmadaAgentControl(
+    agentId
+      ? {
+          id: agentId,
+          kind: 'table',
+          label: typeof title === 'string' ? title : searchPlaceholder,
+          value: {
+            activeTab: resolvedActiveTab ?? null,
+            searchValue: searchValue ?? '',
+            rowCount: (tableProps.dataSource ?? []).length,
+            selectedCount: selectedCount ?? 0,
+          },
+          options: tabs?.map((tab) => ({
+            value: tab.key,
+            label: typeof tab.label === 'string' ? tab.label : tab.key,
+          })),
+          meta: {
+            rowCount: (tableProps.dataSource ?? []).length,
+            selectedCount: selectedCount ?? 0,
+          },
+          actions: {
+            search: (query: unknown) => {
+              onSearchChange?.(String(query ?? ''));
+            },
+            setValue: (query: unknown) => {
+              onSearchChange?.(String(query ?? ''));
+            },
+            clear: () => {
+              onSearchChange?.('');
+              return '';
+            },
+            ...(tabs && tabs.length > 0
+              ? {
+                  selectTab: (nextTab: unknown) => {
+                    const target = tabs.find((t) => t.key === String(nextTab));
+                    if (!target) {
+                      throw new Error(`Unknown tab "${String(nextTab)}".`);
+                    }
+                    onTabChange?.(target.key);
+                    return target.key;
+                  },
+                }
+              : {}),
+            ...(onClearSelection
+              ? {
+                  clearSelection: () => {
+                    onClearSelection();
+                  },
+                }
+              : {}),
+          },
+        }
+      : null,
+  );
+
   const mergedToolbar =
     tableProps.toolbar ??
     (searchPlaceholder !== undefined ||
@@ -97,32 +159,16 @@ export function SFilterTableBlock<T extends object>({
   return (
     <div className={`omada-filter-table-block ${className}`.trim()}>
       {tabs && tabs.length > 0 && (
-        <div
-          className={`mb-4 flex items-center justify-between border-b border-[var(--omada-border-divider)] ${clearanceClass}`.trim()}
-        >
-          <div role="tablist" className="flex items-center gap-8">
-            {tabs.map((tab) => {
-              const isActive = tab.key === (activeTab ?? tabs[0].key);
-              return (
-                <button
-                  key={tab.key}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => onTabChange?.(tab.key)}
-                  className={`omada-cfg-subtab-btn cursor-pointer pb-2.5 text-[18px] leading-[26px] ${
-                    isActive ? 'is-active font-medium' : 'font-normal'
-                  }`}
-                >
-                  <span>{tab.label}</span>
-                  {isActive && (
-                    <span className="omada-cfg-subtab-indicator absolute inset-x-0 -bottom-[1px] h-[2px]" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        <STabs
+          variant="page"
+          size="lg"
+          bordered
+          aria-label={typeof title === 'string' ? `${title} tabs` : 'Table views'}
+          items={tabs}
+          activeKey={resolvedActiveTab}
+          onChange={onTabChange}
+          className={`mb-4 ${clearanceClass}`.trim()}
+        />
       )}
 
       {title && mergedToolbar && (

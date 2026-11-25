@@ -11,6 +11,7 @@ import {
   SProductImage,
   SSelect,
   SSwitch,
+  STabs,
   STooltip,
   useOmadaNotification,
 } from '@/omada';
@@ -1369,34 +1370,16 @@ export const LanPage: React.FC<LanPageProps> = ({
             {/* Sub-Toolbar: Topology | Ports + Search + Full Topology */}
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pr-9">
               <div className="flex flex-wrap items-center gap-3">
-                <div
-                  role="tablist"
+                <STabs
+                  variant="filter"
                   aria-label="VLAN sub-views"
-                  className="omada-cfg-seg-track"
-                >
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={subView === 'topology'}
-                    onClick={() => setSubView('topology')}
-                    className={`omada-cfg-seg-pill ${
-                      subView === 'topology' ? 'is-active' : ''
-                    }`}
-                  >
-                    Topology
-                  </button>
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={subView === 'ports'}
-                    onClick={() => setSubView('ports')}
-                    className={`omada-cfg-seg-pill ${
-                      subView === 'ports' ? 'is-active' : ''
-                    }`}
-                  >
-                    Ports
-                  </button>
-                </div>
+                  activeKey={subView}
+                  onChange={(k) => setSubView(k as 'topology' | 'ports')}
+                  items={[
+                    { key: 'topology', label: 'Topology' },
+                    { key: 'ports', label: 'Ports' },
+                  ]}
+                />
 
                 <SInput
                   variant="filled"

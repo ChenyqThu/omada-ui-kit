@@ -1,0 +1,30 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<path d="M26.7786 32.7125C20.8262 34.0289 15.3097 33.2826 13.2854 32.7802C13.084 32.6847 12.7474 31.9805 12.75 31.5667C15.2877 31.9487 17.4357 31.6604 20.0565 31.6276C24.3943 31.5732 27.2681 31.5187 27.3078 31.5338C27.3982 31.6972 27.1017 32.5589 26.7786 32.7125Z" fill="url(#paint0_linear_47299_145049)"/>
+<use xlink:href="#stroke0_47299_145049" fill="url(#paint1_linear_47299_145049)"/>
+<use xlink:href="#stroke0_47299_145049" fill="black" fill-opacity="0.1"/>
+<path d="M11.3164 22.4432L12.2495 8.8125H27.7137L28.6608 22.4432C19.7307 23.0786 13.377 22.7079 11.3164 22.4432Z" fill="url(#paint2_linear_47299_145049)"/>
+<ellipse cx="19.9879" cy="8.8149" rx="7.70273" ry="2.24459" fill="#EAEAEA"/>
+<ellipse cx="19.9906" cy="7.84951" rx="0.592141" ry="0.247949" fill="#95BCDB"/>
+<ellipse cx="19.9906" cy="9.58389" rx="0.592141" ry="0.247949" fill="#DED567"/>
+<ellipse cx="17.9203" cy="8.81826" rx="0.592141" ry="0.247949" fill="#72BDA2"/>
+<ellipse cx="22.1156" cy="8.81826" rx="0.592141" ry="0.247949" fill="#C27066"/>
+<defs>
+<linearGradient id="paint0_linear_47299_145049" x1="19.9862" y1="24.1907" x2="19.9862" y2="31.2341" gradientUnits="userSpaceOnUse">
+<stop stop-color="#383838"/>
+<stop offset="1" stop-color="#494A4D"/>
+</linearGradient>
+<linearGradient id="paint1_linear_47299_145049" x1="28.9757" y1="27.3326" x2="10.9961" y2="27.3326" gradientUnits="userSpaceOnUse">
+<stop stop-color="#807F7F"/>
+<stop offset="0.247141" stop-color="#7D7D7D"/>
+<stop offset="0.768516" stop-color="#DFDFDF"/>
+<stop offset="1" stop-color="#EDEDED"/>
+</linearGradient>
+<linearGradient id="paint2_linear_47299_145049" x1="28.6608" y1="15.8033" x2="11.3164" y2="15.8033" gradientUnits="userSpaceOnUse">
+<stop stop-color="#807F7F"/>
+<stop offset="0.247141" stop-color="#7D7D7D"/>
+<stop offset="0.768516" stop-color="#DFDFDF"/>
+<stop offset="1" stop-color="#EDEDED"/>
+</linearGradient>
+<path id="stroke0_47299_145049" d="M11.2791 22.5277C11.2801 22.4775 11.3578 22.3894 11.3965 22.3516C14.128 22.7626 17.2391 22.772 20.0602 22.7366C24.7292 22.6781 28.6034 22.3418 28.6461 22.3581C28.7009 22.379 28.7382 22.4799 28.7499 22.5277C29.5347 27.3813 28.2807 31.0275 27.2643 31.5969C20.8997 32.8948 14.9508 32.1377 12.7719 31.5969C10.0341 29.117 11.2777 22.5905 11.2791 22.5277Z"/>
+</defs>
+</svg>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BookOpen,
   Bot,
@@ -7,6 +7,7 @@ import {
   Copy,
   ExternalLink,
   GitBranch,
+  Layers,
   MessageSquarePlus,
   Package,
   Puzzle,
@@ -14,14 +15,26 @@ import {
   Terminal,
 } from 'lucide-react';
 import {
+  OmadaAgentProvider,
   SAlert,
   SButton,
   SCard,
+  SInput,
   SPageHeader,
+  SPasswordInput,
+  SSelect,
+  SSwitch,
   STabs,
   STag,
+  useOmadaAgent,
   useOmadaFeedback,
 } from '@/omada';
+
+declare const __OMADA_PKG_VERSION__: string | undefined;
+const PKG_VERSION =
+  typeof __OMADA_PKG_VERSION__ === 'string' && __OMADA_PKG_VERSION__.length > 0
+    ? __OMADA_PKG_VERSION__
+    : '0.5.0';
 
 const GITHUB_REPO_URL = 'https://github.com/ChenyqThu/omada-ui-kit';
 const GITHUB_ISSUES_URL = `${GITHUB_REPO_URL}/issues`;
@@ -203,10 +216,10 @@ const SUPPORTED_AGENTS = [
 ];
 
 const PROMPT_HTML_DEMO =
-  'Using the omada-ui-kit skill, build a single-file HTML PRD prototype for an Omada Controller v6.3 AP Health Monitor using SEmulatorShell, SFilterTableBlock, and SDetailInspectorDrawer. Support Light/Dark mode and run verify-demo.mjs before finishing.';
+  `Using the omada-ui-kit skill (pinned @${PKG_VERSION} CDN), build a single-file HTML PRD prototype for an Omada Controller v6.3 AP Health Monitor using SEmulatorShell, SFilterTableBlock, and SDetailInspectorDrawer. Support Light/Dark mode and run verify-demo.mjs before finishing.`;
 
 const PROMPT_REACT_PAGE =
-  'Using the omada-ui-kit skill, create a React page using subpath imports (@chenyqthu/omada-ui-kit/core and /blocks). Query query-catalog.mjs first so all props and SIcon slugs are verified.';
+  'Using the omada-ui-kit skill, create a React page using subpath imports (@chenyqthu/omada-ui-kit/core, /blocks, and /agent). Read references/docs/blocks.md or query query-catalog.mjs first so all props and SIcon slugs are verified.';
 
 const CLI_WORKFLOW_SNIPPET = [
   'node skills/omada-ui-kit/scripts/query-catalog.mjs info',
@@ -214,6 +227,81 @@ const CLI_WORKFLOW_SNIPPET = [
   'node skills/omada-ui-kit/scripts/query-catalog.mjs template inventory --html > demo.html',
   'node skills/omada-ui-kit/scripts/verify-demo.mjs demo.html',
 ].join('\n');
+
+const SCOPED_MICROFRONTEND_SNIPPET = [
+  "import '@chenyqthu/omada-ui-kit/style.scoped.css'; // Zero global CSS preflight reset",
+  "import { OmadaProvider, SButton } from '@chenyqthu/omada-ui-kit/core';",
+  "import { OmadaAgentProvider } from '@chenyqthu/omada-ui-kit/agent';",
+  '// Compact LLM index: import or fetch @chenyqthu/omada-ui-kit/llms.txt',
+  '',
+  '<OmadaProvider syncDocumentTheme={false} defaultThemeMode="light">',
+  '  <OmadaAgentProvider allow={[\'demo.wlan.*\']}>',
+  '    <SButton variant="primary">Apply</SButton>',
+  '  </OmadaAgentProvider>',
+  '</OmadaProvider>',
+].join('\n');
+
+const AgentBridgeInspector: React.FC = () => {
+  const agent = useOmadaAgent();
+  const [output, setOutput] = useState<string>('');
+
+  useEffect(() => {
+    setOutput(JSON.stringify(agent.snapshot(), null, 2));
+  }, [agent]);
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <SButton
+          size="small"
+          variant="primary"
+          onClick={() => setOutput(JSON.stringify(agent.snapshot(), null, 2))}
+        >
+          snapshot()
+        </SButton>
+        <SButton
+          size="small"
+          variant="secondary"
+          onClick={() => setOutput(JSON.stringify(agent.query('wlan'), null, 2))}
+        >
+          {"query('wlan')"}
+        </SButton>
+        <SButton
+          size="small"
+          variant="outline"
+          onClick={() => {
+            const res = agent.act('demo.wlan.enabled', 'toggle');
+            setOutput(
+              JSON.stringify(
+                { actResult: res, snapshot: agent.snapshot() },
+                null,
+                2,
+              ),
+            );
+          }}
+        >
+          {"act('demo.wlan.enabled', 'toggle')"}
+        </SButton>
+        <SButton
+          size="small"
+          variant="danger"
+          onClick={() => {
+            const res = agent.act('demo.system.reboot', 'toggle');
+            setOutput(JSON.stringify({ actResult: res }, null, 2));
+          }}
+        >
+          {"act('demo.system.reboot', 'toggle')"}
+        </SButton>
+      </div>
+      <pre
+        data-testid="agent-bridge-live-output"
+        className="m-0 max-h-60 overflow-auto rounded-md border border-[var(--omada-border-divider)] bg-[var(--omada-bg-field)] p-3 font-mono text-xs leading-5 text-[var(--omada-text-primary)]"
+      >
+        <code>{output}</code>
+      </pre>
+    </div>
+  );
+};
 
 export const AgentSkillSection: React.FC<AgentSkillSectionProps> = ({ onNavigate }) => {
   const [activeAgentTab, setActiveAgentTab] = useState<string>('claude-code');
@@ -368,8 +456,8 @@ export const AgentSkillSection: React.FC<AgentSkillSectionProps> = ({ onNavigate
 
       {/* 3. How to Use the Skill (Prompts & Bundled CLI) */}
       <SCard
-        title="3. Usage Guide — Prompts & Bundled Verification Scripts"
-        subtitle="The skill bundles SKILL.md, references/catalog.json, 5 HTML/TSX templates, query-catalog.mjs, and verify-demo.mjs so agents never hallucinate props or icon slugs."
+        title="3. Usage Guide — Progressive Docs & Dual-Engine Verifier"
+        subtitle="Load references/llms.txt, references/standalone.md, or domain slices in references/docs/*.md (~96% lower token footprint), 5 HTML/TSX templates, query-catalog.mjs, and Dual-Engine (ts-ast + lexical) verify-demo.mjs."
         extra={<Terminal size={16} className="text-[var(--omada-brand-text)]" />}
       >
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -438,9 +526,87 @@ export const AgentSkillSection: React.FC<AgentSkillSectionProps> = ({ onNavigate
         </div>
       </SCard>
 
-      {/* 4. Missing Components & UI Issue Feedback */}
+      {/* 4. Live Agent Bridge & Scoped Micro-Frontend CSS */}
       <SCard
-        title="4. Missing UI Components or Specific Component Issues?"
+        title="4. Live Agent Bridge & Scoped Micro-Frontend CSS"
+        subtitle="Deterministic snapshot(), query(), act(), allow policy enforcement & [REDACTED] secret masking via @chenyqthu/omada-ui-kit/agent, paired with zero-reset style.scoped.css."
+        extra={<Layers size={16} className="text-[var(--omada-brand-text)]" />}
+      >
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+          <div className="space-y-4">
+            <CopyCommandBox
+              label="Scoped Micro-Frontend CSS + Agent Bridge"
+              badge="No Global Reset"
+              command={SCOPED_MICROFRONTEND_SNIPPET}
+            />
+            <SAlert
+              type="info"
+              title="Security & Isolation Guarantees"
+              description="SPasswordInput masks values as [REDACTED] by default; <OmadaAgentProvider allow={['demo.wlan.*']}> blocks mutations to demo.system.reboot; style.scoped.css isolates tokens & AntD portals inside .omada-scope."
+            />
+          </div>
+
+          <div className="rounded-md border border-[var(--omada-border-divider)] bg-[var(--omada-bg-page)] p-4">
+            <OmadaAgentProvider allow={['demo.wlan.*']}>
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <SSwitch
+                    agentId="demo.wlan.enabled"
+                    label="Enable Guest 6 GHz SSID"
+                    defaultChecked
+                  />
+                  <SSwitch
+                    agentId="demo.system.reboot"
+                    label="Scheduled Reboot (Blocked by allow)"
+                  />
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div>
+                    <div className="mb-1 text-xs font-medium text-[var(--omada-text-secondary)]">
+                      Guest SSID Name
+                    </div>
+                    <SInput
+                      agentId="demo.wlan.ssid"
+                      aria-label="Guest SSID Name"
+                      defaultValue="Omada-Guest-6G"
+                    />
+                  </div>
+                  <div>
+                    <div className="mb-1 text-xs font-medium text-[var(--omada-text-secondary)]">
+                      WPA3 Passphrase (Masked)
+                    </div>
+                    <SPasswordInput
+                      agentId="demo.wlan.psk"
+                      aria-label="WPA3 Passphrase"
+                      defaultValue="OmadaWPA3!2026"
+                    />
+                  </div>
+                  <div>
+                    <div className="mb-1 text-xs font-medium text-[var(--omada-text-secondary)]">
+                      Band Steering
+                    </div>
+                    <SSelect
+                      agentId="demo.wlan.band"
+                      aria-label="Band Steering"
+                      defaultValue="auto"
+                      className="w-full"
+                      options={[
+                        { value: 'auto', label: 'Balanced (2.4G / 5G / 6G)' },
+                        { value: '6g', label: 'Prefer 6 GHz' },
+                      ]}
+                    />
+                  </div>
+                </div>
+                <AgentBridgeInspector />
+              </div>
+            </OmadaAgentProvider>
+          </div>
+        </div>
+      </SCard>
+
+      {/* 5. Missing Components & UI Issue Feedback */}
+      <SCard
+        title="5. Missing UI Components or Specific Component Issues?"
         subtitle="Found a missing Omada Controller v6.3 component, icon, or visual/behavior bug? Open a structured GitHub Issue so it can be added or fixed quickly."
         extra={<MessageSquarePlus size={16} className="text-[var(--omada-brand-text)]" />}
       >

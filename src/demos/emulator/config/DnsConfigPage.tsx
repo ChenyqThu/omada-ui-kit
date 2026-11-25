@@ -14,6 +14,7 @@ import {
   SRadio,
   SSelect,
   SSwitch,
+  STabs,
   useOmadaConfirm,
   useOmadaNotification,
 } from '@/omada';
@@ -371,51 +372,32 @@ export const DnsConfigPage: React.FC<DnsConfigPageProps> = ({
       data-testid="dns-config-page"
     >
       {/* Top Underline Sub-Tabs + Top-Right (?) Help Icon */}
-      <div className="flex items-end justify-between border-b border-[var(--omada-border-divider)]">
-        <div
-          role="tablist"
-          aria-label="DNS configuration sections"
-          className="flex items-center gap-8"
-        >
-          {(
-            [
-              { key: 'dynamic-dns', label: 'Dynamic DNS' },
-              { key: 'dns-proxy', label: 'DNS Proxy' },
-              { key: 'dns-cache', label: 'DNS Cache' },
-            ] as const
-          ).map((tab) => {
-            const isActive = subTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setSubTab(tab.key)}
-                className={`omada-devcfg-subtab-btn cursor-pointer text-[18px] leading-[26px] ${
-                  isActive ? 'is-active font-medium' : 'font-normal'
-                }`}
-              >
-                <span>{tab.label}</span>
-                {isActive && (
-                  <span className="omada-devcfg-subtab-indicator absolute inset-x-0 -bottom-[1px] h-[2px]" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        <Tooltip title="DNS Configuration Help">
-          <button
-            type="button"
-            aria-label="DNS help"
-            onClick={() => setHelpOpen(true)}
-            className="omada-devcfg-help-btn mb-2"
-          >
-            <SIcon name="question" size={20} />
-          </button>
-        </Tooltip>
-      </div>
+      <STabs
+        variant="page"
+        size="lg"
+        bordered
+        aria-label="DNS configuration sections"
+        activeKey={subTab}
+        onChange={(k) => setSubTab(k as typeof subTab)}
+        className="pr-9"
+        items={[
+          { key: 'dynamic-dns', label: 'Dynamic DNS' },
+          { key: 'dns-proxy', label: 'DNS Proxy' },
+          { key: 'dns-cache', label: 'DNS Cache' },
+        ]}
+        extra={
+          <Tooltip title="DNS Configuration Help">
+            <button
+              type="button"
+              aria-label="DNS help"
+              onClick={() => setHelpOpen(true)}
+              className="omada-devcfg-help-btn"
+            >
+              <SIcon name="question" size={20} />
+            </button>
+          </Tooltip>
+        }
+      />
 
       {/* Dynamic DNS Tab */}
       {subTab === 'dynamic-dns' && (

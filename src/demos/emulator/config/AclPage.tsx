@@ -12,6 +12,7 @@ import {
   SModal,
   SSelect,
   SSwitch,
+  STabs,
   useOmadaNotification,
   type SAclEndpointTypeOption,
   type SAclEndpointValue,
@@ -1043,47 +1044,32 @@ export const AclPage: React.FC<AclPageProps> = ({ initialTab = 'gateway' }) => {
       ) : (
         <>
           {/* Top Underline Tabs + Help Icon */}
-          <div className="flex items-center justify-between border-b border-[var(--omada-border-divider)]">
-            <div role="tablist" aria-label="ACL scopes" className="flex items-center gap-8">
-              {(
-                [
-                  { key: 'gateway', label: 'Gateway ACL' },
-                  { key: 'switch', label: 'Switch ACL' },
-                  { key: 'eap', label: 'EAP ACL' },
-                ] as const
-              ).map((tab) => {
-                const isActive = activeTab === tab.key;
-                return (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    onClick={() => setActiveTab(tab.key)}
-                    className={`omada-cfg-subtab-btn cursor-pointer pb-2.5 text-[18px] leading-[26px] ${
-                      isActive ? 'is-active font-medium' : 'font-normal'
-                    }`}
-                  >
-                    <span>{tab.label}</span>
-                    {isActive && (
-                      <span className="omada-cfg-subtab-indicator absolute inset-x-0 -bottom-[1px] h-[2px]" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            <Tooltip title="ACL Help">
-              <button
-                type="button"
-                aria-label="ACL help"
-                onClick={() => setHelpOpen(true)}
-                className="omada-cfg-help-btn mb-1.5"
-              >
-                <SIcon name="question" size={20} />
-              </button>
-            </Tooltip>
-          </div>
+          <STabs
+            variant="page"
+            size="lg"
+            bordered
+            aria-label="ACL scopes"
+            activeKey={activeTab}
+            onChange={(k) => setActiveTab(k as AclTabKey)}
+            className="pr-9"
+            items={[
+              { key: 'gateway', label: 'Gateway ACL' },
+              { key: 'switch', label: 'Switch ACL' },
+              { key: 'eap', label: 'EAP ACL' },
+            ]}
+            extra={
+              <Tooltip title="ACL Help">
+                <button
+                  type="button"
+                  aria-label="ACL help"
+                  onClick={() => setHelpOpen(true)}
+                  className="omada-cfg-help-btn"
+                >
+                  <SIcon name="question" size={20} />
+                </button>
+              </Tooltip>
+            }
+          />
 
           {/* Toolbar (`pr-9` clearance from right-edge `<||` handle!) */}
           <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-3 pr-9">

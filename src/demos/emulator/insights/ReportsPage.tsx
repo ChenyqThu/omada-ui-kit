@@ -9,6 +9,7 @@ import {
   SInput,
   SModal,
   SSwitch,
+  STabs,
   STooltip,
   omadaChartPalette,
   useOmadaTheme,
@@ -381,57 +382,35 @@ export const ReportsPage: React.FC<ReportsPageProps> = ({ className = '' }) => {
       className={`omada-emulator-insights min-h-full px-6 pt-4 pb-6 ${className}`.trim()}
     >
       {/* Top Bar: Underline Report Tabs + Controls */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--omada-border-divider)] pb-2.5">
-        <div className="flex flex-wrap items-center gap-7">
-          <div
-            role="tablist"
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--omada-border-divider)]">
+        <div className="flex flex-wrap items-center gap-3">
+          <STabs
+            variant="page"
+            size="lg"
+            bordered={false}
             aria-label="Report sections"
-            className="flex flex-wrap items-center gap-7"
-          >
-            {(
-              [
-                { key: 'summary', label: 'Summary' },
-                { key: 'wired', label: 'Wired' },
-                { key: 'wireless', label: 'Wireless' },
-                { key: 'client-app', label: reportTitle },
-              ] as const
-            ).map((tab) => {
-              const isActive = activeTab === tab.key;
-              return (
-                <div key={tab.key} className="relative inline-flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    onClick={() => setActiveTab(tab.key)}
-                    className={`omada-insights-tab-btn cursor-pointer border-0 bg-transparent px-0 py-0.5 text-[18px] leading-[26px] ${
-                      isActive ? 'is-active font-medium' : 'font-normal'
-                    }`}
-                  >
-                    <span>{tab.label}</span>
-                  </button>
-                  {tab.key === 'client-app' && (
-                    <button
-                      type="button"
-                      aria-label="Edit report template"
-                      onClick={() => {
-                        setDraftTitle(reportTitle);
-                        setEditModalOpen(true);
-                      }}
-                      className="inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded border-0 bg-transparent p-0 hover:bg-[var(--omada-brand-bg-subtlest)]"
-                    >
-                      <SIcon name="edit" size={16} />
-                    </button>
-                  )}
-                  {isActive && (
-                    <span className="omada-insights-tab-indicator absolute inset-x-0 -bottom-[11px] h-[2px]" />
-                  )}
-                </div>
-              );
-            })}
-          </div>
+            activeKey={activeTab}
+            onChange={(k) => setActiveTab(k as ReportsTabKey)}
+            items={[
+              { key: 'summary', label: 'Summary' },
+              { key: 'wired', label: 'Wired' },
+              { key: 'wireless', label: 'Wireless' },
+              { key: 'client-app', label: reportTitle },
+            ]}
+          />
 
-          <div className="flex items-center gap-2">
+          <div className="mb-2 flex items-center gap-1.5">
+            <button
+              type="button"
+              aria-label="Edit report template"
+              onClick={() => {
+                setDraftTitle(reportTitle);
+                setEditModalOpen(true);
+              }}
+              className="inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded border-0 bg-transparent p-0 hover:bg-[var(--omada-brand-bg-subtlest)]"
+            >
+              <SIcon name="edit" size={16} />
+            </button>
             <STooltip title="Add custom report">
               <button
                 type="button"

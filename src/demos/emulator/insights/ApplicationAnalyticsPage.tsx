@@ -10,6 +10,7 @@ import {
   SEmpty,
   SIcon,
   SModal,
+  STabs,
   STag,
   useOmadaTheme,
   omadaChartPalette,
@@ -610,38 +611,20 @@ export const ApplicationAnalyticsPage: React.FC<ApplicationAnalyticsPageProps> =
       </div>
 
       {/* Underline Sub-Tabs: Categories | Apps | Users */}
-      <div
-        role="tablist"
+      <STabs
+        variant="page"
+        size="md"
+        bordered
         aria-label="Application analytics views"
-        className="mb-4 flex items-center gap-7 border-b border-[var(--omada-border-divider)]"
-      >
-        {(
-          [
-            { key: 'categories', label: 'Categories' },
-            { key: 'apps', label: 'Apps' },
-            { key: 'users', label: 'Users' },
-          ] as const
-        ).map((tab) => {
-          const isActive = subTab === tab.key;
-          return (
-            <button
-              key={tab.key}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => setSubTab(tab.key)}
-              className={`omada-insights-tab-btn cursor-pointer border-0 bg-transparent px-0 pb-2.5 text-[16px] leading-[24px] ${
-                isActive ? 'is-active font-medium' : 'font-normal'
-              }`}
-            >
-              <span>{tab.label}</span>
-              {isActive && (
-                <span className="omada-insights-tab-indicator absolute inset-x-0 -bottom-[1px] h-[2px]" />
-              )}
-            </button>
-          );
-        })}
-      </div>
+        activeKey={subTab}
+        onChange={(k) => setSubTab(k as AnalyticsSubTabKey)}
+        className="mb-4"
+        items={[
+          { key: 'categories', label: 'Categories' },
+          { key: 'apps', label: 'Apps' },
+          { key: 'users', label: 'Users' },
+        ]}
+      />
 
       {/* Sub-Tab 1: Categories Closable Cards */}
       {subTab === 'categories' && (
@@ -710,34 +693,16 @@ export const ApplicationAnalyticsPage: React.FC<ApplicationAnalyticsPageProps> =
       {/* Sub-Tab 2: Apps Allow/Block Table */}
       {subTab === 'apps' && (
         <div data-testid="analytics-apps-panel" className="space-y-3">
-          <div
-            role="tablist"
+          <STabs
+            variant="filter"
             aria-label="App policy filter"
-            className="omada-insights-seg-track"
-          >
-            <button
-              type="button"
-              role="tab"
-              aria-selected={appsFilter === 'allowed'}
-              onClick={() => setAppsFilter('allowed')}
-              className={`omada-insights-seg-pill ${
-                appsFilter === 'allowed' ? 'is-active' : ''
-              }`}
-            >
-              Allow Apps ({allowedApps.length})
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={appsFilter === 'blocked'}
-              onClick={() => setAppsFilter('blocked')}
-              className={`omada-insights-seg-pill ${
-                appsFilter === 'blocked' ? 'is-active' : ''
-              }`}
-            >
-              Block Apps ({blockedApps.length})
-            </button>
-          </div>
+            activeKey={appsFilter}
+            onChange={(k) => setAppsFilter(k as 'allowed' | 'blocked')}
+            items={[
+              { key: 'allowed', label: 'Allow Apps', count: allowedApps.length },
+              { key: 'blocked', label: 'Block Apps', count: blockedApps.length },
+            ]}
+          />
 
           <div className="omada-insights-table-shell">
             <Table<AnalyticsAppItem>

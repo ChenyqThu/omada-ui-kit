@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useRovingFocus } from '../behaviors/useRovingFocus';
 import { SSearchInput } from '../components/SInput';
 import { SEmpty } from '../components/SEmpty';
 
@@ -34,7 +35,7 @@ export interface SMasterDetailSplitBlockProps {
 }
 
 /**
- * Split master-detail workspace combining a searchable left selection list
+ * Split master-detail workspace combining a searchable left selection list (`listbox` + vertical roving focus)
  * and a bordered right detail/canvas surface (`LAN VLANs`, `Terminal`, `Switch Ports`).
  */
 export const SMasterDetailSplitBlock: React.FC<SMasterDetailSplitBlockProps> = ({
@@ -63,6 +64,19 @@ export const SMasterDetailSplitBlock: React.FC<SMasterDetailSplitBlockProps> = (
     });
   }, [items, query]);
 
+  const rovingItems = useMemo(
+    () => filteredItems.map((item) => ({ key: item.key })),
+    [filteredItems],
+  );
+
+  const { getItemProps } = useRovingFocus({
+    items: rovingItems,
+    activeKey,
+    onActivate: onSelect,
+    orientation: 'vertical',
+    activationMode: 'automatic',
+  });
+
   return (
     <div className={`omada-master-detail ${className}`.trim()}>
       <aside className="omada-master-rail" style={{ width: masterWidth }}>
@@ -86,7 +100,11 @@ export const SMasterDetailSplitBlock: React.FC<SMasterDetailSplitBlockProps> = (
           </div>
         )}
 
-        <div className="omada-master-list" role="listbox" aria-label={typeof masterTitle === 'string' ? masterTitle : 'Master list'}>
+        <div
+          className="omada-master-list"
+          role="listbox"
+          aria-label={typeof masterTitle === 'string' ? masterTitle : 'Master list'}
+        >
           {filteredItems.length === 0 ? (
             <div className="px-3 py-6 text-center text-xs text-[var(--omada-text-tertiary)]">
               No matching items
@@ -94,6 +112,7 @@ export const SMasterDetailSplitBlock: React.FC<SMasterDetailSplitBlockProps> = (
           ) : (
             filteredItems.map((item) => {
               const selected = item.key === activeKey;
+              const rovingProps = getItemProps<HTMLButtonElement>(item.key);
               return (
                 <button
                   key={item.key}
@@ -102,6 +121,7 @@ export const SMasterDetailSplitBlock: React.FC<SMasterDetailSplitBlockProps> = (
                   aria-selected={selected}
                   onClick={() => onSelect(item.key)}
                   className={`omada-master-item ${selected ? 'is-active' : ''}`}
+                  {...rovingProps}
                 >
                   {item.icon && (
                     <span className="inline-flex shrink-0 items-center justify-center leading-none">

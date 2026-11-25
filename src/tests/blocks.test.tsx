@@ -301,6 +301,20 @@ describe('Omada Reusable Blocks & Showcase Gallery', () => {
       'https://github.com/ChenyqThu/omada-ui-kit/issues/new?template=component-bug.yml',
     );
 
+    const agentOutput = screen.getByTestId('agent-bridge-live-output');
+    expect(agentOutput.textContent).toContain('demo.wlan.psk');
+    expect(agentOutput.textContent).toContain('[REDACTED]');
+
+    fireEvent.click(screen.getByRole('button', { name: "act('demo.wlan.enabled', 'toggle')" }));
+    await waitFor(() => {
+      expect(screen.getByTestId('agent-bridge-live-output').textContent).toContain('"ok": true');
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: "act('demo.system.reboot', 'toggle')" }));
+    await waitFor(() => {
+      expect(screen.getByTestId('agent-bridge-live-output').textContent).toContain('"ok": false');
+    });
+
     const writeText = vi.fn().mockResolvedValue(undefined);
     const prevDescriptor = Object.getOwnPropertyDescriptor(navigator, 'clipboard');
     Object.defineProperty(navigator, 'clipboard', {

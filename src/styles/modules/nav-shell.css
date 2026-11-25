@@ -307,4 +307,129 @@
   .omada-divider-inset.ant-divider-horizontal {
     padding-inline: 24px;
   }
+
+  /* ==========================================================================
+   * STabs (`page` underline & `filter` segmented track/pills)
+   * ========================================================================== */
+  .omada-tabs-page-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .omada-tabs-page-bar--bordered {
+    border-bottom: 1px solid var(--omada-border-divider);
+  }
+
+  .omada-tabs-page-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .omada-tabs-page-list--md {
+    gap: 24px;
+  }
+
+  .omada-tabs-page-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    background: transparent;
+    padding: 0 0 10px 0;
+    font-size: 18px;
+    line-height: 26px;
+    font-weight: 400;
+    color: var(--omada-text-secondary);
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+
+  .omada-tabs-page-btn--md {
+    padding: 0 0 8px 0;
+    font-size: 15px;
+    line-height: 22px;
+  }
+
+  .omada-tabs-page-btn:hover:not(:disabled) {
+    color: var(--omada-text-primary);
+  }
+
+  .omada-tabs-page-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  .omada-tabs-page-btn.is-active {
+    color: var(--omada-tabs-active-text);
+    font-weight: 500;
+  }
+
+  .omada-tabs-page-indicator {
+    position: absolute;
+    inset-inline: 0;
+    bottom: -1px;
+    height: 2px;
+    background-color: var(--omada-tabs-active-text);
+  }
+
+  .omada-tabs-filter-track {
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    gap: 2px;
+    border-radius: 4px;
+    background-color: var(--omada-bg-field);
+    padding: 3px;
+  }
+
+  .omada-tabs-filter-track--block {
+    display: flex;
+    width: 100%;
+  }
+
+  .omada-tabs-filter-pill {
+    display: inline-flex;
+    height: 26px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: none;
+    border-radius: 3px;
+    background-color: transparent;
+    padding: 0 10px;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--omada-text-secondary);
+    white-space: nowrap;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .omada-tabs-filter-pill--block {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+
+  .omada-tabs-filter-pill:hover:not(:disabled):not(.is-active) {
+    color: var(--omada-text-primary);
+  }
+
+  .omada-tabs-filter-pill:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  .omada-tabs-filter-pill.is-active {
+    background-color: var(--omada-tabs-filter-active-bg);
+    color: var(--omada-tabs-active-text);
+    font-weight: 500;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
 }

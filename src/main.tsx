@@ -9,20 +9,9 @@ import './styles/modules/time-schedule.css';
 import './styles/modules/data-charts.css';
 import './styles/modules/feedback-overlays.css';
 import './styles/modules/emulator-shell.css';
-import './styles/modules/emulator-dashboard.css';
-import './styles/modules/emulator-devices.css';
-import './styles/modules/emulator-drawer.css';
-import './styles/modules/emulator-clients.css';
-import './styles/modules/emulator-map.css';
-import './styles/modules/emulator-insights.css';
-import './styles/modules/emulator-incidents.css';
-import './styles/modules/emulator-logs-recover.css';
-import './styles/modules/emulator-config-core.css';
-import './styles/modules/emulator-config-wlan-acl.css';
-import './styles/modules/emulator-dev-config.css';
-import './styles/modules/emulator-hotspot.css';
-import './styles/modules/emulator-tools-maint.css';
+import './styles/modules/emulator-components.css';
 import './styles/modules/blocks.css';
+import './demos/emulator/emulator-pages.css';
 import { App } from './App';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

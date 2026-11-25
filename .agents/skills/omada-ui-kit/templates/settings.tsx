@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '@chenyqthu/omada-ui-kit/style.css';
 import {
+  OmadaAgentProvider,
   OmadaProvider,
   SEmulatorShell,
   SExpandableSection,
@@ -24,6 +25,7 @@ const SettingsContent: React.FC = () => {
   return (
     <SEmulatorShell activeKey="dns" onSelect={() => {}} controllerName="Headquarters Building">
       <SSettingsPageShell
+        agentId="dns.settings"
         title="DNS & Network Services"
         tabs={[
           { key: 'dns-proxy', label: 'DNS Proxy' },
@@ -44,6 +46,8 @@ const SettingsContent: React.FC = () => {
         <SSettingsSection title={tab === 'dns-proxy' ? 'DNS Proxy Policy' : 'Cache Retention'}>
           <SSettingsRow label="Service Status">
             <SSwitch
+              agentId="dns.enabled"
+              aria-label="Service Status"
               checked={enabled}
               onChange={(checked) => {
                 setEnabled(checked);
@@ -53,6 +57,8 @@ const SettingsContent: React.FC = () => {
           </SSettingsRow>
           <SSettingsRow label="Site Identifier">
             <SInput
+              agentId="dns.siteName"
+              aria-label="Site Identifier"
               value={siteName}
               onChange={(e) => {
                 setSiteName(e.target.value);
@@ -74,6 +80,8 @@ const SettingsContent: React.FC = () => {
         <SExpandableSection title="Advanced Options">
           <SSettingsRow label="Resolver Mode">
             <SSelect
+              agentId="dns.resolverMode"
+              aria-label="Resolver Mode"
               defaultValue="doh"
               onChange={() => setDirty(true)}
               options={[
@@ -90,6 +98,8 @@ const SettingsContent: React.FC = () => {
 
 export const SettingsTemplate: React.FC = () => (
   <OmadaProvider defaultThemeMode="light">
-    <SettingsContent />
+    <OmadaAgentProvider>
+      <SettingsContent />
+    </OmadaAgentProvider>
   </OmadaProvider>
 );

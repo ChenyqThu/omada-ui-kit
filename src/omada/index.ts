@@ -2,6 +2,37 @@
 export { OmadaProvider, useOmadaTheme, type OmadaProviderProps } from './theme/OmadaProvider';
 export { buildOmadaAntdTheme } from './theme/antdTheme';
 export {
+  OMADA_SECRET_MASK,
+  OmadaAgentProvider,
+  useOmadaAgent,
+  useOmadaAgentAction,
+  useOmadaAgentControl,
+  type OmadaAgentActPayload,
+  type OmadaAgentActResult,
+  type OmadaAgentActionRegistration,
+  type OmadaAgentActionSnapshot,
+  type OmadaAgentAllow,
+  type OmadaAgentControlKind,
+  type OmadaAgentControlRegistration,
+  type OmadaAgentControlSnapshot,
+  type OmadaAgentOptionMeta,
+  type OmadaAgentPermissionPolicy,
+  type OmadaAgentProviderProps,
+  type OmadaAgentQuery,
+  type OmadaAgentQueryFilter,
+  type OmadaAgentRuntime,
+  type OmadaAgentSnapshot,
+} from './agent';
+export {
+  useRovingFocus,
+  type RovingFocusActivationMode,
+  type RovingFocusItem,
+  type RovingFocusOrientation,
+  type RovingItemProps,
+  type UseRovingFocusOptions,
+  type UseRovingFocusReturn,
+} from './behaviors/useRovingFocus';
+export {
   omadaChartPalette,
   omadaFontFamily,
   omadaLayout,
@@ -122,6 +153,7 @@ export {
 export {
   STabs,
   type STabItem,
+  type STabsPageSize,
   type STabsProps,
   type STabsVariant,
 } from './components/STabs';
@@ -138,7 +170,12 @@ export {
   type SDeviceStatusProps,
 } from './components/SDeviceStatus';
 export {
+  SEditableCell,
   STable,
+  type SEditableCellOption,
+  type SEditableCellProps,
+  type STableColumnSettingItem,
+  type STableDensity,
   type STableProps,
   type STableToolbarProps,
 } from './components/STable';

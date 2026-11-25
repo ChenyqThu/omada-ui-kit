@@ -8,24 +8,32 @@ description: >-
   Controller UI page, or single-file HTML mockup.
 ---
 
-# Omada UI Kit — PRD Demo & Component Skill
+# Omada UI Kit (`@chenyqthu/omada-ui-kit@0.5.0`)
 
-Build authentic **Omada Controller v6.3** demos using verified exports from `@chenyqthu/omada-ui-kit` (check `references/catalog.json` via `query-catalog.mjs info` for the active version and CDN URLs).
+Build authentic **Omada Controller v6.3** interfaces using verified exports from `@chenyqthu/omada-ui-kit`. Load **only** the reference slice needed for your task instead of reading monolithic catalogs into context.
 
----
+## 1. Progressive Disclosure Index (Read On Demand)
 
-## 1. Choose the Right Output Format
+| Task / Domain | Read File or Run Command |
+| :--- | :--- |
+| Fast overview & subpath map | `references/llms.txt` |
+| Single-file HTML (`window.OmadaUI`, offline `dist/assets/`) | `references/standalone.md` |
+| Page shells & reusable blocks (`SEmulatorShell`, `SFilterTableBlock`, drawers, wizards) | `references/docs/blocks.md` |
+| App layout & headers (`OmadaProvider`, `SAppShell`, `SPageHeader`) | `references/docs/layout.md` |
+| Inputs, selects, switches, schedules, forms | `references/docs/input.md` |
+| Cards, KPIs, `STable`, `STabs` (`page`/`filter`/`capsule`/`line`), tags, port panels | `references/docs/data-display.md` |
+| ECharts & health gauges/radars/rulers | `references/docs/charts.md` |
+| Alerts, modals, drawers, empty states, toasts | `references/docs/feedback.md` |
+| Controller v6.3 topology, ACL builder, settings shells, CLI console | `references/docs/emulator-v6.md` |
+| Verified `SIcon`, `SProductImage`, `SIllustration`, `SClientIcon`, `SBrandAsset` slugs | `references/docs/assets.md` or `node scripts/query-catalog.mjs search-icons <q>` |
+| Agent Bridge (`OmadaAgentProvider`, `agentId`, `snapshot`/`query`/`act`/`allow`) | `references/docs/agent.md` |
+| Exact single-component props / starter template | `node scripts/query-catalog.mjs component <Name>` / `template <id> --html` |
 
-| User Need | Mode | Why |
-| :--- | :--- | :--- |
-| Quick PRD mockup, shareable link/file, zero-install preview | **Single-File HTML Demo** (`standalone.js` + `style.css`) | One `.html` file (~45–80 lines), opens cleanly via `file://` double-click or any static server |
-| Multi-page app, TypeScript checking, Vite project | **React / Vite Project** (`@pkg` ESM + CSS) | Full tree-shaking, IDE IntelliSense (`.d.ts`), and standard `import` ergonomics |
+## 2. Choose Output Mode
 
----
+### Mode A — Single-File HTML Demo (Zero Build, `file://` Safe)
 
-## 2. Mode A — Single-File HTML Starter (Zero Build)
-
-Use classic `<script>` tags (NOT `<script type="module">`) so local `file://` double-click works without CORS failures.
+Use classic `<script>` tags (never `<script type="module">`) and **always pin exact CDN versions** (`@0.5.0` + `@babel/standalone@7.28.4` — never `@latest` or unversioned Babel):
 
 ```html
 <!doctype html>
@@ -34,49 +42,32 @@ Use classic `<script>` tags (NOT `<script type="module">`) so local `file://` do
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Omada PRD Demo</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/standalone.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/standalone.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"></script>
   </head>
   <body style="margin: 0;">
     <div id="root"></div>
     <script type="text/babel">
       const { useState } = OmadaUI.React;
-      const {
-        OmadaProvider,
-        SEmulatorShell,
-        SPageHeader,
-        SKpiCard,
-        STable,
-        SButton,
-        SDeviceStatus,
-        useOmadaTheme,
-      } = window.OmadaUI;
+      const { OmadaProvider, SEmulatorShell, SPageHeader, STable, SButton, SDeviceStatus } = window.OmadaUI;
 
       function DemoApp() {
         const [activeKey, setActiveKey] = useState('devices');
         return (
-          <SEmulatorShell
-            activeKey={activeKey}
-            onSelect={setActiveKey}
-            controllerName="Headquarters Building"
-          >
-            <div className="pr-9" style={{ padding: 20 }}>
+          <SEmulatorShell activeKey={activeKey} onSelect={setActiveKey} controllerName="Headquarters Building">
+            <div style={{ padding: '20px 44px 24px 24px' }}>
               <SPageHeader
                 title="AP Health Overview"
+                description="Real-time telemetry across managed access points"
                 extra={<SButton variant="primary">Run Diagnostic</SButton>}
               />
               <STable
                 rowKey="id"
-                dataSource={[{ id: '1', name: 'AP-Lobby-01', status: 'connected', clients: 42 }]}
+                dataSource={[{ id: '1', name: 'EAP650-Lobby', status: 'connected', clients: 42 }]}
                 columns={[
                   { title: 'Device', dataIndex: 'name', key: 'name' },
-                  {
-                    title: 'Status',
-                    dataIndex: 'status',
-                    key: 'status',
-                    render: (v) => <SDeviceStatus status={v} />,
-                  },
+                  { title: 'Status', dataIndex: 'status', key: 'status', render: (v) => <SDeviceStatus status={v} /> },
                   { title: 'Clients', dataIndex: 'clients', key: 'clients' },
                 ]}
               />
@@ -96,92 +87,39 @@ Use classic `<script>` tags (NOT `<script type="module">`) so local `file://` do
 </html>
 ```
 
-> All 58+ Omada `S*` components, `antd`, `AntdIcons`, `React`, `ReactDOM`, `OmadaUI.render`, and all Figma SVG/PNG assets are bundled on `window.OmadaUI`.
+### Mode B — React / Vite Project (ESM Subpaths)
 
----
-
-## 3. Mode B — React / Vite Project Starter
-
-Prefer subpath imports (`/core`, `/blocks`, `/charts`, `/emulator`, `/assets`) in React / Vite apps to minimize bundle size via ESM tree-shaking (or import everything from `@chenyqthu/omada-ui-kit` for convenience):
+Import tree-shakeable subpaths (`/core`, `/blocks`, `/charts`, `/emulator`, `/assets`, `/agent`):
 
 ```tsx
 import '@chenyqthu/omada-ui-kit/style.css';
-import { OmadaProvider, SPageHeader, STable, SButton } from '@chenyqthu/omada-ui-kit/core';
+// Or '@chenyqthu/omada-ui-kit/style.scoped.css' with <OmadaProvider syncDocumentTheme={false}>
+import { OmadaProvider, SPageHeader, SButton } from '@chenyqthu/omada-ui-kit/core';
 import { SEmulatorShell, SFilterTableBlock } from '@chenyqthu/omada-ui-kit/blocks';
-import { SLineChart } from '@chenyqthu/omada-ui-kit/charts';
-import { SIcon, SProductImage } from '@chenyqthu/omada-ui-kit/assets';
+import { OmadaAgentProvider } from '@chenyqthu/omada-ui-kit/agent';
 ```
 
-Subpath entrypoints:
-- `@chenyqthu/omada-ui-kit/core` — Theme, `SAppShell`, `SPageHeader`, base `S*` inputs/tables/modals/feedback & AntD primitives (no ECharts or full illustration/product/client catalogs)
-- `@chenyqthu/omada-ui-kit/blocks` — `SEmulatorShell` + all 6 high-level Omada Blocks (no ECharts or heavy asset catalogs)
-- `@chenyqthu/omada-ui-kit/charts` — `SChart` (modular `echarts/core`), `SLineChart`, `SBarChart`, `SDonutChart`, `SSparkChart`, `SDonutSummaryCard`, `SHealthGauge`, `SHealthRadar`, `SHealthTrendBar`, `SChannelUtilization`
-- `@chenyqthu/omada-ui-kit/emulator` — Controller v6.3 domain widgets (`STopologyCanvas`, `SAclRuleBuilder`, `SSettingsPageShell`, `STerminalConsole`, etc.)
-- `@chenyqthu/omada-ui-kit/assets` — `SIcon`, `SProductImage`, `SIllustration`, `SClientIcon`, `SBrandAsset`, `OmadaLogo`, manifests
-- `@chenyqthu/omada-ui-kit` — Full root convenience barrel
+## 3. Universal Engineering Guardrails
 
-Wrap the application root with `<OmadaProvider defaultThemeMode="light">` (never nest multiple providers).
+1. **No Hallucinated Components, Props, or Slugs**: Never invent `<S*>` components, prop names, `SIcon` slugs, or `SProductImage` slugs. Query `node scripts/query-catalog.mjs component <Name>` or `search-icons` / `search-assets` first.
+2. **Quick-Drawer `<||` Clearance (`44px` / `pr-9`)**: `<SEmulatorShell>` renders a fixed `36px` `<||` quick-drawer handle at top-right (`top: 12px, right: 0`).
+   - Top-level content wrappers inside `<SEmulatorShell>` MUST reserve right clearance via `style={{ padding: '20px 44px 24px 24px' }}` (or rely on `SFilterTableBlock` / `SSettingsPageShell` default `clearQuickDrawer={true}`).
+   - **NEVER** combine `className="pr-9"` with an inline shorthand `style={{ padding: 20 }}` — inline `padding` overwrites `padding-right` and causes button overlap!
+3. **Theme & Token Discipline**: Always wrap once with `<OmadaProvider>`. Use `var(--omada-*)` CSS custom properties (`--omada-bg-surface`, `--omada-text-primary`, `--omada-border-divider`, `--omada-brand`) instead of hardcoded hex colors so Light/Dark mode works automatically. For embedded micro-frontends, use `import '@chenyqthu/omada-ui-kit/style.scoped.css'` + `<OmadaProvider syncDocumentTheme={false}>`.
+4. **Ant Design 6 + Accessibility**:
+   - Use `<SButton variant="primary" | "secondary" | "outline" | "danger">` (never AntD `type="primary"`).
+   - Never use deprecated AntD v4/v5 props (`visible`, `destroyOnClose`, `overlayClassName`, `dropdownClassName`, `popupClassName`, `bodyStyle`, `headStyle`, `maskStyle`, `bordered={false}`).
+   - Icon-only buttons (`<SButton icon={...} />`) and standalone inputs/switches without visible labels MUST provide `aria-label`.
+5. **TypeScript Project Flag**: Never run bare `tsc` without `-p` in project roots (`tsconfig.json` is a solution-style `files: []` config). Always run `pnpm typecheck` or pass `-p tsconfig.app.json` / `-p tsconfig.templates.json`.
 
----
+## 4. Mandatory Verification Gate & Reporting
 
-## 4. Mandatory Catalog Lookup Workflow (No Guessing!)
+Before declaring any HTML demo or TSX page complete:
 
-**NEVER invent component prop names, `SIcon` names, or `SProductImage` slugs from memory.** Always query the local catalog script bundled with this skill:
-
-```bash
-# 1. Check active package name, CDN URLs, and counts
-node scripts/query-catalog.mjs info
-
-# 2. List all exported Omada blocks or components
-node scripts/query-catalog.mjs list-components blocks
-node scripts/query-catalog.mjs list-components
-node scripts/query-catalog.mjs list-components emulator-v6
-
-# 3. Pull full-page starter templates (`dashboard`, `inventory`, `acl-rules`, `settings`, `analytics-logs`)
-node scripts/query-catalog.mjs templates
-node scripts/query-catalog.mjs template inventory --html > demo.html
-node scripts/query-catalog.mjs template inventory --tsx
-
-# 4. Inspect exact Props interface and description for a block or component
-node scripts/query-catalog.mjs component SFilterTableBlock
-node scripts/query-catalog.mjs component SEmulatorShell
-
-# 5. Search verified Figma asset slugs before writing <SIcon> or <SProductImage>
-node scripts/query-catalog.mjs search-icons status 20
-node scripts/query-catalog.mjs search-icons sidebar 20
-node scripts/query-catalog.mjs search-assets products eap 20
-node scripts/query-catalog.mjs search-assets illustrations empty 20
-node scripts/query-catalog.mjs search-assets clients apple 20
-
-# 6. Inspect Light/Dark tokens or Omada v6.3 page recipes
-node scripts/query-catalog.mjs tokens light
-node scripts/query-catalog.mjs recipes
-
-# 7. Validate generated HTML / TSX demo before finishing (checks asset slugs, OmadaProvider, AntD 6 props)
-node scripts/verify-demo.mjs demo.html
-```
-
-Online Showcase & Blocks/Templates Gallery: `https://pages.chenge.ink/omada-ui-kit/#/showcase` (`#/showcase/blocks`, `#/showcase/templates`, and `#/dashboard`)
-
----
-
-## 5. Quick Component & Block Map
-
-- **High-Level Blocks**: `SFilterTableBlock`, `SInlineRuleEditorLayout`, `SInlineFormRow`, `SDetailInspectorDrawer`, `SMasterDetailSplitBlock`, `SWizardModal`, `SSwitchPortPicker`, `SEmulatorShell` (`scope="site" | "global"`, `extraNavItems`)
-- **Theme & Layout**: `OmadaProvider`, `useOmadaTheme`, `SEmulatorShell`, `EMULATOR_NAV_GROUPS`, `EMULATOR_GLOBAL_NAV_GROUPS`, `SAppShell`, `SPageHeader`
-- **Data Display & Tables**: `SCard`, `SKpiCard`, `STable`, `STabs`, `STag`, `SCustomTag`, `SDeviceStatus`, `SDescriptions`, `SCollapse`, `SPortPanel`, `SDevicePortGraphic`, `STopologyCanvas`
-- **Charts & Health**: `SLineChart`, `SBarChart`, `SDonutChart`, `SSparkChart`, `SDonutSummaryCard`, `SHealthGauge`, `SHealthRadar`, `SHealthTrendBar`, `SApDistributionRuler`, `SChannelUtilization`, `SDeviceHealthSummary`, `SClientOverviewStrip`, `SCategoryKpiCarousel`
-- **Inputs & Settings**: `SButton`, `SInput`, `SSearchInput`, `SPasswordInput`, `SNumberInput`, `STextArea`, `SIpInput`, `SMacInput`, `SSelect`, `SSwitch`, `SSlider`, `SRadio`, `SCheckbox`, `SDatePicker`, `STimePicker`, `SSchedule`, `SForm`, `SFormSection`, `SFormItem`, `SSettingsPageShell`, `SSettingsSection`, `SSettingsRow`, `SSettingsInfoBanner`, `SExpandableSection`, `SAclRuleBuilder`
-- **Feedback & Diagnostics**: `SAlert`, `SModal`, `useOmadaConfirm`, `SDrawer`, `SEmpty`, `useOmadaFeedback`, `STerminalConsole`
-- **Bundled Figma Assets**: `SIcon`, `SProductImage`, `SIllustration`, `SClientIcon`, `SBrandAsset`, `SDeviceIcon`, `OmadaLogo`
-- **Ant Design 6 Re-exports**: `Row`, `Col`, `Space`, `Badge`, `Popover`, `Tooltip`, `Dropdown`, `Progress`, `Pagination`, `Divider`, `Switch`, `Select`, etc.
-
----
-
-## 6. Omada v6.3 Visual & AntD 6 Guardrails
-
-1. **Always wrap with `<OmadaProvider>`** so Ant Design 6 tokens, `@ant-design/cssinjs` Cascade Layers (`<StyleProvider layer>`), and `--omada-*` CSS variables initialize properly.
-2. **Respect Light/Dark Mode**: Use CSS variables (`var(--omada-bg-surface)`, `var(--omada-text-primary)`, `var(--omada-border-divider)`, `var(--omada-brand)`) instead of hardcoding `#fff` or `#000`. Toggle theme programmatically via `const { setThemeMode } = useOmadaTheme()`.
-3. **Clear the `SEmulatorShell` quick-drawer handle**: When rendering content inside `<SEmulatorShell>` with `showQuickDrawerHandle` enabled (default), add right padding (`pr-9` / `paddingRight: 36`) on top-right toolbars or KPI strips so rightmost buttons/arrows never sit behind the floating `<||` handle.
-4. **Ant Design 6 & Omada Props hygiene**: Use `classNames` / `styles` props on AntD `Drawer`, `Modal`, `Dropdown`, `Popover` (not removed v4/v5 props like `overlayClassName`, `bodyStyle`, `destroyOnClose`). Use `variant="primary" | "secondary" | "outline" | "danger"` on `<SButton>` instead of AntD's `type` prop.
-5. **Layout without consumer Tailwind**: Inside `dist/standalone.js` / `style.css` single-file HTML demos, prefer `S*` layout components, AntD `Row` / `Col` / `Space` / `Flex`, standard inline `style={{ display: 'flex', gap: 16 }}`, or classes from `style.css` rather than assuming arbitrary Tailwind JIT classes exist outside this repo.
+1. Run the bundled AST + lexical verifier on every generated/edited demo file:
+   ```bash
+   node scripts/verify-demo.mjs <path-to-demo.html-or-Demo.tsx>
+   ```
+2. In React/TSX repositories, also run `pnpm typecheck` (or `npx tsc --noEmit -p <tsconfig.json>`).
+3. Fix all `[ERROR]` findings until exit code is `0`.
+4. **In your final response, explicitly report the exact verification command(s) executed and their exit code(s).**

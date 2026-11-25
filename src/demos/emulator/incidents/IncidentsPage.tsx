@@ -8,6 +8,7 @@ import {
   SInput,
   SSelect,
   SSwitch,
+  STabs,
   useOmadaNotification,
 } from '@/omada';
 import {
@@ -567,71 +568,36 @@ export const IncidentsPage: React.FC<IncidentsPageProps> = ({
     >
       {/* Top Header Row: Left Sub-Tabs + Right Status & Time Controls */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div
-          role="tablist"
+        <STabs
+          variant="page"
+          size="lg"
+          bordered={false}
           aria-label="Incidents sections"
-          className="flex items-center gap-7"
-        >
-          {(
-            [
-              { key: 'analysis', label: 'Incident Analysis' },
-              { key: 'notification', label: 'Notification' },
-              { key: 'settings', label: 'Settings' },
-            ] as const
-          ).map((tab) => {
-            const isActive = mainTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setMainTab(tab.key)}
-                className={`omada-incidents-subtab-btn cursor-pointer border-0 bg-transparent pb-2 text-[18px] leading-[26px] ${
-                  isActive ? 'is-active font-medium' : 'font-normal'
-                }`}
-              >
-                <span>{tab.label}</span>
-                {isActive && (
-                  <span className="omada-incidents-subtab-indicator absolute inset-x-0 bottom-0 h-[2px]" />
-                )}
-              </button>
-            );
-          })}
-        </div>
+          activeKey={mainTab}
+          onChange={(k) => setMainTab(k as typeof mainTab)}
+          items={[
+            { key: 'analysis', label: 'Incident Analysis' },
+            { key: 'notification', label: 'Notification' },
+            { key: 'settings', label: 'Settings' },
+          ]}
+        />
 
         {mainTab === 'analysis' && (
           <div className="flex flex-wrap items-center gap-2.5 pb-1">
             {/* Status Segmented Bar */}
-            <div
-              role="tablist"
+            <STabs
+              variant="filter"
               aria-label="Incident status filter"
-              className="omada-incidents-seg-track"
-            >
-              {(
-                [
-                  { key: 'all', label: `All (${statusCounts.all})` },
-                  { key: 'ongoing', label: `Ongoing (${statusCounts.ongoing})` },
-                  { key: 'unresolved', label: `Unresolved (${statusCounts.unresolved})` },
-                  { key: 'resolved', label: `Resolved (${statusCounts.resolved})` },
-                  { key: 'ignored', label: `Ignored (${statusCounts.ignored})` },
-                ] as const
-              ).map((item) => {
-                const isActive = statusFilter === item.key;
-                return (
-                  <button
-                    key={item.key}
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    onClick={() => setStatusFilter(item.key)}
-                    className={`omada-incidents-seg-pill ${isActive ? 'is-active' : ''}`}
-                  >
-                    {item.label}
-                  </button>
-                );
-              })}
-            </div>
+              activeKey={statusFilter}
+              onChange={(k) => setStatusFilter(k as typeof statusFilter)}
+              items={[
+                { key: 'all', label: 'All', count: statusCounts.all },
+                { key: 'ongoing', label: 'Ongoing', count: statusCounts.ongoing },
+                { key: 'unresolved', label: 'Unresolved', count: statusCounts.unresolved },
+                { key: 'resolved', label: 'Resolved', count: statusCounts.resolved },
+                { key: 'ignored', label: 'Ignored', count: statusCounts.ignored },
+              ]}
+            />
 
             {/* Time Range Segmented Bar + Calendar */}
             <div
@@ -718,58 +684,39 @@ export const IncidentsPage: React.FC<IncidentsPageProps> = ({
               style={{ width: 260 }}
             />
 
-            <div
-              role="tablist"
+            <STabs
+              variant="filter"
               aria-label="Incident severity filter"
-              className="omada-incidents-seg-track"
-            >
-              {(
-                [
-                  { key: 'all', label: `All (${severityCounts.all})` },
-                  {
-                    key: 'critical',
-                    label: `Critical (${severityCounts.critical})`,
-                    dotColor: SEVERITY_DOT_COLOR.critical,
-                  },
-                  {
-                    key: 'error',
-                    label: `Error (${severityCounts.error})`,
-                    dotColor: SEVERITY_DOT_COLOR.error,
-                  },
-                  {
-                    key: 'warning',
-                    label: `Warning (${severityCounts.warning})`,
-                    dotColor: SEVERITY_DOT_COLOR.warning,
-                  },
-                  {
-                    key: 'info',
-                    label: `Info (${severityCounts.info})`,
-                    dotColor: SEVERITY_DOT_COLOR.info,
-                  },
-                ] as const
-              ).map((item) => {
-                const isActive = severityFilter === item.key;
-                return (
-                  <button
-                    key={item.key}
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    onClick={() => setSeverityFilter(item.key)}
-                    className={`omada-incidents-seg-pill ${isActive ? 'is-active' : ''}`}
-                  >
-                    {'dotColor' in item && item.dotColor && (
-                      <span
-                        aria-hidden="true"
-                        className="h-[6px] w-[6px] shrink-0 rounded-full"
-                        style={{ backgroundColor: item.dotColor }}
-                      />
-                    )}
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+              activeKey={severityFilter}
+              onChange={(k) => setSeverityFilter(k as typeof severityFilter)}
+              items={[
+                { key: 'all', label: 'All', count: severityCounts.all },
+                {
+                  key: 'critical',
+                  label: 'Critical',
+                  count: severityCounts.critical,
+                  dotColor: SEVERITY_DOT_COLOR.critical,
+                },
+                {
+                  key: 'error',
+                  label: 'Error',
+                  count: severityCounts.error,
+                  dotColor: SEVERITY_DOT_COLOR.error,
+                },
+                {
+                  key: 'warning',
+                  label: 'Warning',
+                  count: severityCounts.warning,
+                  dotColor: SEVERITY_DOT_COLOR.warning,
+                },
+                {
+                  key: 'info',
+                  label: 'Info',
+                  count: severityCounts.info,
+                  dotColor: SEVERITY_DOT_COLOR.info,
+                },
+              ]}
+            />
           </div>
 
           {/* Horizontally Scrollable Table */}

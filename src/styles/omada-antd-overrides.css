@@ -243,7 +243,8 @@
     border-radius: 10px;
   }
 
-  .ant-drawer .ant-drawer-content {
+  .ant-drawer .ant-drawer-content,
+  .ant-drawer .ant-drawer-section {
     background-color: var(--omada-bg-overlay);
     box-shadow: var(--omada-shadow-drawer);
   }

@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import '@chenyqthu/omada-ui-kit/style.css';
 import {
+  OmadaAgentProvider,
   OmadaProvider,
   SButton,
   SDescriptions,
@@ -93,6 +94,7 @@ const InventoryContent: React.FC = () => {
     >
       <div style={{ padding: '16px 24px' }}>
         <SFilterTableBlock<DeviceRow>
+          agentId="devices.table"
           title="Managed Devices"
           subtitle={`${filtered.length} online or pending`}
           searchPlaceholder="Search device name or IP"
@@ -100,6 +102,8 @@ const InventoryContent: React.FC = () => {
           onSearchChange={setSearch}
           filters={
             <SSelect
+              agentId="devices.statusFilter"
+              aria-label="Filter by status"
               value={statusFilter}
               onChange={(val) => setStatusFilter(String(val))}
               style={{ width: 170 }}
@@ -172,6 +176,8 @@ const InventoryContent: React.FC = () => {
 
 export const InventoryTemplate: React.FC = () => (
   <OmadaProvider defaultThemeMode="light">
-    <InventoryContent />
+    <OmadaAgentProvider>
+      <InventoryContent />
+    </OmadaAgentProvider>
   </OmadaProvider>
 );

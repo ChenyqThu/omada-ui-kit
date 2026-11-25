@@ -7,6 +7,7 @@ import {
   SIcon,
   SIllustration,
   SSwitch,
+  STabs,
   STooltip,
   useOmadaNotification,
   useOmadaTheme,
@@ -361,32 +362,17 @@ export const SiteDashboardPage: React.FC<SiteDashboardPageProps> = ({
       {/* Top Control Row */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         {/* Capsule Main Tabs */}
-        <div
-          role="tablist"
+        <STabs
+          variant="capsule"
           aria-label="Dashboard sections"
-          className="inline-flex h-[34px] items-center gap-0.5 rounded-[4px] bg-[var(--omada-dash-track)] p-[3px]"
-        >
-          {MAIN_TABS.map((tab) => {
-            const isActive = mainTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setMainTab(tab.key)}
-                className={`inline-flex h-[28px] cursor-pointer items-center gap-1.5 rounded-[2px] border-0 px-3 text-[13px] transition-colors ${
-                  isActive
-                    ? 'bg-[var(--omada-dash-capsule-active)] font-medium text-white'
-                    : 'bg-transparent font-normal text-[var(--omada-text-secondary)] hover:text-[var(--omada-text-primary)]'
-                }`}
-              >
-                <SIcon name={tab.icon} size={15} />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
+          activeKey={mainTab}
+          onChange={(k) => setMainTab(k as typeof mainTab)}
+          items={MAIN_TABS.map((tab) => ({
+            key: tab.key,
+            label: tab.label,
+            icon: <SIcon name={tab.icon} size={15} />,
+          }))}
+        />
 
         {/* Right Header Controls: Topology Toolbar OR Timestamp & Time Range Picker */}
         {mainTab === 'topology' ? (
@@ -533,36 +519,19 @@ export const SiteDashboardPage: React.FC<SiteDashboardPageProps> = ({
               </div>
 
               {/* WAN Port Selector */}
-              <div
-                role="tablist"
+              <STabs
+                variant="filter"
+                block
                 aria-label="Gateway WAN ports"
-                className="mb-2.5 grid grid-cols-2 rounded-[4px] bg-[var(--omada-dash-track)] p-[3px]"
-              >
-                {DASHBOARD_GATEWAY.wanPorts.map((port) => {
-                  const isActive = port.key === activeWan.key;
-                  return (
-                    <button
-                      key={port.key}
-                      type="button"
-                      role="tab"
-                      aria-selected={isActive}
-                      title={port.label}
-                      onClick={() => setActiveWanKey(port.key)}
-                      className={`inline-flex h-[28px] min-w-0 cursor-pointer items-center justify-center gap-1.5 rounded-[3px] border-0 px-2 text-[12px] transition-colors ${
-                        isActive
-                          ? 'bg-[var(--omada-dash-pill-active)] font-medium text-[var(--omada-dash-pill-text-active)] shadow-2xs'
-                          : 'bg-transparent text-[var(--omada-text-secondary)] hover:text-[var(--omada-text-primary)]'
-                      }`}
-                    >
-                      <span
-                        className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--omada-brand-hover)]"
-                        aria-hidden="true"
-                      />
-                      <span className="truncate">{port.shortLabel}</span>
-                    </button>
-                  );
-                })}
-              </div>
+                activeKey={activeWan.key}
+                onChange={(k) => setActiveWanKey(k as typeof activeWanKey)}
+                className="mb-2.5"
+                items={DASHBOARD_GATEWAY.wanPorts.map((port) => ({
+                  key: port.key,
+                  label: port.shortLabel,
+                  dotColor: 'var(--omada-brand-hover)',
+                }))}
+              />
 
               {/* Throughput & WAN IP Box */}
               <div className="mb-3 flex flex-col gap-2 rounded-[6px] bg-[var(--omada-dash-surface-subtle)] px-3 py-2.5 text-[13px]">
@@ -781,31 +750,16 @@ export const SiteDashboardPage: React.FC<SiteDashboardPageProps> = ({
               <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-3">
                   <h2 className="omada-dash-title m-0">Activity</h2>
-                  <div
-                    role="tablist"
+                  <STabs
+                    variant="filter"
                     aria-label="Activity view"
-                    className="inline-flex h-[28px] items-center rounded-[4px] bg-[var(--omada-dash-track)] p-[2px]"
-                  >
-                    {ACTIVITY_SUB_TABS.map((sub) => {
-                      const isActive = activityMode === sub.key;
-                      return (
-                        <button
-                          key={sub.key}
-                          type="button"
-                          role="tab"
-                          aria-selected={isActive}
-                          onClick={() => setActivityMode(sub.key)}
-                          className={`inline-flex h-[24px] cursor-pointer items-center rounded-[2px] border-0 px-2.5 text-[12px] transition-colors ${
-                            isActive
-                              ? 'bg-[var(--omada-dash-pill-active)] font-medium text-[var(--omada-dash-pill-text-active)] shadow-2xs'
-                              : 'bg-transparent text-[var(--omada-text-secondary)] hover:text-[var(--omada-text-primary)]'
-                          }`}
-                        >
-                          {sub.label}
-                        </button>
-                      );
-                    })}
-                  </div>
+                    activeKey={activityMode}
+                    onChange={(k) => setActivityMode(k as typeof activityMode)}
+                    items={ACTIVITY_SUB_TABS.map((sub) => ({
+                      key: sub.key,
+                      label: sub.label,
+                    }))}
+                  />
                 </div>
 
                 {/* Activity Legends */}

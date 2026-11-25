@@ -12,38 +12,33 @@ export type SRadioGroupVariant = 'default' | 'button' | 'capsule';
 export interface SRadioProps extends RadioProps {
   /** Optional explanatory copy rendered 4px beneath the radio label. */
   description?: React.ReactNode;
-  /** Ref forwarded to the underlying AntD 6 Radio instance. */
-  ref?: React.Ref<RadioRef>;
 }
 
-/**
- * Omada Radio control with optional secondary `description` line.
- */
-export const SRadio: React.FC<SRadioProps> & {
-  Group: typeof SRadioGroup;
-  Button: typeof Radio.Button;
-} = ({ description, children, className = '', ref, ...rest }) => {
-  return (
-    <Radio
-      ref={ref}
-      className={`omada-radio-wrapper ${className}`.trim()}
-      {...rest}
-    >
-      {description ? (
-        <span className="inline-flex flex-col gap-1">
-          <span className="text-sm font-normal leading-5 text-[var(--omada-text-primary)]">
-            {children}
+const BaseSRadio = React.forwardRef<RadioRef, SRadioProps>(
+  ({ description, children, className = '', ...rest }, ref) => {
+    return (
+      <Radio
+        ref={ref}
+        className={`omada-radio-wrapper ${className}`.trim()}
+        {...rest}
+      >
+        {description ? (
+          <span className="inline-flex flex-col gap-1">
+            <span className="text-sm font-normal leading-5 text-[var(--omada-text-primary)]">
+              {children}
+            </span>
+            <span className="text-xs leading-4 text-[var(--omada-text-secondary)]">
+              {description}
+            </span>
           </span>
-          <span className="text-xs leading-4 text-[var(--omada-text-secondary)]">
-            {description}
-          </span>
-        </span>
-      ) : (
-        children
-      )}
-    </Radio>
-  );
-};
+        ) : (
+          children
+        )}
+      </Radio>
+    );
+  },
+);
+BaseSRadio.displayName = 'SRadio';
 
 export interface SRadioOption<T = string | number> {
   label: React.ReactNode;
@@ -230,7 +225,7 @@ export function SRadioGroup<T extends string | number = string | number>({
     >
       {normalizedOptions.length > 0
         ? normalizedOptions.map((opt) => (
-            <SRadio
+            <BaseSRadio
               key={String(opt.value)}
               value={opt.value}
               disabled={opt.disabled}
@@ -242,12 +237,17 @@ export function SRadioGroup<T extends string | number = string | number>({
                 {opt.icon}
                 <span>{opt.label}</span>
               </span>
-            </SRadio>
+            </BaseSRadio>
           ))
         : children}
     </Radio.Group>
   );
 }
 
-SRadio.Group = SRadioGroup;
-SRadio.Button = Radio.Button;
+/**
+ * Omada Radio control with optional secondary `description` line.
+ */
+export const SRadio = Object.assign(BaseSRadio, {
+  Group: SRadioGroup,
+  Button: Radio.Button,
+});

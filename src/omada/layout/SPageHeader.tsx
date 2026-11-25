@@ -4,6 +4,8 @@ import { ArrowLeft } from 'lucide-react';
 export interface SPageHeaderProps {
   title: React.ReactNode;
   description?: React.ReactNode;
+  /** Alias for `description` kept for backward compatibility with single-file templates. */
+  subtitle?: React.ReactNode;
   onBack?: () => void;
   tabs?: React.ReactNode;
   extra?: React.ReactNode;
@@ -11,16 +13,19 @@ export interface SPageHeaderProps {
 }
 
 /**
- * Standard Omada page header supporting optional back navigation, description, tabs, and right-aligned actions.
+ * Standard Omada page header supporting optional back navigation, description (`subtitle` alias), tabs, and right-aligned actions.
  */
 export const SPageHeader: React.FC<SPageHeaderProps> = ({
   title,
   description,
+  subtitle,
   onBack,
   tabs,
   extra,
   className = '',
 }) => {
+  const resolvedDescription = description ?? subtitle;
+
   return (
     <div className={`mb-4 ${className}`}>
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -39,9 +44,9 @@ export const SPageHeader: React.FC<SPageHeaderProps> = ({
             <h1 className="m-0 text-[22px] font-semibold leading-[32px] text-[var(--omada-text-primary)]">
               {title}
             </h1>
-            {description && (
+            {resolvedDescription && (
               <p className="mt-0.5 text-sm leading-5 text-[var(--omada-text-secondary)]">
-                {description}
+                {resolvedDescription}
               </p>
             )}
           </div>

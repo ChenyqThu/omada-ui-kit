@@ -1,0 +1,32 @@
+<svg width="244" height="160" viewBox="0 0 244 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="146.333" y="53" width="73.1493" height="49.9393" fill="#E3F1EC" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<rect x="149.847" y="57.2153" width="66.1157" height="45.719" fill="white" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<rect x="140" y="102.94" width="85.1064" height="3.51685" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<ellipse cx="154.066" cy="61.4414" rx="1.40672" ry="1.40674" fill="#EE385C"/>
+<ellipse cx="158.288" cy="61.4414" rx="1.40672" ry="1.40674" fill="#FFCB00"/>
+<ellipse cx="162.507" cy="61.4414" rx="1.40672" ry="1.40674" fill="#00A870"/>
+<path d="M163 66L174.111 66L182.333 73.2035H203V97.5152H163V66Z" fill="#E3F1EC" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<rect x="168.455" y="79.6362" width="2.60732" height="2.60732" fill="#0069CB"/>
+<rect x="168.455" y="84.4785" width="2.60732" height="2.60732" fill="#05C178"/>
+<rect x="168.455" y="89.3206" width="2.60732" height="2.60732" fill="#05C178"/>
+<rect x="172.924" y="79.6362" width="24.5833" height="2.60732" fill="#C1DFD4"/>
+<rect x="172.924" y="89.3206" width="10.8018" height="2.60732" fill="#C1DFD4"/>
+<rect x="172.924" y="84.4785" width="10.8018" height="2.60732" fill="#C1DFD4"/>
+<rect x="186.333" y="84.4785" width="11.1742" height="2.60732" fill="#C1DFD4"/>
+<path d="M113.443 66L113.443 74.6045L83 74.6045L83 86.8955L113.443 86.8955L113.443 95.498L135 80.749L113.443 66Z" fill="url(#paint0_linear_48823_35022)"/>
+<rect x="23" y="52" width="60" height="17.1429" fill="#E3F1EC" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<rect x="26.2147" y="55.2136" width="53.5714" height="10.7143" fill="white" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<ellipse cx="31.8213" cy="60.8214" rx="1.3219" ry="1.32192" fill="#00A870"/>
+<path d="M23.0002 72.3564H83.0002V89.4993H23.0002V72.3564Z" fill="#E3F1EC" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<path d="M26.215 75.5708H79.7864V86.2851H26.215V75.5708Z" fill="white" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<ellipse cx="31.8215" cy="81.1784" rx="1.3219" ry="1.32192" fill="#00A870"/>
+<path d="M23.0002 92.7136H83.0002V109.856H23.0002V92.7136Z" fill="#E3F1EC" stroke-width="1.2" stroke-linecap="square" stroke="#0A5A5A"/>
+<path d="M26.215 95.928H79.7864V106.642H26.215V95.928Z" fill="white" stroke-width="0.6" stroke-linecap="square" stroke="#636363"/>
+<ellipse cx="31.8215" cy="101.536" rx="1.3219" ry="1.32192" fill="#00A870"/>
+<defs>
+<linearGradient id="paint0_linear_48823_35022" x1="83" y1="80.7496" x2="134.623" y2="80.7496" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0069CB" stop-opacity="0"/>
+<stop offset="1" stop-color="#0069CB"/>
+</linearGradient>
+</defs>
+</svg>

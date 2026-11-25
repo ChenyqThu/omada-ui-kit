@@ -75,7 +75,7 @@ export const STag: React.FC<STagProps> = ({
       className={`inline-flex h-5 items-center rounded-[3px] px-1.5 text-xs font-medium leading-4 whitespace-nowrap ${className}`.trim()}
       style={{
         backgroundColor: isSolid ? palette.solidBg : palette.subtleBg,
-        color: isSolid ? '#FFFFFF' : palette.text,
+        color: isSolid ? 'var(--omada-text-inverse)' : palette.text,
       }}
     >
       {children}

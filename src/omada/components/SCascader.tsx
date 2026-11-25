@@ -15,29 +15,37 @@ export type SCascaderProps<
 > = CascaderAutoProps<OptionType, ValueField> & {
   /** Separator rendered between path segments in the default `displayRender` (defaults to `' / '`). */
   displaySeparator?: React.ReactNode;
-  /** Ref forwarded to the underlying AntD 6 Cascader instance. */
-  ref?: React.Ref<CascaderRef>;
 };
 
-/**
- * Omada Cascader control defaulting to `variant="filled"`, supporting single and
- * multi-select hierarchical paths with customizable `displayRender` and removable Omada tags.
- */
-export function SCascader<
+type SCascaderComponent = (<
   OptionType extends DefaultOptionType = SCascaderOption,
   ValueField extends keyof OptionType = keyof OptionType,
->({
-  variant = 'filled',
-  displaySeparator = ' / ',
-  displayRender,
-  tagRender,
-  multiple,
-  className = '',
-  classNames,
-  styles,
-  ref,
-  ...rest
-}: SCascaderProps<OptionType, ValueField>) {
+>(
+  props: SCascaderProps<OptionType, ValueField> & React.RefAttributes<CascaderRef>,
+) => React.ReactElement | null) & {
+  SHOW_PARENT: typeof Cascader.SHOW_PARENT;
+  SHOW_CHILD: typeof Cascader.SHOW_CHILD;
+  Panel: typeof Cascader.Panel;
+  displayName?: string;
+};
+
+function SCascaderInner<
+  OptionType extends DefaultOptionType = SCascaderOption,
+  ValueField extends keyof OptionType = keyof OptionType,
+>(
+  {
+    variant = 'filled',
+    displaySeparator = ' / ',
+    displayRender,
+    tagRender,
+    multiple,
+    className = '',
+    classNames,
+    styles,
+    ...rest
+  }: SCascaderProps<OptionType, ValueField>,
+  ref: React.ForwardedRef<CascaderRef>,
+) {
   const defaultDisplayRender: NonNullable<
     CascaderProps<OptionType, ValueField>['displayRender']
   > = (labels) => {
@@ -126,12 +134,27 @@ export function SCascader<
     classNames: resolvedClassNames,
     styles,
   } as CascaderAutoProps<OptionType, ValueField> & {
-    ref?: React.Ref<CascaderRef>;
+    ref?: React.ForwardedRef<CascaderRef>;
   };
 
   return <Cascader<OptionType, ValueField> {...mergedProps} />;
 }
 
-SCascader.SHOW_PARENT = Cascader.SHOW_PARENT;
-SCascader.SHOW_CHILD = Cascader.SHOW_CHILD;
-SCascader.Panel = Cascader.Panel;
+/**
+ * Omada Cascader control defaulting to `variant="filled"`, supporting single and
+ * multi-select hierarchical paths with customizable `displayRender` and removable Omada tags.
+ */
+export const SCascader = Object.assign(
+  React.forwardRef(
+    SCascaderInner as (
+      props: SCascaderProps<SCascaderOption, keyof SCascaderOption>,
+      ref: React.ForwardedRef<CascaderRef>,
+    ) => React.ReactElement | null,
+  ),
+  {
+    SHOW_PARENT: Cascader.SHOW_PARENT,
+    SHOW_CHILD: Cascader.SHOW_CHILD,
+    Panel: Cascader.Panel,
+  },
+) as unknown as SCascaderComponent;
+SCascader.displayName = 'SCascader';

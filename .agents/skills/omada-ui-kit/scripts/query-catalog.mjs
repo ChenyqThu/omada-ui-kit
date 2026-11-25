@@ -35,6 +35,9 @@ function cmdInfo(catalog) {
   console.log(`Package: ${catalog.package.name}@${catalog.package.version}`);
   console.log(`CDN CSS:        ${catalog.package.cdn.jsdelivrCss}`);
   console.log(`CDN Standalone: ${catalog.package.cdn.jsdelivrStandalone}`);
+  if (catalog.package.cdn.babelStandalone) {
+    console.log(`CDN Babel:      ${catalog.package.cdn.babelStandalone}`);
+  }
   console.log('Counts:', JSON.stringify(catalog.counts));
 }
 
@@ -81,18 +84,28 @@ function cmdComponent(catalog, query) {
   for (const item of matches) {
     console.log(`\n### ${item.name} (${item.category} / ${item.kind})`);
     if (item.description) console.log(item.description);
-    console.log(`Import: import { ${item.name} } from '${catalog.package.name}';`);
+    console.log(`Import: import { ${item.name} } from '${item.subpath ?? catalog.package.name}';`);
     if (item.sourcePath) console.log(`Source: ${item.sourcePath}`);
     if (item.extends) console.log(`Extends: ${item.extends}`);
     if (item.props && item.props.length > 0) {
-      console.log('\nProps:');
+      console.log('\nOwn Props:');
       for (const p of item.props) {
         const req = p.optional ? '?' : '';
         const desc = p.description ? `  // ${p.description}` : '';
         console.log(`  ${p.name}${req}: ${p.type}${desc}`);
       }
-    } else {
-      console.log('(No dedicated *Props interface extracted; check extends / AntD primitive signature.)');
+    }
+    if (item.antdProps && item.antdProps.length > 0) {
+      console.log(`\nInherited AntD Props (${item.antdProps.length}): ${item.antdProps.join(', ')}`);
+    }
+    if (item.commonProps && item.commonProps.length > 0) {
+      console.log(`\nCommon React/DOM Props: ${item.commonProps.join(', ')}`);
+    }
+    if (typeof item.acceptsDomProps === 'boolean') {
+      console.log(`Accepts arbitrary DOM/aria-*/data-* attributes: ${item.acceptsDomProps ? 'yes' : 'aria-*/data-* only'}`);
+    }
+    if (!item.props?.length && !item.antdProps?.length && !item.commonProps?.length) {
+      console.log('(No component props signature extracted; check helper/hook signature.)');
     }
   }
 }
@@ -167,8 +180,11 @@ function cmdRecipes(catalog, keyword = '') {
     console.log(r.summary);
     console.log(`Components: ${r.components.join(', ')}`);
     if (r.cdnUrls) {
-      console.log(`CDN CSS: ${r.cdnUrls.css}`);
-      console.log(`CDN JS:  ${r.cdnUrls.js}`);
+      console.log(`CDN CSS:   ${r.cdnUrls.css}`);
+      console.log(`CDN JS:    ${r.cdnUrls.js}`);
+      if (r.cdnUrls.babel) {
+        console.log(`CDN Babel: ${r.cdnUrls.babel}`);
+      }
     }
     if (r.notes) console.log(`Note: ${r.notes}`);
   }

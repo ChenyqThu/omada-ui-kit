@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Omada Analytics & Logs Template</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/standalone.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/standalone.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"></script>
   </head>
   <body style="margin: 0;">
     <div id="root"></div>
@@ -47,7 +47,9 @@
         return (
           <SEmulatorShell activeKey="incidents" onSelect={() => {}} controllerName="Headquarters Building">
             <div style={{ padding: '20px 24px' }}>
-              <SPageHeader title="Incident & Event Analytics" subtitle="Intelligent correlation across wireless, auth, and WAN anomalies" />
+              <div style={{ paddingRight: 20 }}>
+                <SPageHeader title="Incident & Event Analytics" description="Intelligent correlation across wireless, auth, and WAN anomalies" />
+              </div>
 
               <div className="pr-9" style={{ marginBottom: 16 }}>
                 <SCategoryKpiCarousel

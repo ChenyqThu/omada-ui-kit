@@ -53,14 +53,15 @@ export function resolveRuntimeAssetUrl(url: string): string {
   ) {
     return url;
   }
-  const base = (globalThis as { __OMADA_ASSET_BASE__?: string }).__OMADA_ASSET_BASE__;
-  if (!base) {
+  const rawBase = (globalThis as { __OMADA_ASSET_BASE__?: string }).__OMADA_ASSET_BASE__?.trim();
+  if (!rawBase) {
     return url;
   }
+  const normalizedBase = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
   try {
-    return new URL(url, base).href;
+    return new URL(url, normalizedBase).href;
   } catch {
-    return url;
+    return `${normalizedBase}${url.replace(/^\.\//, '')}`;
   }
 }
 

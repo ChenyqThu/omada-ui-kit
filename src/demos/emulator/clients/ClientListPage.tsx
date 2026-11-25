@@ -9,6 +9,7 @@ import {
   SIcon,
   SInput,
   SPagination,
+  STabs,
   useOmadaNotification,
 } from '@/omada';
 import {
@@ -1130,46 +1131,28 @@ export const ClientListPage: React.FC<ClientListPageProps> = ({
   return (
     <div className="omada-clients-page px-6 pt-4 pb-6">
       {/* Top Underline Sub-Tabs + Right Export Action */}
-      <div className="flex items-center justify-between border-b border-[var(--omada-border-divider)]">
-        <div
-          role="tablist"
-          aria-label="Client views"
-          className="flex items-center gap-8"
-        >
-          {VIEW_TABS.map((tab) => {
-            const isActive = viewTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => {
-                  setViewTab(tab.key);
-                  setCurrentPage(1);
-                }}
-                className={`omada-clients-subtab-btn cursor-pointer pb-2.5 text-[18px] leading-[26px] ${
-                  isActive ? 'is-active font-medium' : 'font-normal'
-                }`}
-              >
-                <span>{tab.label}</span>
-                {isActive && (
-                  <span className="omada-clients-subtab-indicator absolute inset-x-0 -bottom-[1px] h-[2px]" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        <button
-          type="button"
-          onClick={handleExport}
-          className="omada-clients-ghost-action mb-1.5"
-        >
-          <SIcon name="export" size={15} />
-          <span>Export</span>
-        </button>
-      </div>
+      <STabs
+        variant="page"
+        size="lg"
+        bordered
+        aria-label="Client views"
+        activeKey={viewTab}
+        onChange={(k) => {
+          setViewTab(k as typeof viewTab);
+          setCurrentPage(1);
+        }}
+        items={VIEW_TABS.map((tab) => ({ key: tab.key, label: tab.label }))}
+        extra={
+          <button
+            type="button"
+            onClick={handleExport}
+            className="omada-clients-ghost-action"
+          >
+            <SIcon name="export" size={15} />
+            <span>Export</span>
+          </button>
+        }
+      />
 
       {/* 4-Column Client Overview KPI Strip */}
       <div className="mt-3 mb-2">
@@ -1206,46 +1189,25 @@ export const ClientListPage: React.FC<ClientListPageProps> = ({
               style={{ width: 260 }}
             />
 
-            <div
-              role="tablist"
+            <STabs
+              variant="filter"
               aria-label="Client connection filter"
-              className="omada-clients-seg-track"
-            >
-              {(
-                [
-                  { key: 'all', label: `All (${connectionCounts.all})` },
-                  {
-                    key: 'wireless',
-                    label: `Wireless (${connectionCounts.wireless})`,
-                  },
-                  { key: 'wired', label: `Wired (${connectionCounts.wired})` },
-                  {
-                    key: 'ipc-nvr',
-                    label:
-                      connectionCounts.ipcNvr > 0
-                        ? `IPCs/NVRs (${connectionCounts.ipcNvr})`
-                        : 'IPCs/NVRs',
-                  },
-                ] as const
-              ).map((item) => {
-                const isActive = connectionFilter === item.key;
-                return (
-                  <button
-                    key={item.key}
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    onClick={() => {
-                      setConnectionFilter(item.key);
-                      setCurrentPage(1);
-                    }}
-                    className={`omada-clients-seg-pill ${isActive ? 'is-active' : ''}`}
-                  >
-                    {item.label}
-                  </button>
-                );
-              })}
-            </div>
+              activeKey={connectionFilter}
+              onChange={(k) => {
+                setConnectionFilter(k as typeof connectionFilter);
+                setCurrentPage(1);
+              }}
+              items={[
+                { key: 'all', label: 'All', count: connectionCounts.all },
+                { key: 'wireless', label: 'Wireless', count: connectionCounts.wireless },
+                { key: 'wired', label: 'Wired', count: connectionCounts.wired },
+                {
+                  key: 'ipc-nvr',
+                  label: 'IPCs/NVRs',
+                  count: connectionCounts.ipcNvr > 0 ? connectionCounts.ipcNvr : undefined,
+                },
+              ]}
+            />
           </div>
 
           <div className="flex items-center gap-4">
@@ -1278,61 +1240,42 @@ export const ClientListPage: React.FC<ClientListPageProps> = ({
 
         {/* Row 2: Experience Segmented Filter */}
         <div className="flex flex-wrap items-center gap-3">
-          <div
-            role="tablist"
+          <STabs
+            variant="filter"
             aria-label="Client experience filter"
-            className="omada-clients-seg-track"
-          >
-            {(
-              [
-                { key: 'all', label: `All (${experienceCounts.all})` },
-                {
-                  key: 'good',
-                  label: `Good (${experienceCounts.good})`,
-                  dotColor: EXPERIENCE_DOT_COLOR.good,
-                },
-                {
-                  key: 'fair',
-                  label: `Fair (${experienceCounts.fair})`,
-                  dotColor: EXPERIENCE_DOT_COLOR.fair,
-                },
-                {
-                  key: 'poor',
-                  label: `Poor (${experienceCounts.poor})`,
-                  dotColor: EXPERIENCE_DOT_COLOR.poor,
-                },
-                {
-                  key: 'no-data',
-                  label: `No Data (${experienceCounts.noData})`,
-                  dotColor: EXPERIENCE_DOT_COLOR['no-data'],
-                },
-              ] as const
-            ).map((item) => {
-              const isActive = experienceFilter === item.key;
-              return (
-                <button
-                  key={item.key}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => {
-                    setExperienceFilter(item.key);
-                    setCurrentPage(1);
-                  }}
-                  className={`omada-clients-seg-pill ${isActive ? 'is-active' : ''}`}
-                >
-                  {'dotColor' in item && item.dotColor && (
-                    <span
-                      aria-hidden="true"
-                      className="h-[6px] w-[6px] shrink-0 rounded-full"
-                      style={{ backgroundColor: item.dotColor }}
-                    />
-                  )}
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </div>
+            activeKey={experienceFilter}
+            onChange={(k) => {
+              setExperienceFilter(k as typeof experienceFilter);
+              setCurrentPage(1);
+            }}
+            items={[
+              { key: 'all', label: 'All', count: experienceCounts.all },
+              {
+                key: 'good',
+                label: 'Good',
+                count: experienceCounts.good,
+                dotColor: EXPERIENCE_DOT_COLOR.good,
+              },
+              {
+                key: 'fair',
+                label: 'Fair',
+                count: experienceCounts.fair,
+                dotColor: EXPERIENCE_DOT_COLOR.fair,
+              },
+              {
+                key: 'poor',
+                label: 'Poor',
+                count: experienceCounts.poor,
+                dotColor: EXPERIENCE_DOT_COLOR.poor,
+              },
+              {
+                key: 'no-data',
+                label: 'No Data',
+                count: experienceCounts.noData,
+                dotColor: EXPERIENCE_DOT_COLOR['no-data'],
+              },
+            ]}
+          />
         </div>
       </div>
 

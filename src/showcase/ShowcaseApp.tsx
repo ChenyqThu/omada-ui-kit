@@ -131,7 +131,7 @@ const NAV_GROUPS: SNavGroup[] = [
         key: 'blocks',
         label: 'Blocks',
         icon: <Blocks size={16} />,
-        badge: '6',
+        badge: '8',
       },
       {
         key: 'templates',
@@ -160,7 +160,7 @@ const NAV_GROUPS: SNavGroup[] = [
         key: 'assets',
         label: 'Icons & Assets',
         icon: <Images size={16} />,
-        badge: '859',
+        badge: '1,059',
       },
       {
         key: 'nav-shell',

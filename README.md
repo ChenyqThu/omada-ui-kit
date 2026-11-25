@@ -44,6 +44,9 @@ In Vite / Rollup / webpack builds, import from dedicated subpath entrypoints ins
 | `@chenyqthu/omada-ui-kit/charts` | `SChart` (modular `echarts/core`), `SLineChart`, `SBarChart`, `SDonutChart`, `SSparkChart`, `SDonutSummaryCard`, `SHealthGauge`, `SHealthRadar`, `SHealthTrendBar`, `SChannelUtilization` | Full Illustration/Product/Client catalogs |
 | `@chenyqthu/omada-ui-kit/emulator` | All Controller v6.3 domain components (`STopologyCanvas`, `SAclRuleBuilder`, `SSettingsPageShell`, `STerminalConsole`, `SDevicePortGraphic`, etc.) | — |
 | `@chenyqthu/omada-ui-kit/assets` | `SIcon`, `SProductImage`, `SIllustration`, `SClientIcon`, `SBrandAsset`, `OmadaLogo`, `SDeviceIcon`, asset & icon manifests | ECharts |
+| `@chenyqthu/omada-ui-kit/agent` | Deterministic Agent Bridge (`OmadaAgentProvider`, `useOmadaAgent`, `useOmadaAgentControl`, `useOmadaAgentAction`) with `snapshot()` / `query()` / `act()` / `allow` & secret masking | ECharts, AntD, asset catalogs |
+| `@chenyqthu/omada-ui-kit/style.scoped.css` | Scoped stylesheet (no Tailwind `preflight` global reset; tokens scoped to `.omada-scope, .omada-emulator-root` for `<OmadaProvider syncDocumentTheme={false}>`) | Global CSS reset |
+| `@chenyqthu/omada-ui-kit/llms.txt` | Compact LLM/Agent index mapping subpaths, components, templates, and progressive-disclosure docs | — |
 | `@chenyqthu/omada-ui-kit` | Convenience root re-export of all modules (full backward compatibility) | — |
 
 ```tsx
@@ -62,9 +65,9 @@ For quick PRD prototypes, load `dist/style.css` and `dist/standalone.js` (bundle
 <html>
   <head>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@latest/dist/standalone.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.5.0/dist/standalone.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"></script>
   </head>
   <body style="margin: 0;">
     <div id="root"></div>
@@ -73,7 +76,7 @@ For quick PRD prototypes, load `dist/style.css` and `dist/standalone.js` (bundle
       OmadaUI.render(
         <OmadaProvider>
           <SEmulatorShell activeKey="dashboard" onSelect={() => {}}>
-            <div style={{ padding: 24 }}>
+            <div style={{ padding: '20px 44px 24px 24px' }}>
               <SCard title="PRD Demo"><SButton variant="primary">Action</SButton></SCard>
             </div>
           </SEmulatorShell>
@@ -165,6 +168,9 @@ Including the Omada Controller v6.3 page/section name, usage mode (Single-File H
 ## 6. Development & Build Scripts
 
 - `pnpm dev` — Start local Showcase & Omada Controller v6.3 Emulator
-- `pnpm build:lib` — Build ESM (`dist/index.js`), CSS (`dist/style.css`), Standalone IIFE (`dist/standalone.js`), `.d.ts` (`dist/types/`), and `dist/catalog.json` (also syncs Skill bundles)
+- `pnpm build:lib` — Build ESM (`dist/index.js`, `./core`, `./blocks`, `./charts`, `./emulator`, `./assets`, `./agent`), CSS (`dist/style.css` + `dist/style.scoped.css`), Standalone IIFE (`dist/standalone.js` + `dist/assets/`), `.d.ts` (`dist/types/`), `dist/catalog.json`, and `dist/llms.txt`
+- `pnpm typecheck` — Type-check `tsconfig.app.json`, `tsconfig.node.json`, `tsconfig.lib.json`, and `tsconfig.templates.json`
+- `pnpm sync:local-skill` — Sync `skills/omada-ui-kit/` into local user `~/.gemini/config/skills/omada-ui-kit/`
 - `pnpm build:pages` — Build static site for GitHub Pages (`dist-app/`)
 - `pnpm test` — Run unit test suite
+- `pnpm test:agent-eval` — Run Agent readiness benchmark (progressive disclosure token budget, `verify-demo.mjs` mutation suite, and Agent Bridge determinism)

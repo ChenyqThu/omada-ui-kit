@@ -123,7 +123,9 @@ export const SPortPanel: React.FC<SPortPanelProps> = ({
               width: boxSize,
               height: boxSize,
               backgroundColor: color,
-              color: lightText ? '#FFFFFF' : '#2B2B2B',
+              color: lightText
+                ? 'var(--omada-text-inverse)'
+                : 'var(--omada-port-tile-text-dark)',
             }}
             className={`relative flex items-center justify-center rounded-[3px] transition-transform ${
               isSfp ? 'border-2 border-black/25 dark:border-white/30' : ''
