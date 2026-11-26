@@ -266,7 +266,8 @@ async function main() {
     {
       // Track A: Browser DOM / ARIA
       const pageA = await context.newPage();
-      await pageA.goto(`${baseUrl}/templates/settings.html`, { waitUntil: 'networkidle' });
+      await pageA.goto(`${baseUrl}/templates/settings.html`, { waitUntil: 'load' });
+      await pageA.waitForFunction(() => Boolean(document.querySelector('#root > *')));
       const recA = createMetricsRecorder();
       const t0A = performance.now();
 
@@ -308,7 +309,8 @@ async function main() {
 
       // Track B: Agent Bridge / WebMCP
       const pageB = await context.newPage();
-      await pageB.goto(`${baseUrl}/templates/settings.html`, { waitUntil: 'networkidle' });
+      await pageB.goto(`${baseUrl}/templates/settings.html`, { waitUntil: 'load' });
+      await pageB.waitForFunction(() => Boolean(window.__OMADA_AGENT__));
       const recB = createMetricsRecorder();
       const t0B = performance.now();
 
@@ -346,7 +348,8 @@ async function main() {
     {
       // Track A: Browser DOM / ARIA
       const pageA = await context.newPage();
-      await pageA.goto(`${baseUrl}/templates/inventory.html`, { waitUntil: 'networkidle' });
+      await pageA.goto(`${baseUrl}/templates/inventory.html`, { waitUntil: 'load' });
+      await pageA.waitForFunction(() => Boolean(document.querySelector('#root > *')));
       const recA = createMetricsRecorder();
       const t0A = performance.now();
 
@@ -394,7 +397,8 @@ async function main() {
 
       // Track B: Agent Bridge / WebMCP
       const pageB = await context.newPage();
-      await pageB.goto(`${baseUrl}/templates/inventory.html`, { waitUntil: 'networkidle' });
+      await pageB.goto(`${baseUrl}/templates/inventory.html`, { waitUntil: 'load' });
+      await pageB.waitForFunction(() => Boolean(window.__OMADA_AGENT__));
       const recB = createMetricsRecorder();
       const t0B = performance.now();
 

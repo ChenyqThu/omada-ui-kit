@@ -8,7 +8,7 @@ description: >-
   Controller UI page, or single-file HTML mockup.
 ---
 
-# Omada UI Kit (`@chenyqthu/omada-ui-kit@0.7.0`)
+# Omada UI Kit (`@chenyqthu/omada-ui-kit@0.7.1`)
 
 Build authentic **Omada Controller v6.3** interfaces under our **Dual Agent-UI Design Paradigm**:
 - **Build Pages Better**: Load **only** the progressive-disclosure slice needed below, compose verified `S*` Blocks/templates, and validate with `verify-demo.mjs --render` (Headless Chrome + `axe-core` WCAG 2.1 A/AA + `<||` overlap check).
@@ -36,7 +36,7 @@ Build authentic **Omada Controller v6.3** interfaces under our **Dual Agent-UI D
 
 ### Mode A — Single-File HTML Demo (Zero Build, `file://` Safe)
 
-Use classic `<script>` tags (never `<script type="module">`) and **always pin exact CDN versions** (`@0.7.0` + `@babel/standalone@7.28.4` — never `@latest` or unversioned Babel):
+Use classic `<script>` tags (never `<script type="module">`) and **always pin exact CDN versions** (`@0.7.1` + `@babel/standalone@7.28.4` — never `@latest` or unversioned Babel):
 
 ```html
 <!doctype html>
@@ -45,8 +45,8 @@ Use classic `<script>` tags (never `<script type="module">`) and **always pin ex
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Omada PRD Demo</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/standalone.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.1/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.1/dist/standalone.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"></script>
   </head>
   <body style="margin: 0;">

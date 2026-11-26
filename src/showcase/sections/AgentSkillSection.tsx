@@ -40,7 +40,7 @@ declare const __OMADA_PKG_VERSION__: string | undefined;
 const PKG_VERSION =
   typeof __OMADA_PKG_VERSION__ === 'string' && __OMADA_PKG_VERSION__.length > 0
     ? __OMADA_PKG_VERSION__
-    : '0.7.0';
+    : '0.7.1';
 
 const GITHUB_REPO_URL = 'https://github.com/ChenyqThu/omada-ui-kit';
 const GITHUB_ISSUES_URL = `${GITHUB_REPO_URL}/issues`;

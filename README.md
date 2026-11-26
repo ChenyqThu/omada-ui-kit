@@ -65,8 +65,8 @@ For quick PRD prototypes, load `dist/style.css` and `dist/standalone.js` (bundle
 <html>
   <head>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/standalone.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.1/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.1/dist/standalone.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"></script>
   </head>
   <body style="margin: 0;">

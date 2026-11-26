@@ -1,4 +1,4 @@
-# @chenyqthu/omada-ui-kit@0.7.0
+# @chenyqthu/omada-ui-kit@0.7.1
 
 > TP-Link Omada Controller v6.3 React 19 + Ant Design 6 UI component kit with Light/Dark design tokens, scoped micro-frontend CSS, bundled Figma assets, deterministic Agent Bridge, and zero-build single-file HTML standalone bundle.
 
@@ -19,8 +19,8 @@
 3. **Operate**: Call `await window.__OMADA_AGENT__.actAsync({ steps: [{ id, action, value }, ...] })` (or sync `act(...)`) to mutate controls, navigate routes, open drawers/modals, and run domain actions in 1 batch call.
 
 ## Pinned Single-File HTML CDN URLs
-- CSS: `https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/style.css`
-- JS: `https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/standalone.js`
+- CSS: `https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.1/dist/style.css`
+- JS: `https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.1/dist/standalone.js`
 - Babel: `https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js`
 
 ## Progressive-Disclosure Skill References (`skills/omada-ui-kit/`)

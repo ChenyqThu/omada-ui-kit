@@ -1182,16 +1182,33 @@ async function runRenderAndAxeVerification(targets, options) {
 
       try {
         await page.goto(`${baseUrl}/__render__/${routeId}`, {
-          waitUntil: 'networkidle',
-          timeout: 15000,
+          waitUntil: 'load',
+          timeout: 20000,
         });
-        await page.waitForTimeout(120);
 
         const expectsWindowBridge = /exposeWindowBridge\b/.test(rawContent);
         const declaresAgentTargets =
           /\bagentId\s*=/.test(rawContent) ||
           /\buseOmadaAgentAction\s*\(/.test(rawContent) ||
           /\buseOmadaAgentControl\s*\(/.test(rawContent);
+
+        if (pageErrors.length === 0) {
+          await page
+            .waitForFunction(
+              (expectBridge) => {
+                const root = document.getElementById('root');
+                if (!root || root.children.length === 0) return false;
+                if (expectBridge && !window.__OMADA_AGENT__) return false;
+                const imgs = Array.from(document.querySelectorAll('img'));
+                return imgs.every((img) => !img.getAttribute('src') || img.complete);
+              },
+              expectsWindowBridge,
+              { timeout: 8000 },
+            )
+            .catch(() => {
+              // Fall through so domChecks reports exact #root / bridge / asset diagnostics
+            });
+        }
 
         const domChecks = await page.evaluate(
           ({ expectBridge, expectTargets }) => {

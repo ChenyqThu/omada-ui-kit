@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "package": {
     "name": "@chenyqthu/omada-ui-kit",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "description": "Omada Controller v6.3 React UI component library (Ant Design 6 + Design Tokens + Figma Assets + Single-file HTML standalone bundle)",
     "entries": {
       "import": "@chenyqthu/omada-ui-kit",
@@ -19,10 +19,10 @@
       "llmsTxt": "@chenyqthu/omada-ui-kit/llms.txt"
     },
     "cdn": {
-      "jsdelivrCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/style.css",
-      "jsdelivrStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/standalone.js",
-      "pinnedCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/style.css",
-      "pinnedStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/standalone.js",
+      "jsdelivrCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.1/dist/style.css",
+      "jsdelivrStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.1/dist/standalone.js",
+      "pinnedCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.1/dist/style.css",
+      "pinnedStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.1/dist/standalone.js",
       "babelStandalone": "https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"
     }
   },
@@ -18792,13 +18792,13 @@
         "SIcon"
       ],
       "cdnUrls": {
-        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/style.css",
-        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/standalone.js",
+        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.1/dist/style.css",
+        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.1/dist/standalone.js",
         "babel": "https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"
       },
       "pinnedUrls": {
-        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/style.css",
-        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/standalone.js",
+        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.1/dist/style.css",
+        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.1/dist/standalone.js",
         "babel": "https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"
       }
     },
