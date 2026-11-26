@@ -29,19 +29,25 @@ import {
   useOmadaFeedback,
   useOmadaNotification,
   useOmadaConfirm,
+  useControllableState,
+  useSelection,
+  useDragSelect,
   useRovingFocus,
 } from '@chenyqthu/omada-ui-kit';
 ```
 
 ---
 
-## 1. Theme, Scoped CSS & Agent Bridge Foundation
+## 1. Theme, Headless Behavior Primitives & Agent Bridge Foundation
 
 | Symbol | Kind | Purpose | Key Props / API |
 |---|---|---|---|
 | `OmadaProvider` | Component | Root theme, Ant Design 6 token & CSS layer provider | `defaultThemeMode`, `syncDocumentTheme`, `children` |
 | `useOmadaTheme` | Hook | Reads/updates active theme mode and semantic tokens | Returns `{ themeMode, resolvedTheme, tokens, setThemeMode }` |
 | `buildOmadaAntdTheme` | Helper | Builds Ant Design 6 `ThemeConfig` for Light or Dark mode | `(resolvedTheme: 'light' \| 'dark') => ThemeConfig` |
+| `useControllableState` | Hook | Headless controlled / uncontrolled state primitive (`Object.is` dedup, functional updater, stale-free `onChange`) | `value`, `defaultValue`, `onChange` → `[state, setState]` |
+| `useSelection` | Hook | Headless single/multi selection state machine (`Shift+Click` range, `selectAll`, `clear`, `invert`, `isAllSelected`, `isPartiallySelected`) | `items`, `mode`, `selectedKeys`, `defaultSelectedKeys`, `disallowEmpty`, `onSelectionChange` |
+| `useDragSelect` | Hook | Orthogonal pointer brush-paint / range-sweep hook for port matrices, 7×24 schedules & RF channel strips | `items`, `selectedKeys`, `onSelectionChange`, `strategy` (`'paint' \| 'range'`), `disabled` |
 | `useRovingFocus` | Hook | Headless WAI-ARIA roving `tabIndex` keyboard primitive (`horizontal` / `vertical` / `both`, `Home` / `End`, loop, fallback `tabIndex={0}`) | `items`, `activeKey`, `onActivate`, `orientation`, `activationMode`, `loop` |
 | `OmadaAgentProvider` | Component | Deterministic UI-SDK-style Agent Bridge & WebMCP context (`snapshot()` / `query()` / `act()` / `actAsync()` / `allow` + `[REDACTED]` secret masking) | `allow`, `exposeWindowBridge`, `registerWebMcp`, `children` |
 | `useOmadaAgent` / `useOmadaAgentControl` / `useOmadaAgentAction` / `registerWebMcpTools` | Hooks & Helpers | Accesses Agent Bridge runtime, registers controls/actions, or binds WebMCP `document.modelContext` tools | `OMADA_AGENT_TOOLS`, `OMADA_SECRET_MASK` (`'[REDACTED]'`) |
@@ -65,7 +71,7 @@ Lookup guards: `hasOmadaIcon(name)`, `hasOmadaIllustration(name)`, `hasOmadaProd
 
 ---
 
-## 3. Component Reference (`114` Components + `8` Blocks + `8` Hooks)
+## 3. Component Reference (`114` Components + `8` Blocks + `11` Hooks)
 
 ### Reusable Page Blocks (`@chenyqthu/omada-ui-kit/blocks`)
 | Component / Constant | Purpose | Key Props / API |

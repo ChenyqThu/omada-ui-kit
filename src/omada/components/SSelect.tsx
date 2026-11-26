@@ -39,6 +39,22 @@ type SSelectComponent = (<
   displayName?: string;
 };
 
+function flattenSelectOptions<OptionType>(
+  list: readonly OptionType[] | undefined,
+): OptionType[] {
+  if (!list || list.length === 0) return [];
+  const flat: OptionType[] = [];
+  for (const item of list) {
+    const rec = item as Record<string, unknown>;
+    if (Array.isArray(rec.options)) {
+      flat.push(...flattenSelectOptions(rec.options as OptionType[]));
+    } else {
+      flat.push(item);
+    }
+  }
+  return flat;
+}
+
 function SSelectInner<
   ValueType = unknown,
   OptionType extends BaseOptionType | DefaultOptionType = SSelectOption,
@@ -72,21 +88,26 @@ function SSelectInner<
   const isControlled = value !== undefined;
   const wasControlledRef = useRef<boolean>(isControlled);
   const currentValue = isControlled ? value : innerValue;
+  const liveValueRef = useRef<ValueType | null | undefined>(currentValue);
+  liveValueRef.current = currentValue;
 
   useEffect(() => {
     if (wasControlledRef.current && !isControlled) {
       setInnerValue(defaultValue);
+      liveValueRef.current = defaultValue;
     }
     wasControlledRef.current = isControlled;
   }, [isControlled, defaultValue]);
 
   const labelField = (fieldNames?.label as string | undefined) ?? 'label';
   const valueField = (fieldNames?.value as string | undefined) ?? 'value';
+  const flatOptions = flattenSelectOptions(options);
 
   const commitSelect = (
     nextVal: ValueType,
     opt?: OptionType | OptionType[],
   ) => {
+    liveValueRef.current = nextVal;
     if (!isControlled) {
       setInnerValue(nextVal);
     }
@@ -94,6 +115,20 @@ function SSelectInner<
       nextVal,
       (opt ?? ({} as OptionType)) as OptionType | OptionType[],
     );
+  };
+
+  const resolveValidatedOption = (candidate: unknown): OptionType => {
+    const matched = flatOptions.find((o) => {
+      const v = (o as Record<string, unknown>)[valueField];
+      return v === candidate || String(v) === String(candidate);
+    });
+    if (!matched) {
+      throw new Error(`Unknown select option "${String(candidate)}".`);
+    }
+    if ((matched as Record<string, unknown>).disabled) {
+      throw new Error(`Select option "${String(candidate)}" is disabled.`);
+    }
+    return matched;
   };
 
   useOmadaAgentControl(
@@ -105,8 +140,9 @@ function SSelectInner<
             (rest['aria-label'] as string | undefined) ??
             (typeof rest.placeholder === 'string' ? rest.placeholder : undefined),
           value: currentValue,
+          getValue: () => liveValueRef.current,
           disabled: Boolean(disabled),
-          options: (options ?? [])
+          options: flatOptions
             .map((opt) => {
               const rec = opt as Record<string, unknown>;
               const v = rec[valueField];
@@ -121,16 +157,143 @@ function SSelectInner<
             .filter((item): item is NonNullable<typeof item> => item !== null),
           actions: {
             setValue: (next: unknown) => {
-              const matched = (options ?? []).find(
-                (o) => (o as Record<string, unknown>)[valueField] === next,
-              );
-              commitSelect(next as ValueType, matched);
+              if (mode === 'multiple') {
+                if (!Array.isArray(next)) {
+                  throw new Error(
+                    'Expected an array of option values for multiple-mode SSelect.',
+                  );
+                }
+                const prevArr = Array.isArray(liveValueRef.current)
+                  ? (liveValueRef.current as unknown[])
+                  : [];
+                const resolvedVals: unknown[] = [];
+                const resolvedOpts: OptionType[] = [];
+                for (const item of next) {
+                  if (flatOptions.length > 0) {
+                    const matched = flatOptions.find((o) => {
+                      const v = (o as Record<string, unknown>)[valueField];
+                      return v === item || String(v) === String(item);
+                    });
+                    if (!matched) {
+                      throw new Error(`Unknown select option "${String(item)}".`);
+                    }
+                    const canonicalVal = (matched as Record<string, unknown>)[valueField];
+                    if (
+                      (matched as Record<string, unknown>).disabled &&
+                      !prevArr.includes(canonicalVal)
+                    ) {
+                      throw new Error(`Select option "${String(item)}" is disabled.`);
+                    }
+                    if (!resolvedVals.includes(canonicalVal)) {
+                      resolvedVals.push(canonicalVal);
+                      resolvedOpts.push(matched);
+                    }
+                  } else if (!resolvedVals.includes(item)) {
+                    resolvedVals.push(item);
+                  }
+                }
+                commitSelect(resolvedVals as unknown as ValueType, resolvedOpts);
+                return resolvedVals;
+              }
+
+              if (mode === 'tags') {
+                if (!Array.isArray(next)) {
+                  throw new Error(
+                    'Expected an array of tag values for tags-mode SSelect.',
+                  );
+                }
+                const resolvedTags: Array<string | number> = [];
+                for (const item of next) {
+                  if (typeof item !== 'string' && typeof item !== 'number') {
+                    throw new Error('Tag values must be strings or numbers.');
+                  }
+                  const matched = flatOptions.find((o) => {
+                    const v = (o as Record<string, unknown>)[valueField];
+                    return v === item || String(v) === String(item);
+                  });
+                  if (matched && (matched as Record<string, unknown>).disabled) {
+                    throw new Error(`Select option "${String(item)}" is disabled.`);
+                  }
+                  const canonicalTag = matched
+                    ? ((matched as Record<string, unknown>)[valueField] as string | number)
+                    : item;
+                  if (!resolvedTags.includes(canonicalTag)) {
+                    resolvedTags.push(canonicalTag);
+                  }
+                }
+                commitSelect(resolvedTags as unknown as ValueType);
+                return resolvedTags;
+              }
+
+              if (Array.isArray(next)) {
+                throw new Error(
+                  'Single-mode SSelect does not accept an array value.',
+                );
+              }
+              if ((next === undefined || next === null) && rest.allowClear) {
+                commitSelect(undefined as unknown as ValueType);
+                return null;
+              }
+              if (flatOptions.length > 0) {
+                const matched = resolveValidatedOption(next);
+                const canonicalVal = (matched as Record<string, unknown>)[
+                  valueField
+                ] as ValueType;
+                commitSelect(canonicalVal, matched);
+                return canonicalVal;
+              }
+              commitSelect(next as ValueType);
+              return next;
             },
             select: (next: unknown) => {
-              const matched = (options ?? []).find(
-                (o) => (o as Record<string, unknown>)[valueField] === next,
-              );
-              commitSelect(next as ValueType, matched);
+              if (Array.isArray(next)) {
+                throw new Error('Action "select" expects a single option value.');
+              }
+              if (mode === 'multiple') {
+                const prevArr = Array.isArray(liveValueRef.current)
+                  ? [...(liveValueRef.current as unknown[])]
+                  : [];
+                if (flatOptions.length > 0) {
+                  const matched = resolveValidatedOption(next);
+                  const canonicalVal = (matched as Record<string, unknown>)[valueField];
+                  const nextArr = prevArr.includes(canonicalVal)
+                    ? prevArr
+                    : [...prevArr, canonicalVal];
+                  commitSelect(nextArr as unknown as ValueType);
+                  return nextArr;
+                }
+                const nextArr = prevArr.includes(next) ? prevArr : [...prevArr, next];
+                commitSelect(nextArr as unknown as ValueType);
+                return nextArr;
+              }
+              if (mode === 'tags') {
+                if (typeof next !== 'string' && typeof next !== 'number') {
+                  throw new Error('Tag value must be a string or number.');
+                }
+                const matched = flatOptions.find((o) => {
+                  const v = (o as Record<string, unknown>)[valueField];
+                  return v === next || String(v) === String(next);
+                });
+                if (matched && (matched as Record<string, unknown>).disabled) {
+                  throw new Error(`Select option "${String(next)}" is disabled.`);
+                }
+                const prevArr = Array.isArray(liveValueRef.current)
+                  ? [...(liveValueRef.current as unknown[])]
+                  : [];
+                const nextArr = prevArr.includes(next) ? prevArr : [...prevArr, next];
+                commitSelect(nextArr as unknown as ValueType);
+                return nextArr;
+              }
+              if (flatOptions.length > 0) {
+                const matched = resolveValidatedOption(next);
+                const canonicalVal = (matched as Record<string, unknown>)[
+                  valueField
+                ] as ValueType;
+                commitSelect(canonicalVal, matched);
+                return canonicalVal;
+              }
+              commitSelect(next as ValueType);
+              return next;
             },
             clear: () => {
               const cleared = (isMulti ? [] : undefined) as unknown as ValueType;

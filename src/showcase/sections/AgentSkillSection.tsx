@@ -16,9 +16,11 @@ import {
 } from 'lucide-react';
 import {
   OmadaAgentProvider,
+  Popover,
   SAlert,
   SButton,
   SCard,
+  SCheckbox,
   SInput,
   SPageHeader,
   SPasswordInput,
@@ -26,15 +28,19 @@ import {
   SSwitch,
   STabs,
   STag,
+  useDragSelect,
   useOmadaAgent,
+  useOmadaAgentControl,
   useOmadaFeedback,
+  useRovingFocus,
+  useSelection,
 } from '@/omada';
 
 declare const __OMADA_PKG_VERSION__: string | undefined;
 const PKG_VERSION =
   typeof __OMADA_PKG_VERSION__ === 'string' && __OMADA_PKG_VERSION__.length > 0
     ? __OMADA_PKG_VERSION__
-    : '0.6.0';
+    : '0.7.0';
 
 const GITHUB_REPO_URL = 'https://github.com/ChenyqThu/omada-ui-kit';
 const GITHUB_ISSUES_URL = `${GITHUB_REPO_URL}/issues`;
@@ -243,6 +249,138 @@ const SCOPED_MICROFRONTEND_SNIPPET = [
   '</OmadaProvider>',
 ].join('\n');
 
+const PSC_CHANNEL_ITEMS: ReadonlyArray<{
+  key: string;
+  label: string;
+  disabled?: boolean;
+}> = [
+  { key: '37', label: 'Ch 37' },
+  { key: '53', label: 'Ch 53' },
+  { key: '69', label: 'Ch 69' },
+  { key: '85', label: 'Ch 85' },
+  { key: '101', label: 'Ch 101' },
+  { key: '117', label: 'Ch 117 (AFC)', disabled: true },
+];
+
+/**
+ * Live demonstration of the 4-Layer Custom Component Authoring Formula:
+ * AntD <Popover> shell + headless hooks (useSelection + useDragSelect + useRovingFocus)
+ * + var(--omada-*) tokens + useOmadaAgentControl.
+ */
+const CustomPscChannelPicker: React.FC = () => {
+  const selection = useSelection({
+    items: PSC_CHANNEL_ITEMS,
+    mode: 'multiple',
+    defaultSelectedKeys: ['37', '53'],
+  });
+
+  const drag = useDragSelect({
+    items: PSC_CHANNEL_ITEMS,
+    selectedKeys: selection.selectedKeys,
+    onSelectionChange: selection.setSelectedKeys,
+    strategy: 'paint',
+  });
+
+  const roving = useRovingFocus({
+    items: PSC_CHANNEL_ITEMS,
+    orientation: 'horizontal',
+    activationMode: 'manual',
+    onActivate: (key) => selection.toggle(key),
+  });
+
+  useOmadaAgentControl({
+    id: 'demo.wlan.pscChannels',
+    kind: 'checkbox',
+    label: '6 GHz PSC Channel Matrix (Custom 4-Layer Widget)',
+    value: selection.selectedKeys,
+    options: PSC_CHANNEL_ITEMS.map((ch) => ({
+      value: ch.key,
+      label: ch.label,
+      disabled: Boolean(ch.disabled),
+    })),
+    actions: {
+      setValue: (next: unknown) =>
+        selection.setSelectedKeys(Array.isArray(next) ? next.map(String) : []),
+      toggle: (key: unknown) => selection.toggle(String(key)),
+      selectAll: () => selection.selectAll(),
+      clear: () => selection.clear(),
+    },
+  });
+
+  return (
+    <div className="rounded-md border border-[var(--omada-border-divider)] bg-[var(--omada-bg-surface)] p-3 space-y-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <SCheckbox
+          checked={selection.isAllSelected}
+          indeterminate={selection.isPartiallySelected}
+          onChange={() =>
+            selection.isAllSelected ? selection.clear() : selection.selectAll()
+          }
+        >
+          <span className="text-xs font-medium">
+            Custom 6 GHz PSC Painter ({selection.selectedKeys.length}/5 enabled)
+          </span>
+        </SCheckbox>
+        <Popover
+          trigger="click"
+          placement="topRight"
+          content={
+            <div className="max-w-[240px] space-y-1 text-xs text-[var(--omada-text-secondary)]">
+              <div className="font-semibold text-[var(--omada-text-primary)]">
+                4-Layer Custom Widget
+              </div>
+              <div>
+                Drag-paint across channels, Shift+Click a span, use Arrow keys, or inspect{' '}
+                <code className="font-mono">demo.wlan.pscChannels</code> in{' '}
+                <code className="font-mono">snapshot()</code>.
+              </div>
+            </div>
+          }
+        >
+          <SButton size="small" variant="outline">
+            4-Layer Info
+          </SButton>
+        </Popover>
+      </div>
+
+      <div
+        role="group"
+        aria-label="6 GHz PSC Channel Matrix"
+        className="flex flex-wrap gap-1.5 select-none"
+      >
+        {PSC_CHANNEL_ITEMS.map((ch) => {
+          const isDisabled = Boolean(ch.disabled);
+          const active = selection.isSelected(ch.key);
+          const rovingProps = roving.getItemProps<HTMLButtonElement>(ch.key, {
+            disabled: isDisabled,
+          });
+          const dragProps = drag.getDragItemProps<HTMLButtonElement>(ch.key, {
+            disabled: isDisabled,
+            onClick: (e) => selection.toggle(ch.key, { shiftKey: e.shiftKey }),
+          });
+          return (
+            <button
+              key={ch.key}
+              type="button"
+              disabled={isDisabled}
+              aria-pressed={active}
+              {...rovingProps}
+              {...dragProps}
+              className={`h-7 rounded px-2.5 text-xs font-medium cursor-pointer transition-colors ${
+                active
+                  ? 'border border-[var(--omada-brand)] bg-[var(--omada-brand-bg-subtlest)] text-[var(--omada-brand-text)]'
+                  : 'border border-[var(--omada-border-divider)] bg-[var(--omada-bg-field)] text-[var(--omada-text-primary)] hover:bg-[var(--omada-bg-field-hover)]'
+              } disabled:cursor-not-allowed disabled:opacity-45`}
+            >
+              {ch.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 const AgentBridgeInspector: React.FC = () => {
   const agent = useOmadaAgent();
   const [output, setOutput] = useState<string>('');
@@ -352,13 +490,13 @@ export const AgentSkillSection: React.FC<AgentSkillSectionProps> = ({ onNavigate
               <STag color="green">-96.3% Context Tokens</STag>
             </div>
             <p className="m-0 text-xs leading-5 text-[var(--omada-text-secondary)]">
-              TypeChecker-derived zero-drift catalog, progressive-disclosure domain docs (
-              <code className="font-mono">SKILL.md</code> + <code className="font-mono">llms.txt</code> +{' '}
-              <code className="font-mono">references/docs/*.md</code>), 3.40 MB{' '}
+              TypeChecker-derived zero-drift catalog, 10 progressive-disclosure domain docs (including{' '}
+              <code className="font-mono">custom-component.md</code> + 4 headless hooks in{' '}
+              <code className="font-mono">/core</code>), 3.41 MB{' '}
               <code className="font-mono">standalone.js</code>, and{' '}
               <code className="font-mono">verify-demo.mjs --render</code> (Headless Chrome +{' '}
               <code className="font-mono">axe-core</code> WCAG 2.1 A/AA +{' '}
-              <code className="font-mono">&lt;||</code> handle geometry check).
+              <code className="font-mono">&lt;||</code> geometry + live Agent Bridge self-check).
             </p>
           </div>
 
@@ -643,6 +781,7 @@ export const AgentSkillSection: React.FC<AgentSkillSectionProps> = ({ onNavigate
                     />
                   </div>
                 </div>
+                <CustomPscChannelPicker />
                 <AgentBridgeInspector />
               </div>
             </OmadaAgentProvider>

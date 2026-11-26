@@ -228,6 +228,18 @@ function main() {
       code: `import { OmadaProvider } from '@chenyqthu/omada-ui-kit';\nexport const X = () => <OmadaProvider><p>Controller's Wireless Settings — open <SHallucinatedAfterApostrophe bad="1" /> now</p></OmadaProvider>;\n`,
       expectedSubstring: 'Unknown Omada component <SHallucinatedAfterApostrophe>',
     },
+    {
+      name: 'duplicate-static-agent-id.tsx',
+      code: `import { OmadaProvider, OmadaAgentProvider, SSwitch } from '@chenyqthu/omada-ui-kit';\nexport const X = () => <OmadaProvider><OmadaAgentProvider><SSwitch agentId="dup.id" label="A" /><SSwitch agentId="dup.id" label="B" /></OmadaAgentProvider></OmadaProvider>;\n`,
+      expectedSubstring: 'Duplicate static agentId="dup.id"',
+    },
+    {
+      name: 'agent-id-without-provider.html',
+      code: baseValidHtml
+        .replace('<OmadaAgentProvider exposeWindowBridge>', '<div>')
+        .replace('</OmadaAgentProvider>', '</div>'),
+      expectedSubstring: 'without `<OmadaAgentProvider>`',
+    },
   ];
 
   fs.rmSync(TMP_MUTATION_DIR, { recursive: true, force: true });
@@ -420,6 +432,18 @@ function main() {
     compMap.has('registerWebMcpTools') && compMap.has('OMADA_AGENT_TOOLS'),
     'Missing registerWebMcpTools or OMADA_AGENT_TOOLS in catalog.json',
   );
+  for (const hookName of [
+    'useControllableState',
+    'useSelection',
+    'useDragSelect',
+    'useRovingFocus',
+  ]) {
+    assert(compMap.has(hookName), `Missing headless hook ${hookName} in catalog.json`);
+  }
+  assert(
+    fs.existsSync(path.join(SKILL_DIR, 'references/docs/custom-component.md')),
+    'Missing references/docs/custom-component.md progressive guide',
+  );
 
   console.log('[4/5] Agent Bridge & WebMCP Schema Audit:');
   console.log(
@@ -495,9 +519,27 @@ function main() {
         `--render missed physical <|| handle overlap: "${overlapRes.stderr}"`,
       );
 
+      // Adversarial mis-wired <OmadaAgentProvider> (mounted empty sibling, 0 controls registered -> caught by --render)
+      const miswiredBridgeHtml = path.join(TMP_MUTATION_DIR, 'miswired-agent-provider.html');
+      const miswiredSource = baseValidHtml.replace(
+        /<OmadaAgentProvider exposeWindowBridge>([\s\S]*?)<\/OmadaAgentProvider>/,
+        '<div><OmadaAgentProvider exposeWindowBridge><span /></OmadaAgentProvider>$1</div>',
+      );
+      assert(
+        miswiredSource !== baseValidHtml,
+        'Failed to inject mis-wired OmadaAgentProvider into dashboard.html',
+      );
+      fs.writeFileSync(miswiredBridgeHtml, miswiredSource, 'utf8');
+      const miswiredRes = runVerifier(miswiredBridgeHtml, ['--render']);
+      assert(
+        miswiredRes.status !== 0 &&
+          miswiredRes.stderr.includes('0 controls/actions registered with `<OmadaAgentProvider>`'),
+        `--render missed mis-wired OmadaAgentProvider with 0 registered targets: "${miswiredRes.stderr}"`,
+      );
+
       console.log('[5/5] Headless Chrome --render + axe WCAG 2.1 A/AA Runtime Gate:');
       console.log('  - Positive HTML + TSX live renders passed: 3/3 (0 runtime errors, 0 axe violations)');
-      console.log('  - Runtime adversarial catches passed:      3/3 (render crash, axe label, <|| geometry overlap)\n');
+      console.log('  - Runtime adversarial catches passed:      4/4 (render crash, axe label, <|| overlap, mis-wired Agent Bridge)\n');
     } finally {
       fs.rmSync(TMP_MUTATION_DIR, { recursive: true, force: true });
     }

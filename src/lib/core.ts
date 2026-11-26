@@ -2,14 +2,29 @@
 export { OmadaProvider, useOmadaTheme, type OmadaProviderProps } from '../omada/theme/OmadaProvider';
 export { buildOmadaAntdTheme } from '../omada/theme/antdTheme';
 export {
+  useControllableState,
+  useDragSelect,
   useRovingFocus,
+  useSelection,
+  type DragSelectItem,
+  type DragSelectItemProps,
+  type DragSelectStrategy,
   type RovingFocusActivationMode,
   type RovingFocusItem,
   type RovingFocusOrientation,
   type RovingItemProps,
+  type SelectionItem,
+  type SelectionMode,
+  type SetControllableState,
+  type ToggleSelectionOptions,
+  type UseControllableStateOptions,
+  type UseDragSelectOptions,
+  type UseDragSelectReturn,
   type UseRovingFocusOptions,
   type UseRovingFocusReturn,
-} from '../omada/behaviors/useRovingFocus';
+  type UseSelectionOptions,
+  type UseSelectionReturn,
+} from '../omada/behaviors';
 export {
   omadaChartPalette,
   omadaFontFamily,

@@ -44,7 +44,9 @@ export interface OmadaAgentControlRegistration {
   label?: string;
   /** Current control state value (automatically masked when `secret` is `true`). */
   value?: unknown;
-  /** Masks `value` in `snapshot()`, `query()`, and `act()` results when `true`. */
+  /** Optional synchronous getter returning the latest uncommitted value during rapid sync `act()` batches. */
+  getValue?: () => unknown;
+  /** Masks `value`, omits `options`, and scrubs secrets in `snapshot()`, `query()`, and `act()` when `true`. */
   secret?: boolean;
   /** Marks control as non-interactive; `act()` rejects mutations when `true`. */
   disabled?: boolean;
@@ -65,6 +67,8 @@ export interface OmadaAgentActionRegistration {
   description?: string;
   /** Prevents execution via `act()` when `true`. */
   disabled?: boolean;
+  /** Masks returned `result` as `'[REDACTED]'` and scrubs secret inputs from thrown errors when `true`. */
+  secret?: boolean;
   /** Additional metadata. */
   meta?: Record<string, unknown>;
   /** Action callback executed when `act(id)` or `act(id, 'trigger', payload)` is called. */
@@ -106,6 +110,7 @@ export interface OmadaAgentActionSnapshot {
   label?: string;
   description?: string;
   disabled: boolean;
+  secret?: boolean;
   meta?: Record<string, unknown>;
 }
 
@@ -186,8 +191,10 @@ export interface OmadaAgentRuntime {
   actAsync: OmadaAgentActAsyncFn;
   /** Active permission configuration passed to `<OmadaAgentProvider>`. */
   allow: OmadaAgentAllow;
+  /** Resolves the canonical action name (`'setValue'`, `'trigger'`, or explicit `action`) for `id`. */
+  resolveAction?: (id: string, explicitAction?: string) => string;
   /** Evaluates whether `act(id, action)` is permitted under current `allow` policy. */
-  canAct: (id: string, action?: string) => boolean;
+  canAct: (id: string, action?: string, value?: unknown) => boolean;
 }
 
 export interface OmadaWebMcpToolAnnotations {
@@ -404,26 +411,104 @@ function canActWithAllow(
   return true;
 }
 
+function resolveCanonicalActionName(
+  hasControl: boolean,
+  hasAction: boolean,
+  explicitAction?: string,
+): string {
+  if (typeof explicitAction === 'string' && explicitAction.trim().length > 0) {
+    return explicitAction;
+  }
+  if (!hasControl && hasAction) {
+    return 'trigger';
+  }
+  return 'setValue';
+}
+
+function collectStringsFromPayload(
+  input: unknown,
+  out: Set<string>,
+  depth = 0,
+): void {
+  if (depth > 4 || input === null || input === undefined) return;
+  if (typeof input === 'string') {
+    if (input.length > 0 && input !== OMADA_SECRET_MASK) {
+      out.add(input);
+    }
+    return;
+  }
+  if (Array.isArray(input)) {
+    for (const item of input) {
+      collectStringsFromPayload(item, out, depth + 1);
+    }
+    return;
+  }
+  if (typeof input === 'object') {
+    for (const val of Object.values(input as Record<string, unknown>)) {
+      collectStringsFromPayload(val, out, depth + 1);
+    }
+  }
+}
+
+function scrubSecretString(text: string, secrets: readonly string[]): string {
+  if (!text || secrets.length === 0) return text;
+  let result = text;
+  for (const secret of secrets) {
+    if (secret && secret !== OMADA_SECRET_MASK && result.includes(secret)) {
+      result = result.split(secret).join(OMADA_SECRET_MASK);
+    }
+  }
+  return result;
+}
+
+function redactSecretsDeep(
+  value: unknown,
+  secrets: readonly string[],
+  depth = 0,
+): unknown {
+  if (secrets.length === 0 || depth > 6 || value === null || value === undefined) {
+    return value;
+  }
+  if (typeof value === 'string') {
+    return scrubSecretString(value, secrets);
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => redactSecretsDeep(item, secrets, depth + 1));
+  }
+  if (typeof value === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      out[k] = redactSecretsDeep(v, secrets, depth + 1);
+    }
+    return out;
+  }
+  return value;
+}
+
 function maskControlSnapshot(
   id: string,
   reg: OmadaAgentControlRegistration,
+  secretStrings: readonly string[],
 ): OmadaAgentControlSnapshot {
   const isSecret = Boolean(reg.secret || reg.kind === 'password');
-  const rawVal = reg.value;
+  const rawVal = reg.getValue ? reg.getValue() : reg.value;
   const hasValue =
     rawVal !== undefined && rawVal !== null && String(rawVal).length > 0;
+  const scrubbedMeta = reg.meta
+    ? (redactSecretsDeep(reg.meta, secretStrings) as Record<string, unknown>)
+    : undefined;
 
   return {
     id,
     kind: reg.kind,
     ...(reg.label !== undefined ? { label: reg.label } : {}),
-    value: isSecret ? OMADA_SECRET_MASK : rawVal,
+    value: isSecret ? OMADA_SECRET_MASK : redactSecretsDeep(rawVal, secretStrings),
     secret: isSecret,
     ...(isSecret ? { hasValue } : {}),
     disabled: Boolean(reg.disabled),
     actions: Object.keys(reg.actions ?? {}).sort(),
-    ...(reg.options ? { options: reg.options } : {}),
-    ...(reg.meta ? { meta: reg.meta } : {}),
+    ...(!isSecret && reg.options ? { options: reg.options } : {}),
+    ...(scrubbedMeta ? { meta: scrubbedMeta } : {}),
   };
 }
 
@@ -469,6 +554,23 @@ function detectBrowserModelContext(): OmadaModelContextLike | null {
     }
   }
   return null;
+}
+
+function resolveRuntimeActionName(
+  runtime: OmadaAgentRuntime,
+  id: string,
+  explicitAction?: string,
+): string {
+  if (typeof explicitAction === 'string' && explicitAction.trim().length > 0) {
+    return explicitAction;
+  }
+  if (typeof runtime.resolveAction === 'function') {
+    return runtime.resolveAction(id, explicitAction);
+  }
+  const snap = runtime.snapshot();
+  const hasControl = snap.controls.some((c) => c.id === id);
+  const hasAction = snap.actions.some((a) => a.id === id);
+  return resolveCanonicalActionName(hasControl, hasAction, explicitAction);
 }
 
 /**
@@ -541,10 +643,17 @@ export function registerWebMcpTools(
               };
               return formatWebMcpResult(badResult, true);
             }
-            const stepAction = step.action ?? 'default';
+            const stepAction = resolveRuntimeActionName(
+              runtime,
+              step.id,
+              step.action,
+            );
+            const primaryArg = Array.isArray(step.args)
+              ? step.args[0]
+              : step.value;
             if (
               extraAllow !== undefined &&
-              !canActWithAllow(extraAllow, step.id, stepAction, step.value)
+              !canActWithAllow(extraAllow, step.id, stepAction, primaryArg)
             ) {
               const deniedStep: OmadaAgentActResult = {
                 ok: false,
@@ -597,27 +706,30 @@ export function registerWebMcpTools(
           };
           return formatWebMcpResult(missingRes, true);
         }
-        const actionName =
+        const explicitAction =
           typeof input?.action === 'string' ? input.action : undefined;
+        const resolvedAction = resolveRuntimeActionName(
+          runtime,
+          id,
+          explicitAction,
+        );
+        const primaryArg = Array.isArray(input?.args)
+          ? input.args[0]
+          : input?.value;
         if (
           extraAllow !== undefined &&
-          !canActWithAllow(
-            extraAllow,
-            id,
-            actionName ?? 'default',
-            input?.value,
-          )
+          !canActWithAllow(extraAllow, id, resolvedAction, primaryArg)
         ) {
           const deniedRes: OmadaAgentActResult = {
             ok: false,
             id,
-            action: actionName ?? 'default',
-            error: `Action "${actionName ?? 'default'}" on "${id}" is not permitted by WebMCP allow policy.`,
+            action: resolvedAction,
+            error: `Action "${resolvedAction}" on "${id}" is not permitted by WebMCP allow policy.`,
           };
           return formatWebMcpResult(deniedRes, true);
         }
         const singleRes = await runtime.actAsync(id, {
-          action: actionName,
+          action: explicitAction,
           value: input?.value,
           args: Array.isArray(input?.args) ? input.args : undefined,
         });
@@ -730,30 +842,55 @@ export const OmadaAgentProvider: React.FC<OmadaAgentProviderProps> = ({
     [],
   );
 
+  const collectRegisteredSecrets = useCallback((): string[] => {
+    const found = new Set<string>();
+    for (const getter of controlsRef.current.values()) {
+      const reg = getter();
+      if (reg.secret || reg.kind === 'password') {
+        const liveVal = reg.getValue ? reg.getValue() : reg.value;
+        collectStringsFromPayload(liveVal, found);
+        collectStringsFromPayload(reg.value, found);
+      }
+    }
+    return Array.from(found).sort((a, b) => b.length - a.length);
+  }, []);
+
   const snapshot = useCallback((): OmadaAgentSnapshot => {
     if (!canReadWithAllow(allowRef.current)) {
       return { controls: [], actions: [] };
     }
 
+    const secretStrings = collectRegisteredSecrets();
+
     const controls = Array.from(controlsRef.current.entries())
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([id, getter]) => maskControlSnapshot(id, getter()));
+      .map(([id, getter]) => maskControlSnapshot(id, getter(), secretStrings));
 
     const actions = Array.from(actionsRef.current.entries())
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([id, getter]) => {
         const reg = getter();
+        const scrubbedMeta =
+          !reg.secret && reg.meta
+            ? (redactSecretsDeep(reg.meta, secretStrings) as Record<
+                string,
+                unknown
+              >)
+            : undefined;
         return {
           id,
           ...(reg.label !== undefined ? { label: reg.label } : {}),
-          ...(reg.description !== undefined ? { description: reg.description } : {}),
+          ...(reg.description !== undefined
+            ? { description: reg.description }
+            : {}),
           disabled: Boolean(reg.disabled),
-          ...(reg.meta ? { meta: reg.meta } : {}),
+          ...(reg.secret ? { secret: true } : {}),
+          ...(scrubbedMeta ? { meta: scrubbedMeta } : {}),
         };
       });
 
     return { controls, actions };
-  }, []);
+  }, [collectRegisteredSecrets]);
 
   const query = useCallback(
     (filter?: OmadaAgentQuery): OmadaAgentControlSnapshot[] => {
@@ -794,9 +931,24 @@ export const OmadaAgentProvider: React.FC<OmadaAgentProviderProps> = ({
     [snapshot],
   );
 
-  const canAct = useCallback((id: string, action = 'default'): boolean => {
-    return canActWithAllow(allowRef.current, id, action);
-  }, []);
+  const resolveAction = useCallback(
+    (id: string, explicitAction?: string): string => {
+      return resolveCanonicalActionName(
+        controlsRef.current.has(id),
+        actionsRef.current.has(id),
+        explicitAction,
+      );
+    },
+    [],
+  );
+
+  const canAct = useCallback(
+    (id: string, action?: string, value?: unknown): boolean => {
+      const effectiveAction = resolveAction(id, action);
+      return canActWithAllow(allowRef.current, id, effectiveAction, value);
+    },
+    [resolveAction],
+  );
 
   const runSingleAct = useCallback(
     (
@@ -804,14 +956,14 @@ export const OmadaAgentProvider: React.FC<OmadaAgentProviderProps> = ({
       actionOrPayload?: string | OmadaAgentActPayload,
       valueArg?: unknown,
     ): OmadaAgentActResult => {
-      let actionName = 'setValue';
+      let explicitAction: string | undefined;
       let callArgs: unknown[] = [];
 
       if (typeof actionOrPayload === 'string') {
-        actionName = actionOrPayload;
+        explicitAction = actionOrPayload;
         callArgs = valueArg !== undefined ? [valueArg] : [];
       } else if (actionOrPayload && typeof actionOrPayload === 'object') {
-        actionName = actionOrPayload.action ?? 'setValue';
+        explicitAction = actionOrPayload.action;
         if (Array.isArray(actionOrPayload.args)) {
           callArgs = actionOrPayload.args;
         } else if (actionOrPayload.value !== undefined) {
@@ -823,17 +975,11 @@ export const OmadaAgentProvider: React.FC<OmadaAgentProviderProps> = ({
 
       const controlGetter = controlsRef.current.get(id);
       const actionGetter = actionsRef.current.get(id);
-
-      if (
-        !controlGetter &&
-        actionGetter &&
-        (actionOrPayload === undefined ||
-          (typeof actionOrPayload === 'object' &&
-            actionOrPayload !== null &&
-            actionOrPayload.action === undefined))
-      ) {
-        actionName = 'trigger';
-      }
+      const actionName = resolveCanonicalActionName(
+        Boolean(controlGetter),
+        Boolean(actionGetter),
+        explicitAction,
+      );
 
       if (!canActWithAllow(allowRef.current, id, actionName, callArgs[0])) {
         return {
@@ -847,6 +993,14 @@ export const OmadaAgentProvider: React.FC<OmadaAgentProviderProps> = ({
       if (controlGetter) {
         const reg = controlGetter();
         const isSecret = Boolean(reg.secret || reg.kind === 'password');
+        const secretSet = new Set<string>(collectRegisteredSecrets());
+        if (isSecret) {
+          collectStringsFromPayload(callArgs, secretSet);
+        }
+        const secretList = Array.from(secretSet).sort(
+          (a, b) => b.length - a.length,
+        );
+
         if (reg.disabled) {
           return {
             ok: false,
@@ -867,33 +1021,52 @@ export const OmadaAgentProvider: React.FC<OmadaAgentProviderProps> = ({
         }
         try {
           const result = fn(...callArgs);
-          const nextSnap = maskControlSnapshot(id, controlGetter());
+          const updatedSecrets = Array.from(
+            new Set([...secretList, ...collectRegisteredSecrets()]),
+          ).sort((a, b) => b.length - a.length);
+          const nextSnap = maskControlSnapshot(
+            id,
+            controlGetter(),
+            updatedSecrets,
+          );
           const resolvedValue = isSecret
             ? OMADA_SECRET_MASK
             : result !== undefined
-              ? result
+              ? redactSecretsDeep(result, updatedSecrets)
               : callArgs.length > 0
-                ? callArgs[0]
+                ? redactSecretsDeep(callArgs[0], updatedSecrets)
                 : nextSnap.value;
           return {
             ok: true,
             id,
             action: actionName,
             value: resolvedValue,
-            ...(result !== undefined && !isSecret ? { result } : {}),
+            ...(result !== undefined && !isSecret
+              ? { result: redactSecretsDeep(result, updatedSecrets) }
+              : {}),
           };
         } catch (err) {
+          const rawErr = err instanceof Error ? err.message : String(err);
           return {
             ok: false,
             id,
             action: actionName,
-            error: err instanceof Error ? err.message : String(err),
+            error: scrubSecretString(rawErr, secretList),
           };
         }
       }
 
       if (actionGetter) {
         const reg = actionGetter();
+        const isSecretAction = Boolean(reg.secret);
+        const secretSet = new Set<string>(collectRegisteredSecrets());
+        if (isSecretAction) {
+          collectStringsFromPayload(callArgs, secretSet);
+        }
+        const secretList = Array.from(secretSet).sort(
+          (a, b) => b.length - a.length,
+        );
+
         if (reg.disabled) {
           return {
             ok: false,
@@ -904,18 +1077,28 @@ export const OmadaAgentProvider: React.FC<OmadaAgentProviderProps> = ({
         }
         try {
           const result = reg.handler(callArgs[0]);
+          const updatedSecrets = Array.from(
+            new Set([...secretList, ...collectRegisteredSecrets()]),
+          ).sort((a, b) => b.length - a.length);
           return {
             ok: true,
             id,
             action: actionName,
-            ...(result !== undefined ? { result } : {}),
+            ...(result !== undefined
+              ? {
+                  result: isSecretAction
+                    ? OMADA_SECRET_MASK
+                    : redactSecretsDeep(result, updatedSecrets),
+                }
+              : {}),
           };
         } catch (err) {
+          const rawErr = err instanceof Error ? err.message : String(err);
           return {
             ok: false,
             id,
             action: actionName,
-            error: err instanceof Error ? err.message : String(err),
+            error: scrubSecretString(rawErr, secretList),
           };
         }
       }
@@ -927,7 +1110,7 @@ export const OmadaAgentProvider: React.FC<OmadaAgentProviderProps> = ({
         error: `No registered control or action found with agentId "${id}".`,
       };
     },
-    [],
+    [collectRegisteredSecrets],
   );
 
   const act = useCallback<OmadaAgentActFn>(
@@ -1026,6 +1209,7 @@ export const OmadaAgentProvider: React.FC<OmadaAgentProviderProps> = ({
             } satisfies OmadaAgentBatchResult;
           }
           await nextMacrotaskTick();
+          await nextMacrotaskTick();
         }
         return {
           ok: true,
@@ -1036,6 +1220,7 @@ export const OmadaAgentProvider: React.FC<OmadaAgentProviderProps> = ({
 
       await waitForTargetRegistration(firstArg);
       const singleRes = runSingleAct(firstArg, actionOrPayload, valueArg);
+      await nextMacrotaskTick();
       await nextMacrotaskTick();
       return singleRes;
     },
@@ -1049,9 +1234,10 @@ export const OmadaAgentProvider: React.FC<OmadaAgentProviderProps> = ({
       act,
       actAsync,
       allow,
+      resolveAction,
       canAct,
     }),
-    [snapshot, query, act, actAsync, allow, canAct],
+    [snapshot, query, act, actAsync, allow, resolveAction, canAct],
   );
 
   useEffect(() => {

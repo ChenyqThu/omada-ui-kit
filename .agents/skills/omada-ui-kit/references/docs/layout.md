@@ -1,6 +1,6 @@
-# Theme, Layout, Navigation & Headless Focus (`@chenyqthu/omada-ui-kit/core`)
+# Theme, Layout & Navigation (`@chenyqthu/omada-ui-kit/core`)
 
-Application theme provider (global or scoped micro-frontend mode), classic app shell, page headers, steps/breadcrumbs/pagination, and WAI-ARIA roving focus.
+Application theme provider (global or scoped micro-frontend mode), classic app shell, page headers, and steps/breadcrumbs/pagination.
 
 ### `SAnchor` (`component` · `@chenyqthu/omada-ui-kit/core`)
 Omada Anchor (`35368:149692`): - Right-rail vertical TOC (and horizontal strip) with optional section `title` - Supports L1 + L2 indented links plus Normal, Hover, Active, Disabled, and Error states.
@@ -129,9 +129,6 @@ Omada Steps (`3:64441`) supporting horizontal, vertical, navigation, dot, and lo
 | `titlePlacement` | `'horizontal' \| 'vertical'` | No | Title/content placement relative to icon (`horizontal` or `vertical`). |
 | `type` | `SStepsType` | No | Visual style (`default`, `navigation`, `inline`, or `dot`). |
 - **Inherited AntD props**: `className`, `classNames`, `current`, `ellipsis`, `iconRender`, `initial`, `maxCount`, `offset`, `onChange`, `percent`, `responsive`, `rootClassName`, `status`, `style`, `styles`, `variant`
-
-### `useRovingFocus` (`hook` · `@chenyqthu/omada-ui-kit/core`)
-Headless WAI-ARIA roving `tabIndex` hook supporting horizontal, vertical, and 2D grid navigation, `Home` / `End` jumps, optional circular looping, and automatic or manual activation.
 
 ### `buildOmadaAntdTheme` (`helper` · `@chenyqthu/omada-ui-kit/core`)
 Builds the Ant Design 5 ThemeConfig mapped from Omada semantic tokens.

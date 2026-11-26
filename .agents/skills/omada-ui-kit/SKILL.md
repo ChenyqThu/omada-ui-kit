@@ -8,7 +8,7 @@ description: >-
   Controller UI page, or single-file HTML mockup.
 ---
 
-# Omada UI Kit (`@chenyqthu/omada-ui-kit@0.6.0`)
+# Omada UI Kit (`@chenyqthu/omada-ui-kit@0.7.0`)
 
 Build authentic **Omada Controller v6.3** interfaces under our **Dual Agent-UI Design Paradigm**:
 - **Build Pages Better**: Load **only** the progressive-disclosure slice needed below, compose verified `S*` Blocks/templates, and validate with `verify-demo.mjs --render` (Headless Chrome + `axe-core` WCAG 2.1 A/AA + `<||` overlap check).
@@ -29,13 +29,14 @@ Build authentic **Omada Controller v6.3** interfaces under our **Dual Agent-UI D
 | Controller v6.3 topology, ACL builder, settings shells, CLI console | `references/docs/emulator-v6.md` |
 | Verified `SIcon`, `SProductImage`, `SIllustration`, `SClientIcon`, `SBrandAsset` slugs | `references/docs/assets.md` or `node scripts/query-catalog.mjs search-icons <q>` |
 | Agent Bridge & WebMCP (`OmadaAgentProvider`, `agentId`, `window.__OMADA_AGENT__`, `snapshot`/`query`/`act`) | `references/docs/agent.md` |
+| Authoring custom widgets (`useControllableState`, `useSelection`, `useDragSelect`, `useRovingFocus`) | `references/docs/custom-component.md` |
 | Exact single-component props / starter template | `node scripts/query-catalog.mjs component <Name>` / `template <id> --html` |
 
 ## 2. Choose Output Mode
 
 ### Mode A — Single-File HTML Demo (Zero Build, `file://` Safe)
 
-Use classic `<script>` tags (never `<script type="module">`) and **always pin exact CDN versions** (`@0.6.0` + `@babel/standalone@7.28.4` — never `@latest` or unversioned Babel):
+Use classic `<script>` tags (never `<script type="module">`) and **always pin exact CDN versions** (`@0.7.0` + `@babel/standalone@7.28.4` — never `@latest` or unversioned Babel):
 
 ```html
 <!doctype html>
@@ -44,8 +45,8 @@ Use classic `<script>` tags (never `<script type="module">`) and **always pin ex
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Omada PRD Demo</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/standalone.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/standalone.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"></script>
   </head>
   <body style="margin: 0;">
@@ -119,6 +120,7 @@ import { OmadaAgentProvider } from '@chenyqthu/omada-ui-kit/agent';
    - Wrap pages in `<OmadaAgentProvider exposeWindowBridge>` (enabled in all `templates/*.{html,tsx}`), attach `agentId="domain.control"` to interactive inputs/tables/tabs/drawers/modals, and register 2–3 high-value domain actions via `useOmadaAgentAction`.
    - When operating a live Omada page as a browser agent, check `window.__OMADA_AGENT__` (or WebMCP tools `snapshot`, `query`, `act` on `document.modelContext`) **before** taking screenshots or clicking DOM selectors: read state via `window.__OMADA_AGENT__.snapshot()` / `query(...)` (`[REDACTED]` secrets) and run multi-step flows in 1 call via `await window.__OMADA_AGENT__.actAsync({ steps: [...] })`.
 6. **TypeScript Project Flag**: Never run bare `tsc` without `-p` in project roots (`tsconfig.json` is a solution-style `files: []` config). Always run `pnpm typecheck` or pass `-p tsconfig.app.json` / `-p tsconfig.templates.json`.
+7. **Custom Component 4-Layer Formula**: When building a novel domain widget not in the kit, reuse AntD shells (`Popover`/`SModal`/`SDrawer` — never custom `createPortal` or `mousedown` outside traps), compose `useControllableState` + `useSelection` + `useDragSelect` + `useRovingFocus` (`@chenyqthu/omada-ui-kit/core`), style with `var(--omada-*)`, and bind `useOmadaAgentControl` (see `references/docs/custom-component.md`).
 
 ## 4. Mandatory Verification Gate & Reporting
 

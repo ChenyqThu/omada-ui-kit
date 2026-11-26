@@ -35,7 +35,7 @@ jobs:
 
       - name: Verify deterministic catalog & skill bundle sync
         run: |
-          git diff --exit-code -- skills/ .agents/
+          git diff --exit-code -- skills/ .agents/ COMPONENTS.md
           test -z "$(git ls-files --others --exclude-standard -- skills/ .agents/)"
 
       - name: Run unit test suite

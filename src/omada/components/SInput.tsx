@@ -48,12 +48,15 @@ export const SInput = React.forwardRef<InputRef, SInputProps>(
         ? ''
         : String(value)
       : innerValue;
+    const liveValueRef = useRef<string>(currentValue);
+    liveValueRef.current = currentValue;
 
     useEffect(() => {
       if (wasControlledRef.current && !isControlled) {
-        setInnerValue(
-          defaultValue !== undefined && defaultValue !== null ? String(defaultValue) : '',
-        );
+        const fallback =
+          defaultValue !== undefined && defaultValue !== null ? String(defaultValue) : '';
+        setInnerValue(fallback);
+        liveValueRef.current = fallback;
       }
       wasControlledRef.current = isControlled;
     }, [isControlled, defaultValue]);
@@ -62,6 +65,7 @@ export const SInput = React.forwardRef<InputRef, SInputProps>(
       nextVal: string,
       nativeEvent?: React.ChangeEvent<HTMLInputElement>,
     ) => {
+      liveValueRef.current = nextVal;
       if (!isControlled) {
         setInnerValue(nextVal);
       }
@@ -83,6 +87,7 @@ export const SInput = React.forwardRef<InputRef, SInputProps>(
             label:
               (rest['aria-label'] as string | undefined) ?? rest.placeholder,
             value: currentValue,
+            getValue: () => liveValueRef.current,
             secret,
             disabled: Boolean(disabled),
             actions: {
@@ -257,11 +262,15 @@ export const SPasswordInput = React.forwardRef<InputRef, SPasswordInputProps>(
         : value === undefined || value === null
           ? innerValue
           : String(value);
+    const livePwdRef = useRef<string>(currentValue);
+    livePwdRef.current = currentValue;
     const strength = evaluatePasswordStrength(currentValue);
 
     useEffect(() => {
       if (wasControlledRef.current && !isControlled) {
-        setInnerValue(typeof defaultValue === 'string' ? defaultValue : '');
+        const fallback = typeof defaultValue === 'string' ? defaultValue : '';
+        setInnerValue(fallback);
+        livePwdRef.current = fallback;
       }
       wasControlledRef.current = isControlled;
     }, [isControlled, defaultValue]);
@@ -270,6 +279,7 @@ export const SPasswordInput = React.forwardRef<InputRef, SPasswordInputProps>(
       nextVal: string,
       nativeEvent?: React.ChangeEvent<HTMLInputElement>,
     ) => {
+      livePwdRef.current = nextVal;
       if (!isControlled) {
         setInnerValue(nextVal);
       }
@@ -291,6 +301,7 @@ export const SPasswordInput = React.forwardRef<InputRef, SPasswordInputProps>(
             label:
               (rest['aria-label'] as string | undefined) ?? rest.placeholder,
             value: currentValue,
+            getValue: () => livePwdRef.current,
             secret,
             disabled: Boolean(disabled),
             actions: {
@@ -449,6 +460,28 @@ export const SNumberInput = React.forwardRef<HTMLInputElement, SNumberInputProps
     );
     const isControlled = value !== undefined;
     const currentNum = isControlled ? (value ?? null) : innerNum;
+    const liveNumRef = useRef<number | string | null>(currentNum);
+    liveNumRef.current = currentNum;
+
+    const commitNum = (nextNum: number | null) => {
+      liveNumRef.current = nextNum;
+      if (!isControlled) setInnerNum(nextNum);
+      onChange?.(nextNum as never);
+      return nextNum;
+    };
+
+    const validateAndCommitNum = (parsed: number) => {
+      if (!Number.isFinite(parsed)) {
+        throw new Error(`Invalid number "${String(parsed)}".`);
+      }
+      if (typeof min === 'number' && parsed < min) {
+        throw new Error(`Value ${parsed} is below min ${min}.`);
+      }
+      if (typeof max === 'number' && parsed > max) {
+        throw new Error(`Value ${parsed} exceeds max ${max}.`);
+      }
+      return commitNum(parsed);
+    };
 
     useOmadaAgentControl(
       agentId
@@ -458,6 +491,7 @@ export const SNumberInput = React.forwardRef<HTMLInputElement, SNumberInputProps
             label:
               (rest['aria-label'] as string | undefined) ?? rest.placeholder,
             value: currentNum,
+            getValue: () => liveNumRef.current,
             disabled: Boolean(disabled),
             meta: {
               ...(min !== undefined ? { min } : {}),
@@ -467,29 +501,28 @@ export const SNumberInput = React.forwardRef<HTMLInputElement, SNumberInputProps
             actions: {
               setValue: (next: unknown) => {
                 if (next === null || next === '') {
-                  if (!isControlled) setInnerNum(null);
-                  onChange?.(null);
-                  return null;
+                  return commitNum(null);
                 }
                 const parsed = typeof next === 'number' ? next : Number(next);
-                if (!Number.isFinite(parsed)) {
-                  throw new Error(`Invalid number "${String(next)}".`);
-                }
-                if (typeof min === 'number' && parsed < min) {
-                  throw new Error(`Value ${parsed} is below min ${min}.`);
-                }
-                if (typeof max === 'number' && parsed > max) {
-                  throw new Error(`Value ${parsed} exceeds max ${max}.`);
-                }
-                if (!isControlled) setInnerNum(parsed);
-                onChange?.(parsed as never);
-                return parsed;
+                return validateAndCommitNum(parsed);
               },
-              clear: () => {
-                if (!isControlled) setInnerNum(null);
-                onChange?.(null);
-                return null;
+              increment: () => {
+                const delta = typeof step === 'number' ? step : 1;
+                const base =
+                  typeof liveNumRef.current === 'number'
+                    ? liveNumRef.current
+                    : Number(liveNumRef.current ?? 0) || 0;
+                return validateAndCommitNum(base + delta);
               },
+              decrement: () => {
+                const delta = typeof step === 'number' ? step : 1;
+                const base =
+                  typeof liveNumRef.current === 'number'
+                    ? liveNumRef.current
+                    : Number(liveNumRef.current ?? 0) || 0;
+                return validateAndCommitNum(base - delta);
+              },
+              clear: () => commitNum(null),
             },
           }
         : null,

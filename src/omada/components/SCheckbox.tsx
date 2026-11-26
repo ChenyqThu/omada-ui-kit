@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Checkbox,
   type CheckboxChangeEvent,
@@ -38,8 +38,11 @@ const BaseSCheckbox = React.forwardRef<CheckboxRef, SCheckboxProps>(
     );
     const isControlled = checked !== undefined;
     const currentChecked = isControlled ? Boolean(checked) : innerChecked;
+    const liveCheckedRef = useRef<boolean>(currentChecked);
+    liveCheckedRef.current = currentChecked;
 
     const commitChecked = (next: boolean, nativeEvent?: CheckboxChangeEvent) => {
+      liveCheckedRef.current = next;
       if (!isControlled) {
         setInnerChecked(next);
       }
@@ -67,6 +70,7 @@ const BaseSCheckbox = React.forwardRef<CheckboxRef, SCheckboxProps>(
                     | string
                     | undefined),
             value: currentChecked,
+            getValue: () => liveCheckedRef.current,
             disabled: Boolean(disabled),
             actions: {
               setValue: (next: unknown) => {
@@ -75,7 +79,7 @@ const BaseSCheckbox = React.forwardRef<CheckboxRef, SCheckboxProps>(
                 return bool;
               },
               toggle: () => {
-                const next = !currentChecked;
+                const next = !liveCheckedRef.current;
                 commitChecked(next);
                 return next;
               },
@@ -164,6 +168,8 @@ export function SCheckboxGroup<T extends string | number = string | number>({
   const [innerValue, setInnerValue] = useState<T[]>(defaultValue ?? []);
   const isControlled = value !== undefined;
   const currentValue = isControlled ? value : innerValue;
+  const liveGroupRef = useRef<T[]>(currentValue);
+  liveGroupRef.current = currentValue;
 
   const normalizedOptions: SCheckboxOption<T>[] = (options ?? []).map((opt) =>
     typeof opt === 'string' || typeof opt === 'number'
@@ -172,6 +178,7 @@ export function SCheckboxGroup<T extends string | number = string | number>({
   );
 
   const commitChange = (nextValues: T[]) => {
+    liveGroupRef.current = nextValues;
     if (!isControlled) {
       setInnerValue(nextValues);
     }
@@ -212,6 +219,7 @@ export function SCheckboxGroup<T extends string | number = string | number>({
           kind: 'checkbox-group',
           label: rest['aria-label'],
           value: currentValue,
+          getValue: () => liveGroupRef.current,
           disabled: Boolean(disabled),
           options: normalizedOptions.map((opt) => ({
             value: opt.value as string | number,
@@ -225,7 +233,26 @@ export function SCheckboxGroup<T extends string | number = string | number>({
                   'Expected an array of values for checkbox-group setValue.',
                 );
               }
-              const typed = next as T[];
+              if (normalizedOptions.length > 0) {
+                const resolved: T[] = [];
+                for (const item of next) {
+                  const match = normalizedOptions.find(
+                    (o) => o.value === item || String(o.value) === String(item),
+                  );
+                  if (!match) {
+                    throw new Error(`Unknown checkbox option "${String(item)}".`);
+                  }
+                  if (match.disabled && !liveGroupRef.current.includes(match.value)) {
+                    throw new Error(`Option "${String(item)}" is disabled.`);
+                  }
+                  if (!resolved.includes(match.value)) {
+                    resolved.push(match.value);
+                  }
+                }
+                commitChange(resolved);
+                return resolved;
+              }
+              const typed = Array.from(new Set(next as T[]));
               commitChange(typed);
               return typed;
             },
@@ -239,21 +266,26 @@ export function SCheckboxGroup<T extends string | number = string | number>({
               if (match.disabled) {
                 throw new Error(`Option "${String(optVal)}" is disabled.`);
               }
-              const exists = currentValue.includes(match.value);
+              const current = liveGroupRef.current;
+              const exists = current.includes(match.value);
               const next = exists
-                ? currentValue.filter((v) => v !== match.value)
-                : [...currentValue, match.value];
+                ? current.filter((v) => v !== match.value)
+                : [...current, match.value];
               commitChange(next);
               return next;
             },
             selectAll: () => {
-              const merged = Array.from(new Set([...currentValue, ...enabledValues]));
+              const merged = Array.from(
+                new Set([...liveGroupRef.current, ...enabledValues]),
+              );
               commitChange(merged);
               return merged;
             },
             clear: () => {
               const enabledSet = new Set(enabledValues);
-              const remaining = currentValue.filter((v) => !enabledSet.has(v));
+              const remaining = liveGroupRef.current.filter(
+                (v) => !enabledSet.has(v),
+              );
               commitChange(remaining);
               return remaining;
             },

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import { useOmadaAgentControl } from '../agent';
 
@@ -35,8 +35,11 @@ export const SExpandableSection: React.FC<SExpandableSectionProps> = ({
 }) => {
   const [innerExpanded, setInnerExpanded] = useState(defaultExpanded);
   const isExpanded = controlledExpanded ?? innerExpanded;
+  const liveExpandedRef = useRef<boolean>(isExpanded);
+  liveExpandedRef.current = isExpanded;
 
   const setExpandedState = (next: boolean) => {
+    liveExpandedRef.current = next;
     if (controlledExpanded === undefined) {
       setInnerExpanded(next);
     }
@@ -45,7 +48,7 @@ export const SExpandableSection: React.FC<SExpandableSectionProps> = ({
   };
 
   const handleToggle = () => {
-    setExpandedState(!isExpanded);
+    setExpandedState(!liveExpandedRef.current);
   };
 
   useOmadaAgentControl(
@@ -55,10 +58,11 @@ export const SExpandableSection: React.FC<SExpandableSectionProps> = ({
           kind: 'switch',
           label: typeof title === 'string' ? title : undefined,
           value: isExpanded,
+          getValue: () => liveExpandedRef.current,
           actions: {
             expand: () => setExpandedState(true),
             collapse: () => setExpandedState(false),
-            toggle: () => setExpandedState(!isExpanded),
+            toggle: () => setExpandedState(!liveExpandedRef.current),
             setValue: (next: unknown) => setExpandedState(Boolean(next)),
           },
         }

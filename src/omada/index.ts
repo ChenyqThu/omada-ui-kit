@@ -37,14 +37,29 @@ export {
   type OmadaWebMcpToolSchema,
 } from './agent';
 export {
+  useControllableState,
+  useDragSelect,
   useRovingFocus,
+  useSelection,
+  type DragSelectItem,
+  type DragSelectItemProps,
+  type DragSelectStrategy,
   type RovingFocusActivationMode,
   type RovingFocusItem,
   type RovingFocusOrientation,
   type RovingItemProps,
+  type SelectionItem,
+  type SelectionMode,
+  type SetControllableState,
+  type ToggleSelectionOptions,
+  type UseControllableStateOptions,
+  type UseDragSelectOptions,
+  type UseDragSelectReturn,
   type UseRovingFocusOptions,
   type UseRovingFocusReturn,
-} from './behaviors/useRovingFocus';
+  type UseSelectionOptions,
+  type UseSelectionReturn,
+} from './behaviors';
 export {
   omadaChartPalette,
   omadaFontFamily,

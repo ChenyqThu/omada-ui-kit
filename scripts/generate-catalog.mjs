@@ -144,7 +144,7 @@ function classifySourcePath(relPath, symbolName) {
     return 'theme';
   }
   if (normalized.includes('omada/behaviors/')) {
-    return 'layout';
+    return 'behaviors';
   }
   if (
     normalized.includes('omada/blocks/') ||
@@ -668,6 +668,25 @@ function buildRecipes(pkgName, pkgVersion) {
         'SSettingsPageShell',
       ],
     },
+    {
+      id: 'custom-component',
+      title: 'Zero-Conflict Custom Omada Component (4-Layer Formula)',
+      summary:
+        'Compose AntD 6 overlay shells (SModal/SDrawer/Popover) + headless behavior hooks (useControllableState, useSelection, useDragSelect, useRovingFocus) + --omada-* tokens + useOmadaAgentControl for custom domain widgets without Portal or focus conflicts.',
+      components: [
+        'OmadaProvider',
+        'useOmadaTheme',
+        'useControllableState',
+        'useSelection',
+        'useDragSelect',
+        'useRovingFocus',
+        'useOmadaAgentControl',
+        'Popover',
+        'SModal',
+        'SDrawer',
+        'SIcon',
+      ],
+    },
   ];
 }
 
@@ -774,7 +793,7 @@ function generateLlmsTxt(catalog) {
 > TP-Link Omada Controller v6.3 React 19 + Ant Design 6 UI component kit with Light/Dark design tokens, scoped micro-frontend CSS, bundled Figma assets, deterministic Agent Bridge, and zero-build single-file HTML standalone bundle.
 
 ## Subpath Entrypoints
-- \`${name}/core\`: Theme (\`OmadaProvider\`, \`useOmadaTheme\`, \`useRovingFocus\`), layout, base \`S*\` inputs/tables/feedback
+- \`${name}/core\`: Theme (\`OmadaProvider\`, \`useOmadaTheme\`), headless behavior hooks (\`useControllableState\`, \`useSelection\`, \`useDragSelect\`, \`useRovingFocus\`), layout, base \`S*\` inputs/tables/feedback
 - \`${name}/blocks\`: \`SEmulatorShell\`, \`SFilterTableBlock\`, \`SInlineRuleEditorLayout\`, \`SInlineFormRow\`, \`SDetailInspectorDrawer\`, \`SMasterDetailSplitBlock\`, \`SWizardModal\`, \`SSwitchPortPicker\`
 - \`${name}/charts\`: Modular ECharts (\`SChart\`, \`SLineChart\`, \`SBarChart\`, \`SDonutChart\`, \`SSparkChart\`, \`SDonutSummaryCard\`, \`SHealthGauge\`, \`SHealthRadar\`, \`SHealthTrendBar\`, \`SChannelUtilization\`)
 - \`${name}/emulator\`: Controller v6.3 domain widgets (\`STopologyCanvas\`, \`SAclRuleBuilder\`, \`SSettingsPageShell\`, \`STerminalConsole\`, \`SDevicePortGraphic\`, \`SPortPanel\`)
@@ -806,6 +825,7 @@ function generateLlmsTxt(catalog) {
 - \`references/docs/emulator-v6.md\`: ${byCategory('emulator-v6')}
 - \`references/docs/assets.md\`: ${byCategory('assets')}
 - \`references/docs/agent.md\`: ${byCategory('agent')}
+- \`references/docs/custom-component.md\`: ${byCategory('behaviors')} (4-Layer Custom Component Formula)
 
 ## Starter Templates & Verification CLI
 - Templates (\`templates/*.{html,tsx}\`): ${catalog.templates.map((t) => `\`${t.id}\``).join(', ')}
@@ -888,10 +908,147 @@ function generateDomainDocs(catalog) {
       `## Quick-Drawer Handle Clearance\n\`SEmulatorShell\` mounts a fixed \`36px\` \`<||\` quick-drawer handle at top-right. \`SFilterTableBlock\` defaults to \`clearQuickDrawer={true}\` (\`pr-9\`). Custom top wrappers inside \`SEmulatorShell\` should use \`style={{ padding: '20px 44px 24px 24px' }}\`.`,
     ),
     'layout.md': buildCategoryDoc(
-      'Theme, Layout, Navigation & Headless Focus (`@chenyqthu/omada-ui-kit/core`)',
-      'Application theme provider (global or scoped micro-frontend mode), classic app shell, page headers, steps/breadcrumbs/pagination, and WAI-ARIA roving focus.',
+      'Theme, Layout & Navigation (`@chenyqthu/omada-ui-kit/core`)',
+      'Application theme provider (global or scoped micro-frontend mode), classic app shell, page headers, and steps/breadcrumbs/pagination.',
       nonAntd(['theme', 'layout', 'utility']),
       `## Scoped Micro-Frontend Mode\nImport \`@chenyqthu/omada-ui-kit/style.scoped.css\` and render \`<OmadaProvider syncDocumentTheme={false}>\` to scope CSS custom properties and AntD popup portals inside \`.omada-scope\` without mutating \`document.documentElement\`.`,
+    ),
+    'custom-component.md': buildCategoryDoc(
+      'Authoring Custom Omada Components — Headless Hooks & 4-Layer Formula (`@chenyqthu/omada-ui-kit/core`)',
+      'When a PRD needs a novel domain widget not in the built-in catalog (e.g., RF channel spectrum strip, PoE port painter, VLAN matrix, custom policy card), combine these headless hooks with AntD 6 overlay shells and `--omada-*` tokens for zero DOM/focus conflicts and automatic Agent Bridge support.',
+      nonAntd(['behaviors']),
+      `## The 4-Layer Zero-Conflict Authoring Formula
+
+1. **Layer 1 — Reuse AntD 6 Overlay & Container Shells (Never Re-invent DOM Globals)**
+   - Wrap popups, menus, dialogs, and drawers in \`<Popover>\`, \`<Dropdown>\`, \`<SModal>\`, or \`<SDrawer>\`.
+   - **NEVER** call \`createPortal(..., document.body)\`, attach \`document.addEventListener('mousedown', ...)\` click-outside traps, or mutate \`document.body.style.overflow\`. \`<OmadaProvider>\` already binds AntD \`getPopupContainer\` (preserving \`.omada-scope\` Dark Mode variables), \`Escape\` dismissal stacks, and focus traps.
+2. **Layer 2 — Drive State, Selection, Pointer Drag & Keyboard with Headless Hooks**
+   - \`useControllableState({ value, defaultValue, onChange })\`: Dual controlled/uncontrolled state without stale closures.
+   - \`useSelection({ items, mode, selectedKeys, defaultSelectedKeys, onSelectionChange })\`: Single/multi selection, \`Shift+Click\` range toggle (\`toggle(key, { shiftKey })\`), \`selectAll()\`, \`clear()\`, \`invert()\`, and \`isAllSelected\` / \`isPartiallySelected\` (maps directly to \`<SCheckbox indeterminate>\`).
+   - \`useDragSelect({ items, selectedKeys, onSelectionChange, strategy })\`: Pointer brush-paint (\`'paint'\`) or span (\`'range'\`) across ports, channels, or schedule cells without stealing keyboard focus or breaking outer AntD modals.
+   - \`useRovingFocus({ items, activeKey, onActivate, orientation, activationMode })\`: Single \`tabIndex={0}\` stop + \`Arrow*\` / \`Home\` / \`End\` WAI-ARIA keyboard navigation.
+3. **Layer 3 — Style Exclusively with \`var(--omada-*)\` Tokens & Official Figma Assets**
+   - Use \`--omada-bg-surface\`, \`--omada-bg-field\`, \`--omada-border-divider\`, \`--omada-brand\`, \`--omada-brand-bg-subtlest\`, and \`--omada-text-primary\`. Because \`@layer antd\` is lower priority than \`@layer utilities\`, Tailwind utilities override cleanly without \`!important\`.
+4. **Layer 4 — Register Deterministic Agent & WebMCP Control (\`useOmadaAgentControl\`)**
+   - Bind \`agentId?: string\` to \`useOmadaAgentControl\` so \`window.__OMADA_AGENT__\` and WebMCP (\`snapshot\` / \`query\` / \`act\`) inspect and operate your custom widget identically to native \`S*\` components.
+
+## Blueprint: Custom 6 GHz PSC Channel Matrix Widget
+
+\`\`\`tsx
+import React from 'react';
+import {
+  SCheckbox,
+  useDragSelect,
+  useRovingFocus,
+  useSelection,
+} from '@chenyqthu/omada-ui-kit/core';
+import { useOmadaAgentControl } from '@chenyqthu/omada-ui-kit/agent';
+
+export interface ChannelItem {
+  key: string;
+  label: string;
+  dfs?: boolean;
+  disabled?: boolean;
+}
+
+export interface CustomChannelMatrixProps {
+  agentId?: string;
+  channels: readonly ChannelItem[];
+  value?: string[];
+  defaultValue?: string[];
+  onChange?: (channels: string[]) => void;
+}
+
+export const CustomChannelMatrix: React.FC<CustomChannelMatrixProps> = ({
+  agentId,
+  channels,
+  value,
+  defaultValue = [],
+  onChange,
+}) => {
+  const selection = useSelection({
+    items: channels,
+    mode: 'multiple',
+    selectedKeys: value,
+    defaultSelectedKeys: defaultValue,
+    onSelectionChange: onChange,
+  });
+
+  const drag = useDragSelect({
+    items: channels,
+    selectedKeys: selection.selectedKeys,
+    onSelectionChange: selection.setSelectedKeys,
+    strategy: 'paint',
+  });
+
+  const roving = useRovingFocus({
+    items: channels,
+    orientation: 'horizontal',
+    activationMode: 'manual',
+    onActivate: (k) => selection.toggle(k),
+  });
+
+  useOmadaAgentControl(
+    agentId
+      ? {
+          id: agentId,
+          kind: 'checkbox',
+          label: '6 GHz PSC Channels',
+          value: selection.selectedKeys,
+          options: channels.map((c) => ({ value: c.key, label: c.label, disabled: c.disabled })),
+          actions: {
+            setValue: (next: unknown) =>
+              selection.setSelectedKeys(Array.isArray(next) ? next.map(String) : []),
+            toggle: (k: unknown) => selection.toggle(String(k)),
+            selectAll: () => selection.selectAll(),
+            clear: () => selection.clear(),
+          },
+        }
+      : null,
+  );
+
+  return (
+    <div className="space-y-2 rounded-md border border-[var(--omada-border-divider)] bg-[var(--omada-bg-surface)] p-3">
+      <div className="flex items-center justify-between">
+        <SCheckbox
+          checked={selection.isAllSelected}
+          indeterminate={selection.isPartiallySelected}
+          onChange={() => (selection.isAllSelected ? selection.clear() : selection.selectAll())}
+        >
+          Select All PSC Channels ({selection.selectedKeys.length}/{channels.length})
+        </SCheckbox>
+      </div>
+      <div role="group" aria-label="6 GHz PSC Channels" className="flex flex-wrap gap-1.5 select-none">
+        {channels.map((ch) => {
+          const active = selection.isSelected(ch.key);
+          const rovingProps = roving.getItemProps<HTMLButtonElement>(ch.key, { disabled: ch.disabled });
+          const dragProps = drag.getDragItemProps<HTMLButtonElement>(ch.key, {
+            disabled: ch.disabled,
+            onClick: (e) => selection.toggle(ch.key, { shiftKey: e.shiftKey }),
+          });
+          return (
+            <button
+              key={ch.key}
+              type="button"
+              disabled={ch.disabled}
+              aria-pressed={active}
+              {...rovingProps}
+              {...dragProps}
+              className={\`h-8 min-w-[52px] rounded px-2 text-xs font-medium transition-colors \${
+                active
+                  ? 'border border-[var(--omada-brand)] bg-[var(--omada-brand-bg-subtlest)] text-[var(--omada-brand-text)]'
+                  : 'border border-[var(--omada-border-divider)] bg-[var(--omada-bg-field)] text-[var(--omada-text-primary)]'
+              } disabled:cursor-not-allowed disabled:opacity-45\`}
+            >
+              {ch.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+\`\`\``,
     ),
     'input.md': buildCategoryDoc(
       'Inputs, Selections, Schedules & Forms (`@chenyqthu/omada-ui-kit/core`)',

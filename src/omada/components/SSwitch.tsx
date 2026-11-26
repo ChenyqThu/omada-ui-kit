@@ -61,11 +61,15 @@ export const SSwitch = React.forwardRef<HTMLButtonElement, SSwitchProps>(
     const isControlled = checked !== undefined;
     const wasControlledRef = useRef<boolean>(isControlled);
     const currentChecked = Boolean(isControlled ? checked : innerChecked);
+    const liveCheckedRef = useRef<boolean>(currentChecked);
+    liveCheckedRef.current = currentChecked;
     const resolvedAntdSize: SwitchProps['size'] = size === 'small' ? 'small' : 'medium';
 
     useEffect(() => {
       if (wasControlledRef.current && !isControlled) {
-        setInnerChecked(Boolean(defaultChecked));
+        const fallback = Boolean(defaultChecked);
+        setInnerChecked(fallback);
+        liveCheckedRef.current = fallback;
       }
       wasControlledRef.current = isControlled;
     }, [isControlled, defaultChecked]);
@@ -74,6 +78,7 @@ export const SSwitch = React.forwardRef<HTMLButtonElement, SSwitchProps>(
       next: boolean,
       event?: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>,
     ) => {
+      liveCheckedRef.current = next;
       if (!isControlled) {
         setInnerChecked(next);
       }
@@ -95,6 +100,7 @@ export const SSwitch = React.forwardRef<HTMLButtonElement, SSwitchProps>(
                 ? label
                 : (rest['aria-label'] as string | undefined),
             value: currentChecked,
+            getValue: () => liveCheckedRef.current,
             disabled: Boolean(disabled),
             actions: {
               setValue: (val: unknown) => {
@@ -103,7 +109,7 @@ export const SSwitch = React.forwardRef<HTMLButtonElement, SSwitchProps>(
                 return next;
               },
               toggle: () => {
-                const next = !currentChecked;
+                const next = !liveCheckedRef.current;
                 commitChecked(next);
                 return next;
               },

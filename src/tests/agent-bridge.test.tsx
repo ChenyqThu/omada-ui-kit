@@ -26,6 +26,7 @@ import {
   registerWebMcpTools,
   useOmadaAgent,
   useOmadaAgentAction,
+  useOmadaAgentControl,
   type OmadaAgentBatchResult,
   type OmadaAgentRuntime,
   type OmadaWebMcpToolDefinition,
@@ -640,5 +641,174 @@ describe('Omada Agent Bridge (snapshot / query / act / allow / secret masking)',
     const serialized = JSON.stringify(batchResult);
     expect(serialized).not.toContain('UltraSecretPassphrase!');
     expect(win.__OMADA_AGENT__!.query({ id: 'dns.proxyType' })[0].value).toBe('DoT');
+  });
+
+  it('prevents omitted-action WebMCP allow bypasses, scrubs deep secrets & errors, validates SSelect modes/options, and tracks sync batch toggles', async () => {
+    let runtime!: OmadaAgentRuntime;
+    const registeredTools = new Map<string, OmadaWebMcpToolDefinition>();
+
+    function HardeningHarness() {
+      const [secretVal, setSecretVal] = useState('TopSecret#Init');
+
+      useOmadaAgentControl({
+        id: 'sec.customSecret',
+        kind: 'password',
+        label: 'Custom Secret Token',
+        value: secretVal,
+        secret: true,
+        options: [{ value: secretVal, label: 'LeakedOption' }],
+        meta: { hint: `Current token is ${secretVal}` },
+        actions: {
+          setValue: (next: unknown) => {
+            const s = String(next ?? '');
+            if (s.includes('bad')) {
+              throw new Error(`Rejected secret candidate "${s}" while replacing "${secretVal}"`);
+            }
+            setSecretVal(s);
+            return s;
+          },
+        },
+      });
+
+      useOmadaAgentAction({
+        id: 'sec.rotateApiKey',
+        label: 'Rotate API Key',
+        secret: true,
+        meta: { internal: secretVal },
+        handler: (payload) => {
+          const candidate = String(payload ?? '');
+          if (candidate === 'explode') {
+            throw new Error(`Rotation failed for ${secretVal}`);
+          }
+          return `IssuedKey:${candidate}`;
+        },
+      });
+
+      return (
+        <div>
+          <SSwitch agentId="sync.switch" label="Sync Switch" defaultChecked={false} />
+          <SNumberInput agentId="sync.num" aria-label="Sync Num" defaultValue={10} step={5} min={0} max={25} />
+          <SSelect
+            agentId="strict.singleSelect"
+            aria-label="Strict Single"
+            defaultValue="doh"
+            options={[
+              { value: 'doh', label: 'DoH' },
+              { value: 'dot', label: 'DoT' },
+              { value: 'legacy', label: 'Legacy Plaintext', disabled: true },
+            ]}
+          />
+          <SSelect
+            agentId="strict.multiSelect"
+            aria-label="Strict Multi"
+            mode="multiple"
+            defaultValue={['doh']}
+            options={[
+              { value: 'doh', label: 'DoH' },
+              { value: 'dot', label: 'DoT' },
+              { value: 'disabledOpt', label: 'Disabled', disabled: true },
+            ]}
+          />
+          <SSelect
+            agentId="strict.tagsSelect"
+            aria-label="Strict Tags"
+            mode="tags"
+            defaultValue={['tag-a']}
+            options={[{ value: 'preset-tag', label: 'Preset Tag' }]}
+          />
+          <RuntimeProbe onRuntime={(rt) => (runtime = rt)} />
+        </div>
+      );
+    }
+
+    render(
+      <OmadaProvider>
+        <OmadaAgentProvider
+          allow={{ deniedIds: ['sync.num:decrement'] }}
+          registerWebMcp={{
+            // Only allow 'sync.switch:default' (not 'setValue') and 'sec.rotateApiKey:trigger'
+            allow: ['sync.switch:default', 'sec.rotateApiKey:trigger'],
+            modelContext: {
+              registerTool: (tool) => {
+                registeredTools.set(tool.name, tool);
+                return () => registeredTools.delete(tool.name);
+              },
+            },
+          }}
+        >
+          <HardeningHarness />
+        </OmadaAgentProvider>
+      </OmadaProvider>,
+    );
+
+    // 1. Canonical action resolution in canAct + WebMCP omitted-action guard
+    expect(runtime.canAct('sync.switch')).toBe(true); // resolves 'setValue'
+    expect(runtime.canAct('sec.rotateApiKey')).toBe(true); // resolves 'trigger'
+    expect(runtime.canAct('sync.num', 'decrement')).toBe(false);
+
+    const mcpAct = registeredTools.get('act')!;
+    // Omitting `action` on `sync.switch` resolves to `setValue`, NOT `default`, so WebMCP `allow: ['sync.switch:default']` MUST block it!
+    const bypassAttempt = await mcpAct.execute({ id: 'sync.switch', value: true });
+    expect(bypassAttempt.isError).toBe(true);
+    expect((bypassAttempt.structuredContent as { action: string }).action).toBe('setValue');
+    expect(runtime.query({ id: 'sync.switch' })[0].value).toBe(false);
+
+    // Omitting `action` on `sec.rotateApiKey` resolves to `trigger` (permitted) and masks secret return!
+    const rotateRes = await mcpAct.execute({ id: 'sec.rotateApiKey', value: 'NewSuperSecretKey' });
+    expect(rotateRes.isError).toBeFalsy();
+    expect(JSON.stringify(rotateRes)).not.toContain('NewSuperSecretKey');
+    expect(JSON.stringify(rotateRes)).not.toContain('TopSecret#Init');
+    expect((rotateRes.structuredContent as { result: string }).result).toBe(OMADA_SECRET_MASK);
+
+    // 2. Deep secret redaction on options, meta, and thrown error messages
+    const secretSnap = runtime.query({ id: 'sec.customSecret' })[0];
+    expect(secretSnap.value).toBe(OMADA_SECRET_MASK);
+    expect(secretSnap.options).toBeUndefined();
+    expect(JSON.stringify(secretSnap)).not.toContain('TopSecret#Init');
+    expect(secretSnap.meta?.hint).toBe(`Current token is ${OMADA_SECRET_MASK}`);
+
+    const badSecretErr = runtime.act('sec.customSecret', 'setValue', 'bad-CandidatePass!');
+    expect(badSecretErr.ok).toBe(false);
+    expect(badSecretErr.error).not.toContain('bad-CandidatePass!');
+    expect(badSecretErr.error).not.toContain('TopSecret#Init');
+    expect(badSecretErr.error).toContain(OMADA_SECRET_MASK);
+
+    // 3. Rapid synchronous batch toggles & increments read live uncommitted ref
+    let syncBatch!: OmadaAgentBatchResult;
+    reactAct(() => {
+      syncBatch = runtime.act({
+        steps: [
+          { id: 'sync.switch', action: 'toggle' },
+          { id: 'sync.switch', action: 'toggle' },
+          { id: 'sync.num', action: 'increment' },
+          { id: 'sync.num', action: 'increment' },
+        ],
+      });
+    });
+    expect(syncBatch.ok).toBe(true);
+    expect(syncBatch.snapshot.controls.find((c) => c.id === 'sync.switch')?.value).toBe(false);
+    expect(syncBatch.snapshot.controls.find((c) => c.id === 'sync.num')?.value).toBe(20);
+
+    // 4. SSelect strict option membership, disabled guard, and mode validation
+    expect(runtime.act('strict.singleSelect', 'setValue', 'non-existent').ok).toBe(false);
+    expect(runtime.act('strict.singleSelect', 'setValue', 'legacy').ok).toBe(false);
+    expect(runtime.act('strict.singleSelect', 'setValue', ['doh']).ok).toBe(false);
+    reactAct(() => {
+      expect(runtime.act('strict.singleSelect', 'setValue', 'dot').ok).toBe(true);
+    });
+    expect(runtime.query({ id: 'strict.singleSelect' })[0].value).toBe('dot');
+
+    expect(runtime.act('strict.multiSelect', 'setValue', 'dot').ok).toBe(false);
+    expect(runtime.act('strict.multiSelect', 'setValue', ['doh', 'disabledOpt']).ok).toBe(false);
+    reactAct(() => {
+      expect(runtime.act('strict.multiSelect', 'select', 'dot').ok).toBe(true);
+    });
+    expect(runtime.query({ id: 'strict.multiSelect' })[0].value).toEqual(['doh', 'dot']);
+
+    expect(runtime.act('strict.tagsSelect', 'select', { invalidObj: true }).ok).toBe(false);
+    reactAct(() => {
+      expect(runtime.act('strict.tagsSelect', 'select', 'custom-tag-99').ok).toBe(true);
+    });
+    expect(runtime.query({ id: 'strict.tagsSelect' })[0].value).toEqual(['tag-a', 'custom-tag-99']);
   });
 });

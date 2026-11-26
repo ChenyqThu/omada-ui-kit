@@ -77,6 +77,15 @@ export function useRovingFocus({
     [enabledItems],
   );
 
+  useEffect(() => {
+    const validKeys = new Set(items.map((item) => item.key));
+    for (const key of Array.from(nodesRef.current.keys())) {
+      if (!validKeys.has(key)) {
+        nodesRef.current.delete(key);
+      }
+    }
+  }, [items]);
+
   const tabStopKey = useMemo<string | null>(() => {
     if (enabledItems.length === 0) {
       return null;
@@ -97,14 +106,21 @@ export function useRovingFocus({
     return enabledItems[0].key;
   }, [enabledItems, enabledKeySet, activationMode, focusedKey, activeKey]);
 
-  const focusItem = useCallback((targetKey: string) => {
-    setFocusedKey(targetKey);
-    const el = nodesRef.current.get(targetKey);
-    if (el) {
+  const focusItem = useCallback(
+    (targetKey: string) => {
+      if (!enabledKeySet.has(targetKey)) {
+        return;
+      }
+      const el = nodesRef.current.get(targetKey);
+      if (!el || (el as HTMLButtonElement).disabled) {
+        return;
+      }
+      setFocusedKey(targetKey);
       el.focus();
       el.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
-    }
-  }, []);
+    },
+    [enabledKeySet],
+  );
 
   const getItemProps = useCallback(
     <E extends HTMLElement = HTMLElement>(

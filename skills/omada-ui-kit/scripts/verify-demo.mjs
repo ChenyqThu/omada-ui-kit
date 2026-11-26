@@ -643,6 +643,7 @@ function verifySingleTarget(targetArg, ctx) {
   const warnings = [];
   let checkedAssetSlugs = 0;
   let checkedJsxTags = 0;
+  const seenStaticAgentIds = new Map();
 
   const codeBlocks = [];
   if (isHtml) {
@@ -672,6 +673,18 @@ function verifySingleTarget(targetArg, ctx) {
       checkedJsxTags += 1;
       const { tagName, line, hasSpread, hasNonEmptyChildren, attrs } = el;
       const baseTag = tagName.split('.')[0];
+
+      const agentIdAttr = attrs.find((a) => a.name === 'agentId');
+      if (agentIdAttr && agentIdAttr.staticString) {
+        const prevLine = seenStaticAgentIds.get(agentIdAttr.staticString);
+        if (prevLine !== undefined) {
+          errors.push(
+            `Line ${agentIdAttr.line}: Duplicate static agentId="${agentIdAttr.staticString}" (first declared on line ${prevLine}). Each control must have a unique agentId.`,
+          );
+        } else {
+          seenStaticAgentIds.set(agentIdAttr.staticString, agentIdAttr.line);
+        }
+      }
 
       // 1. Unknown <S*> component check
       if (
@@ -806,7 +819,18 @@ function verifySingleTarget(targetArg, ctx) {
     }
   }
 
-  // 8. Advisory warning if SEmulatorShell is used without any quick-drawer right padding hint
+  // 8. Standalone HTML Agent Bridge provider wiring check
+  if (
+    isHtml &&
+    (seenStaticAgentIds.size > 0 || content.includes('useOmadaAgentAction')) &&
+    !content.includes('<OmadaAgentProvider')
+  ) {
+    errors.push(
+      'Standalone HTML declares `agentId` or `useOmadaAgentAction` without `<OmadaAgentProvider>`; wrap the app in `<OmadaAgentProvider exposeWindowBridge>`.',
+    );
+  }
+
+  // 9. Advisory warning if SEmulatorShell is used without any quick-drawer right padding hint
   if (
     content.includes('<SEmulatorShell') &&
     !content.includes('showQuickDrawerHandle={false}') &&
@@ -1163,62 +1187,127 @@ async function runRenderAndAxeVerification(targets, options) {
         });
         await page.waitForTimeout(120);
 
-        const domChecks = await page.evaluate(() => {
-          const issues = [];
-          const root = document.getElementById('root');
-          if (!root || root.children.length === 0) {
-            issues.push('Mounted #root container is empty after rendering.');
-          } else {
-            const rootRect = root.getBoundingClientRect();
-            if (rootRect.height <= 0 || rootRect.width <= 0) {
-              issues.push(`Mounted #root has zero dimensions (${rootRect.width}x${rootRect.height}).`);
-            }
-          }
+        const expectsWindowBridge = /exposeWindowBridge\b/.test(rawContent);
+        const declaresAgentTargets =
+          /\bagentId\s*=/.test(rawContent) ||
+          /\buseOmadaAgentAction\s*\(/.test(rawContent) ||
+          /\buseOmadaAgentControl\s*\(/.test(rawContent);
 
-          const imgs = Array.from(document.querySelectorAll('img'));
-          for (const img of imgs) {
-            const src = img.getAttribute('src') || '';
-            if (!src) continue;
-            if (!img.complete || img.naturalWidth === 0) {
-              issues.push(`Broken <img> asset failed to decode: "${src}"`);
+        const domChecks = await page.evaluate(
+          ({ expectBridge, expectTargets }) => {
+            const issues = [];
+            const root = document.getElementById('root');
+            if (!root || root.children.length === 0) {
+              issues.push('Mounted #root container is empty after rendering.');
+            } else {
+              const rootRect = root.getBoundingClientRect();
+              if (rootRect.height <= 0 || rootRect.width <= 0) {
+                issues.push(
+                  `Mounted #root has zero dimensions (${rootRect.width}x${rootRect.height}).`,
+                );
+              }
             }
-          }
 
-          const handle = document.querySelector('[data-testid="quick-drawer-handle"]');
-          if (handle) {
-            const hr = handle.getBoundingClientRect();
-            if (hr.width > 0 && hr.height > 0) {
-              const interactive = Array.from(
-                document.querySelectorAll(
-                  'main button, main a, main input, main [role="tab"], main [role="combobox"]',
-                ),
-              );
-              for (const el of interactive) {
-                if (el === handle || handle.contains(el)) continue;
-                const style = window.getComputedStyle(el);
-                if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
-                  continue;
-                }
-                const r = el.getBoundingClientRect();
-                if (r.width <= 0 || r.height <= 0) continue;
-                const overlapX = Math.min(hr.right, r.right) - Math.max(hr.left, r.left);
-                const overlapY = Math.min(hr.bottom, r.bottom) - Math.max(hr.top, r.top);
-                if (overlapX > 2 && overlapY > 2) {
-                  const label =
-                    el.getAttribute('aria-label') ||
-                    (el.textContent || '').trim().slice(0, 40) ||
-                    el.tagName.toLowerCase();
-                  issues.push(
-                    `Interactive control "${label}" physically overlaps <SEmulatorShell> <|| quick-drawer handle (${Math.round(overlapX)}x${Math.round(overlapY)}px). Add >=36px/44px right clearance.`,
-                  );
+            const imgs = Array.from(document.querySelectorAll('img'));
+            for (const img of imgs) {
+              const src = img.getAttribute('src') || '';
+              if (!src) continue;
+              if (!img.complete || img.naturalWidth === 0) {
+                issues.push(`Broken <img> asset failed to decode: "${src}"`);
+              }
+            }
+
+            const handle = document.querySelector('[data-testid="quick-drawer-handle"]');
+            if (handle) {
+              const hr = handle.getBoundingClientRect();
+              if (hr.width > 0 && hr.height > 0) {
+                const interactive = Array.from(
+                  document.querySelectorAll(
+                    'main button, main a, main input, main [role="tab"], main [role="combobox"]',
+                  ),
+                );
+                for (const el of interactive) {
+                  if (el === handle || handle.contains(el)) continue;
+                  const style = window.getComputedStyle(el);
+                  if (
+                    style.display === 'none' ||
+                    style.visibility === 'hidden' ||
+                    style.opacity === '0'
+                  ) {
+                    continue;
+                  }
+                  const r = el.getBoundingClientRect();
+                  if (r.width <= 0 || r.height <= 0) continue;
+                  const overlapX = Math.min(hr.right, r.right) - Math.max(hr.left, r.left);
+                  const overlapY = Math.min(hr.bottom, r.bottom) - Math.max(hr.top, r.top);
+                  if (overlapX > 2 && overlapY > 2) {
+                    const label =
+                      el.getAttribute('aria-label') ||
+                      (el.textContent || '').trim().slice(0, 40) ||
+                      el.tagName.toLowerCase();
+                    issues.push(
+                      `Interactive control "${label}" physically overlaps <SEmulatorShell> <|| quick-drawer handle (${Math.round(overlapX)}x${Math.round(overlapY)}px). Add >=36px/44px right clearance.`,
+                    );
+                  }
                 }
               }
             }
-          }
 
-          const hasAgentBridge = Boolean(window.__OMADA_AGENT__);
-          return { issues, hasAgentBridge };
-        });
+            const bridge = window.__OMADA_AGENT__;
+            let agentSummary = '';
+            if (expectBridge && !bridge) {
+              issues.push(
+                'Source sets `exposeWindowBridge`, but `window.__OMADA_AGENT__` was not mounted.',
+              );
+            }
+            if (bridge) {
+              try {
+                const snap = bridge.snapshot();
+                const queried = bridge.query();
+                if (!snap || !Array.isArray(snap.controls) || !Array.isArray(snap.actions)) {
+                  issues.push(
+                    '`window.__OMADA_AGENT__.snapshot()` returned an invalid structure.',
+                  );
+                } else {
+                  if (!Array.isArray(queried) || queried.length !== snap.controls.length) {
+                    issues.push(
+                      '`window.__OMADA_AGENT__.query()` count did not match `snapshot().controls`.',
+                    );
+                  }
+                  if (
+                    expectTargets &&
+                    snap.controls.length === 0 &&
+                    snap.actions.length === 0
+                  ) {
+                    issues.push(
+                      'Source declares `agentId` / `useOmadaAgentAction`, but 0 controls/actions registered with `<OmadaAgentProvider>` (check provider tree placement).',
+                    );
+                  }
+                  for (const ctrl of snap.controls) {
+                    if (ctrl.secret && ctrl.value !== '[REDACTED]') {
+                      issues.push(
+                        `Secret control "${ctrl.id}" leaked non-redacted value in snapshot().`,
+                      );
+                    }
+                    if (!ctrl.disabled && (!Array.isArray(ctrl.actions) || ctrl.actions.length === 0)) {
+                      issues.push(
+                        `Enabled control "${ctrl.id}" registered with 0 callable actions.`,
+                      );
+                    }
+                  }
+                  agentSummary = `Agent Bridge verified (${snap.controls.length} controls, ${snap.actions.length} actions)`;
+                }
+              } catch (err) {
+                issues.push(
+                  `Agent Bridge self-check threw an error: ${err instanceof Error ? err.message : String(err)}`,
+                );
+              }
+            }
+
+            return { issues, agentSummary };
+          },
+          { expectBridge: expectsWindowBridge, expectTargets: declaresAgentTargets },
+        );
 
         pageErrors.push(...domChecks.issues);
 
@@ -1249,7 +1338,7 @@ async function runRenderAndAxeVerification(targets, options) {
           allPassed = false;
         } else {
           console.log(
-            `PASS [${targetArg}] (--render + axe WCAG 2.1 A/AA${strictContrast ? ' + contrast' : ''}): 0 runtime errors, 0 broken images, 0 overlaps, 0 axe violations${domChecks.hasAgentBridge ? ', Agent Bridge active' : ''}.`,
+            `PASS [${targetArg}] (--render @1440x900 + axe WCAG 2.1 A/AA${strictContrast ? ' + color-contrast' : ', contrast opt-in'}): 0 runtime errors, 0 broken images, 0 overlaps, 0 axe violations${domChecks.agentSummary ? `, ${domChecks.agentSummary}` : ''}.`,
           );
         }
       } finally {

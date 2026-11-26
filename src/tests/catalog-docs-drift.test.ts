@@ -108,7 +108,7 @@ describe('Catalog, Progressive Docs, Skill Bundle & COMPONENTS.md Zero-Drift Gat
     expect(lagGlyph.props?.some((p) => p.name === 'size')).toBe(true);
   });
 
-  it('generates llms.txt, standalone.md, and all 9 progressive-disclosure domain docs in sync with .agents/skills', () => {
+  it('generates llms.txt, standalone.md, and all 10 progressive-disclosure domain docs in sync with .agents/skills', () => {
     const requiredDocs = [
       'blocks.md',
       'layout.md',
@@ -119,6 +119,7 @@ describe('Catalog, Progressive Docs, Skill Bundle & COMPONENTS.md Zero-Drift Gat
       'emulator-v6.md',
       'assets.md',
       'agent.md',
+      'custom-component.md',
     ];
 
     expect(fs.existsSync(path.join(SKILL_DIR, 'references/llms.txt'))).toBe(true);

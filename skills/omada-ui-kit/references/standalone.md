@@ -4,11 +4,11 @@ Use `dist/standalone.js` + `dist/style.css` for zero-build PRD mockups that open
 
 ## 1. Pinned Script & Stylesheet Tags
 
-Always pin both `@chenyqthu/omada-ui-kit@0.6.0` and `@babel/standalone@7.28.4` (never `@latest`):
+Always pin both `@chenyqthu/omada-ui-kit@0.7.0` and `@babel/standalone@7.28.4` (never `@latest`):
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/style.css" />
-<script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/standalone.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/style.css" />
+<script src="https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/standalone.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"></script>
 ```
 
@@ -26,7 +26,7 @@ For offline repository demos (such as `examples/single-file-demo.html`), referen
 ## 3. Asset Resolution Architecture (`__OMADA_ASSET_BASE__`)
 
 - **100% Inline**: All 590 `<SIcon>` SVGs and builtin empty/upload illustrations (`no-data`, `upgrade`) are embedded directly inside `standalone.js`.
-- **Externalized Heavy Media (`dist/assets/`)**: `products`, remaining `illustrations`, `clients`, and `brand` assets resolve relative to `globalThis.__OMADA_ASSET_BASE__` (auto-detected from `<script src=".../standalone.js">`, falling back to `https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/` when inlined). Whether loaded from jsDelivr CDN, inlined in an HTML file, or loaded via local `../dist/standalone.js` (`file://`), `<SProductImage>`, `<SIllustration>`, `<SClientIcon>`, and `<SBrandAsset>` automatically load `assets/<group>/<theme>/<slug>.<ext>` beside `standalone.js`.
+- **Externalized Heavy Media (`dist/assets/`)**: `products`, remaining `illustrations`, `clients`, and `brand` assets resolve relative to `globalThis.__OMADA_ASSET_BASE__` (auto-detected from `<script src=".../standalone.js">`, falling back to `https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/` when inlined). Whether loaded from jsDelivr CDN, inlined in an HTML file, or loaded via local `../dist/standalone.js` (`file://`), `<SProductImage>`, `<SIllustration>`, `<SClientIcon>`, and `<SBrandAsset>` automatically load `assets/<group>/<theme>/<slug>.<ext>` beside `standalone.js`.
 
 ## 4. External Browser Agent Discovery (`window.__OMADA_AGENT__` & WebMCP)
 

@@ -8,12 +8,47 @@ const __dirname = path.dirname(__filename);
 const CATALOG_PATH = path.resolve(__dirname, '../references/catalog.json');
 const TEMPLATES_DIR = path.resolve(__dirname, '../templates');
 
+function findLatestMtimeMs(dirPath) {
+  let latest = 0;
+  if (!fs.existsSync(dirPath)) return latest;
+  for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
+    const fullPath = path.join(dirPath, entry.name);
+    if (entry.isDirectory()) {
+      latest = Math.max(latest, findLatestMtimeMs(fullPath));
+    } else if (entry.isFile() && /\.(ts|tsx)$/.test(entry.name)) {
+      latest = Math.max(latest, fs.statSync(fullPath).mtimeMs);
+    }
+  }
+  return latest;
+}
+
 function loadCatalog() {
   if (!fs.existsSync(CATALOG_PATH)) {
     console.error(`Missing catalog.json at ${CATALOG_PATH}. Run "pnpm build:catalog" in the repo root.`);
     process.exit(1);
   }
-  return JSON.parse(fs.readFileSync(CATALOG_PATH, 'utf8'));
+  const catalog = JSON.parse(fs.readFileSync(CATALOG_PATH, 'utf8'));
+  const repoPkgPath = path.resolve(__dirname, '../../../package.json');
+  const repoSrcDir = path.resolve(__dirname, '../../../src/omada');
+  if (fs.existsSync(repoPkgPath) && fs.existsSync(repoSrcDir)) {
+    try {
+      const repoPkg = JSON.parse(fs.readFileSync(repoPkgPath, 'utf8'));
+      const catalogMtime = fs.statSync(CATALOG_PATH).mtimeMs;
+      const latestSrcMtime = findLatestMtimeMs(repoSrcDir);
+      if (repoPkg.version && catalog.package?.version !== repoPkg.version) {
+        console.warn(
+          `WARN: catalog.json version (${catalog.package?.version}) differs from package.json (${repoPkg.version}). Run "pnpm build:catalog" to sync.`,
+        );
+      } else if (latestSrcMtime > catalogMtime + 1000) {
+        console.warn(
+          'WARN: src/omada/* has been modified since catalog.json was generated. Run "pnpm build:catalog" for up-to-date prop schemas.',
+        );
+      }
+    } catch {
+      // Ignore staleness check errors in read-only or packaged installs
+    }
+  }
+  return catalog;
 }
 
 function usage() {

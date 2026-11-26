@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "package": {
     "name": "@chenyqthu/omada-ui-kit",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "description": "Omada Controller v6.3 React UI component library (Ant Design 6 + Design Tokens + Figma Assets + Single-file HTML standalone bundle)",
     "entries": {
       "import": "@chenyqthu/omada-ui-kit",
@@ -19,10 +19,10 @@
       "llmsTxt": "@chenyqthu/omada-ui-kit/llms.txt"
     },
     "cdn": {
-      "jsdelivrCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/style.css",
-      "jsdelivrStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/standalone.js",
-      "pinnedCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/style.css",
-      "pinnedStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/standalone.js",
+      "jsdelivrCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/style.css",
+      "jsdelivrStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/standalone.js",
+      "pinnedCss": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/style.css",
+      "pinnedStandalone": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/standalone.js",
       "babelStandalone": "https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"
     }
   },
@@ -30,7 +30,7 @@
     "components": 114,
     "blocks": 8,
     "antdPrimitives": 27,
-    "hooksAndHelpers": 29,
+    "hooksAndHelpers": 32,
     "templates": 5,
     "icons": 590,
     "products": 83,
@@ -718,6 +718,38 @@
         }
       ],
       "acceptsDomProps": false
+    },
+    {
+      "name": "useControllableState",
+      "category": "behaviors",
+      "kind": "hook",
+      "subpath": "@chenyqthu/omada-ui-kit/core",
+      "sourcePath": "src/omada/behaviors/useControllableState.ts",
+      "description": "Headless controlled / uncontrolled state primitive for custom Omada components. Supports rapid synchronous functional updaters (`setState(prev => next)`), reconciles back to `value` via microtask + commit effect even when a controlled parent ignores `onChange` without re-rendering, avoids stale closures, and deduplicates identical updates via `Object.is`."
+    },
+    {
+      "name": "useDragSelect",
+      "category": "behaviors",
+      "kind": "hook",
+      "subpath": "@chenyqthu/omada-ui-kit/core",
+      "sourcePath": "src/omada/behaviors/useDragSelect.ts",
+      "description": "Headless pointer drag-paint / range-sweep primitive for custom Omada widgets (7x24 schedules, switch port panels, RF channel strips, VLAN tag grids). Orthogonal to Ant Design 6 `Modal` / `Drawer` / `Popover` and `useRovingFocus`: - Installs pointerup/cancel listeners synchronously on `pointerdown` and cleans up all timers/listeners on unmount. - Tracks `pointerId` so secondary touch/pen pointers cannot corrupt an active stroke. - Defers `Shift+Click` to `useSelection` and preserves keyboard `Enter`/`Space` activation."
+    },
+    {
+      "name": "useRovingFocus",
+      "category": "behaviors",
+      "kind": "hook",
+      "subpath": "@chenyqthu/omada-ui-kit/core",
+      "sourcePath": "src/omada/behaviors/useRovingFocus.ts",
+      "description": "Headless WAI-ARIA roving `tabIndex` hook supporting horizontal, vertical, and 2D grid navigation, `Home` / `End` jumps, optional circular looping, and automatic or manual activation."
+    },
+    {
+      "name": "useSelection",
+      "category": "behaviors",
+      "kind": "hook",
+      "subpath": "@chenyqthu/omada-ui-kit/core",
+      "sourcePath": "src/omada/behaviors/useSelection.ts",
+      "description": "Headless single/multi selection state machine for custom Omada widgets (port matrices, channel strips, card grids, grouped checklists). Supports `Shift+Click` contiguous range selection, `indeterminate` header state, and `disabled` guards."
     },
     {
       "name": "EMULATOR_GLOBAL_NAV_GROUPS",
@@ -8685,14 +8717,6 @@
         "variant"
       ],
       "acceptsDomProps": false
-    },
-    {
-      "name": "useRovingFocus",
-      "category": "layout",
-      "kind": "hook",
-      "subpath": "@chenyqthu/omada-ui-kit/core",
-      "sourcePath": "src/omada/behaviors/useRovingFocus.ts",
-      "description": "Headless WAI-ARIA roving `tabIndex` hook supporting horizontal, vertical, and 2D grid navigation, `Home` / `End` jumps, optional circular looping, and automatic or manual activation."
     },
     {
       "name": "buildOmadaAntdTheme",
@@ -18768,13 +18792,13 @@
         "SIcon"
       ],
       "cdnUrls": {
-        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/style.css",
-        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/standalone.js",
+        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/style.css",
+        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/standalone.js",
         "babel": "https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"
       },
       "pinnedUrls": {
-        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/style.css",
-        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.6.0/dist/standalone.js",
+        "css": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/style.css",
+        "js": "https://cdn.jsdelivr.net/npm/@chenyqthu/omada-ui-kit@0.7.0/dist/standalone.js",
         "babel": "https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.4/babel.min.js"
       }
     },
@@ -18902,6 +18926,24 @@
         "SStepModal",
         "SExpandableSection",
         "SSettingsPageShell"
+      ]
+    },
+    {
+      "id": "custom-component",
+      "title": "Zero-Conflict Custom Omada Component (4-Layer Formula)",
+      "summary": "Compose AntD 6 overlay shells (SModal/SDrawer/Popover) + headless behavior hooks (useControllableState, useSelection, useDragSelect, useRovingFocus) + --omada-* tokens + useOmadaAgentControl for custom domain widgets without Portal or focus conflicts.",
+      "components": [
+        "OmadaProvider",
+        "useOmadaTheme",
+        "useControllableState",
+        "useSelection",
+        "useDragSelect",
+        "useRovingFocus",
+        "useOmadaAgentControl",
+        "Popover",
+        "SModal",
+        "SDrawer",
+        "SIcon"
       ]
     }
   ]

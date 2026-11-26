@@ -87,6 +87,9 @@ describe('ESM Subpath Entrypoints & Tree-Shaking', () => {
     expect(agentEntry.useOmadaAgentAction).toBeDefined();
     expect(agentEntry.OMADA_SECRET_MASK).toBe('[REDACTED]');
     expect(coreEntry.useRovingFocus).toBeDefined();
+    expect(coreEntry.useControllableState).toBeDefined();
+    expect(coreEntry.useSelection).toBeDefined();
+    expect(coreEntry.useDragSelect).toBeDefined();
   });
 
   it('keeps heavy ECharts and full asset catalogs decoupled from dist subpaths when dist/ exists', () => {
